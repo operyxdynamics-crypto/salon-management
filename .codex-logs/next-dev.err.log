@@ -1,0 +1,2087 @@
+[browser] Uncaught ReferenceError: metricTone is not defined
+    at eval (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/src_components_salon-workspace_tsx_0k_sylh._.js?id=%255Bproject%255D%252Fsrc%252Fcomponents%252Fsalon-workspace.tsx+%255Bapp-client%255D+%2528ecmascript%2529:950:91)
+    at Array.map (<anonymous>)
+    at Overview (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/src_components_salon-workspace_tsx_0k_sylh._.js?id=%255Bproject%255D%252Fsrc%252Fcomponents%252Fsalon-workspace.tsx+%255Bapp-client%255D+%2528ecmascript%2529:945:35)
+    at Object.react_stack_bottom_frame (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:15037:24)
+    at renderWithHooks (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:4620:24)
+    at updateFunctionComponent (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6081:21)
+    at beginWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6691:24)
+    at runWithFiberInDEV (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at performUnitOfWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9555:97)
+    at workLoopSync (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9449:40)
+    at renderRootSync (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9433:13)
+    at performWorkOnRoot (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9061:186)
+    at performSyncWorkOnRoot (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10263:9)
+    at flushSyncWorkAcrossRoots_impl (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10179:316)
+    at processRootScheduleInMicrotask (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10200:106)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10274:158)
+    at SalonWorkspace (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/src_components_salon-workspace_tsx_0k_sylh._.js:576:264)
+    at DashboardPage (src\app\dashboard\page.tsx:12:10)
+  10 |   const query = await searchParams;
+  11 |   const single = (value: string | string[] | undefined) => typeof value === "string" ? val...
+> 12 |   return <SalonWorkspace
+     |          ^
+  13 |     initialData={data}
+  14 |     initialDetail={{
+  15 |       appointmentId: single(query.appointmentId),
+⨯ ReferenceError: metricTone is not defined
+    at <unknown> (src\components\salon-workspace.tsx:288:401)
+    at Array.map (<anonymous>)
+    at Overview (src\components\salon-workspace.tsx:288:72)
+  286 | ...
+  287 | ...
+> 288 | ..._60px_rgba(45,34,20,.12)]"><div className={`grid size-11 place-items-center rounded-2x...
+      |                                               ^
+  289 | ...y" value={String(data.metrics.staffAbsent)} tone={data.metrics.staffAbsent ? "rose" : ...
+  290 | ...
+  291 | ... {
+  digest: '1134287882'
+}
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⨯ ReferenceError: metricTone is not defined
+    at <unknown> (src\components\salon-workspace.tsx:288:401)
+    at Array.map (<anonymous>)
+    at Overview (src\components\salon-workspace.tsx:288:72)
+  286 | ...
+  287 | ...
+> 288 | ..._60px_rgba(45,34,20,.12)]"><div className={`grid size-11 place-items-center rounded-2x...
+      |                                               ^
+  289 | ...y" value={String(data.metrics.staffAbsent)} tone={data.metrics.staffAbsent ? "rose" : ...
+  290 | ...
+  291 | ... {
+  digest: '1134287882'
+}
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⨯ ReferenceError: metricTone is not defined
+    at <unknown> (src\components\salon-workspace.tsx:288:401)
+    at Array.map (<anonymous>)
+    at Overview (src\components\salon-workspace.tsx:288:72)
+  286 | ...
+  287 | ...
+> 288 | ..._60px_rgba(45,34,20,.12)]"><div className={`grid size-11 place-items-center rounded-2x...
+      |                                               ^
+  289 | ...y" value={String(data.metrics.staffAbsent)} tone={data.metrics.staffAbsent ? "rose" : ...
+  290 | ...
+  291 | ... {
+  digest: '1134287882'
+}
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⨯ ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+⨯ ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+⨯ ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+⨯ ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+⨯ ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+⨯ ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+[browser] Uncaught Error: ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+[browser] ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+⨯ ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+[browser] ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] Uncaught Error: ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+[browser] ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx
+Reading source code for parsing failed
+An unexpected error happened while trying to read the source code to parse: failed to convert rope into string
+
+Caused by:
+- invalid utf-8 sequence of 1 bytes from index 9682
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+⨯ ./src/components/salon-workspace.tsx:1:19
+Unexpected character '\u{a3b}'
+[31m[1m>[0m [90m1 |[0m 產敳挠楬湥≴਻椊灭牯⁴⁻潆浲癅湥ⱴ甠敳慃汬慢正‬獵䕥晦捥ⱴ甠敳敍潭‬獵卥慴整素映潲⁭爢慥瑣㬢椊灭牯⁴楌歮...
+  [90m  |[0m            [31m[1m^[0m
+  [90m2 |[0m 㸽挠湡灏湥搨瑡⹡摩湥楴祴爮汯ⱥ椠整⥭㬩ਊ†潣獮⁴敲摡敄慴汩牆浯牕⁬‽獵䍥污扬捡⡫⤨›潗歲灳捡䑥瑥楡⁬㸽笠 ...
+  [90m3 |[0m 㸽猠瑥敄慴汩爨慥䑤瑥楡䙬潲啭汲⤨㬩 †猠湹⡣㬩 †眠湩潤⹷摡䕤敶瑮楌瑳湥牥∨潰獰慴整Ⱒ猠湹⥣਻††敲畴湲⠠
+  [90m4 |[0m 㸽眠湩潤⹷敲潭敶癅湥䱴獩整敮⡲瀢灯瑳瑡≥‬祳据㬩 素‬牛慥䑤瑥楡䙬潲啭汲⥝਻ 愠祳据映湵瑣潩⁮敲牦獥⡨敭...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+
+./src/components/salon-workspace.tsx:1:16
+Unexpected character '≴'
+[31m[1m>[0m [90m1 |[0m 產敳挠楬湥≴਻椊灭牯⁴⁻潆浲癅湥ⱴ甠敳慃汬慢正‬獵䕥晦捥ⱴ甠敳敍潭‬獵卥慴整素映潲⁭爢慥瑣㬢椊灭牯⁴楌歮...
+  [90m  |[0m           [31m[1m^[0m
+  [90m2 |[0m 㸽挠湡灏湥搨瑡⹡摩湥楴祴爮汯ⱥ椠整⥭㬩ਊ†潣獮⁴敲摡敄慴汩牆浯牕⁬‽獵䍥污扬捡⡫⤨›潗歲灳捡䑥瑥楡⁬㸽笠 ...
+  [90m3 |[0m 㸽猠瑥敄慴汩爨慥䑤瑥楡䙬潲啭汲⤨㬩 †猠湹⡣㬩 †眠湩潤⹷摡䕤敶瑮楌瑳湥牥∨潰獰慴整Ⱒ猠湹⥣਻††敲畴湲⠠
+  [90m4 |[0m 㸽眠湩潤⹷敲潭敶癅湥䱴獩整敮⡲瀢灯瑳瑡≥‬祳据㬩 素‬牛慥䑤瑥楡䙬潲啭汲⥝਻ 愠祳据映湵瑣潩⁮敲牦獥⡨敭...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+[browser] Uncaught Error: ./src/components/salon-workspace.tsx:1:19
+Unexpected character '\u{a3b}'
+> 1 | 產敳挠楬湥≴਻椊灭牯⁴⁻潆浲癅湥ⱴ甠敳慃汬慢正‬獵䕥晦捥ⱴ甠敳敍潭‬獵卥慴整素映潲⁭爢慥瑣㬢椊灭牯⁴楌歮...
+    |            ^
+  2 | 㸽挠湡灏湥搨瑡⹡摩湥楴祴爮汯ⱥ椠整⥭㬩ਊ†潣獮⁴敲摡敄慴汩牆浯牕⁬‽獵䍥污扬捡⡫⤨›潗歲灳捡䑥瑥楡⁬㸽笠 ...
+  3 | 㸽猠瑥敄慴汩爨慥䑤瑥楡䙬潲啭汲⤨㬩 †猠湹⡣㬩 †眠湩潤⹷摡䕤敶瑮楌瑳湥牥∨潰獰慴整Ⱒ猠湹⥣਻††敲畴湲⠠
+  4 | 㸽眠湩潤⹷敲潭敶癅湥䱴獩整敮⡲瀢灯瑳瑡≥‬祳据㬩 素‬牛慥䑤瑥楡䙬潲啭汲⥝਻ 愠祳据映湵瑣潩⁮敲牦獥⡨敭...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+    at <unknown> (Error: ./src/components/salon-workspace.tsx:1:19)
+    at <unknown> (Error: (./src/components/salon-workspace.tsx:1:19)
+[browser] ./src/components/salon-workspace.tsx:1:19
+Unexpected character '\u{a3b}'
+> 1 | 產敳挠楬湥≴਻椊灭牯⁴⁻潆浲癅湥ⱴ甠敳慃汬慢正‬獵䕥晦捥ⱴ甠敳敍潭‬獵卥慴整素映潲⁭爢慥瑣㬢椊灭牯⁴楌歮...
+    |            ^
+  2 | 㸽挠湡灏湥搨瑡⹡摩湥楴祴爮汯ⱥ椠整⥭㬩ਊ†潣獮⁴敲摡敄慴汩牆浯牕⁬‽獵䍥污扬捡⡫⤨›潗歲灳捡䑥瑥楡⁬㸽笠 ...
+  3 | 㸽猠瑥敄慴汩爨慥䑤瑥楡䙬潲啭汲⤨㬩 †猠湹⡣㬩 †眠湩潤⹷摡䕤敶瑮楌瑳湥牥∨潰獰慴整Ⱒ猠湹⥣਻††敲畴湲⠠
+  4 | 㸽眠湩潤⹷敲潭敶癅湥䱴獩整敮⡲瀢灯瑳瑡≥‬祳据㬩 素‬牛慥䑤瑥楡䙬潲啭汲⥝਻ 愠祳据映湵瑣潩⁮敲牦獥⡨敭...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:1:16
+Unexpected character '≴'
+> 1 | 產敳挠楬湥≴਻椊灭牯⁴⁻潆浲癅湥ⱴ甠敳慃汬慢正‬獵䕥晦捥ⱴ甠敳敍潭‬獵卥慴整素映潲⁭爢慥瑣㬢椊灭牯⁴楌歮...
+    |           ^
+  2 | 㸽挠湡灏湥搨瑡⹡摩湥楴祴爮汯ⱥ椠整⥭㬩ਊ†潣獮⁴敲摡敄慴汩牆浯牕⁬‽獵䍥污扬捡⡫⤨›潗歲灳捡䑥瑥楡⁬㸽笠 ...
+  3 | 㸽猠瑥敄慴汩爨慥䑤瑥楡䙬潲啭汲⤨㬩 †猠湹⡣㬩 †眠湩潤⹷摡䕤敶瑮楌瑳湥牥∨潰獰慴整Ⱒ猠湹⥣਻††敲畴湲⠠
+  4 | 㸽眠湩潤⹷敲潭敶癅湥䱴獩整敮⡲瀢灯瑳瑡≥‬祳据㬩 素‬牛慥䑤瑥楡䙬潲啭汲⥝਻ 愠祳据映湵瑣潩⁮敲牦獥⡨敭...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:1:19
+Unexpected character '\u{a3b}'
+> 1 | 產敳挠楬湥≴਻椊灭牯⁴⁻潆浲癅湥ⱴ甠敳慃汬慢正‬獵䕥晦捥ⱴ甠敳敍潭‬獵卥慴整素映潲⁭爢慥瑣㬢椊灭牯⁴楌歮...
+    |            ^
+  2 | 㸽挠湡灏湥搨瑡⹡摩湥楴祴爮汯ⱥ椠整⥭㬩ਊ†潣獮⁴敲摡敄慴汩牆浯牕⁬‽獵䍥污扬捡⡫⤨›潗歲灳捡䑥瑥楡⁬㸽笠 ...
+  3 | 㸽猠瑥敄慴汩爨慥䑤瑥楡䙬潲啭汲⤨㬩 †猠湹⡣㬩 †眠湩潤⹷摡䕤敶瑮楌瑳湥牥∨潰獰慴整Ⱒ猠湹⥣਻††敲畴湲⠠
+  4 | 㸽眠湩潤⹷敲潭敶癅湥䱴獩整敮⡲瀢灯瑳瑡≥‬祳据㬩 素‬牛慥䑤瑥楡䙬潲啭汲⥝਻ 愠祳据映湵瑣潩⁮敲牦獥⡨敭...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:1:16
+Unexpected character '≴'
+> 1 | 產敳挠楬湥≴਻椊灭牯⁴⁻潆浲癅湥ⱴ甠敳慃汬慢正‬獵䕥晦捥ⱴ甠敳敍潭‬獵卥慴整素映潲⁭爢慥瑣㬢椊灭牯⁴楌歮...
+    |           ^
+  2 | 㸽挠湡灏湥搨瑡⹡摩湥楴祴爮汯ⱥ椠整⥭㬩ਊ†潣獮⁴敲摡敄慴汩牆浯牕⁬‽獵䍥污扬捡⡫⤨›潗歲灳捡䑥瑥楡⁬㸽笠 ...
+  3 | 㸽猠瑥敄慴汩爨慥䑤瑥楡䙬潲啭汲⤨㬩 †猠湹⡣㬩 †眠湩潤⹷摡䕤敶瑮楌瑳湥牥∨潰獰慴整Ⱒ猠湹⥣਻††敲畴湲⠠
+  4 | 㸽眠湩潤⹷敲潭敶癅湥䱴獩整敮⡲瀢灯瑳瑡≥‬祳据㬩 素‬牛慥䑤瑥楡䙬潲啭汲⥝਻ 愠祳据映湵瑣潩⁮敲牦獥⡨敭...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:1:19
+Unexpected character '\u{a3b}'
+> 1 | 產敳挠楬湥≴਻椊灭牯⁴⁻潆浲癅湥ⱴ甠敳慃汬慢正‬獵䕥晦捥ⱴ甠敳敍潭‬獵卥慴整素映潲⁭爢慥瑣㬢椊灭牯⁴楌歮...
+    |            ^
+  2 | 㸽挠湡灏湥搨瑡⹡摩湥楴祴爮汯ⱥ椠整⥭㬩ਊ†潣獮⁴敲摡敄慴汩牆浯牕⁬‽獵䍥污扬捡⡫⤨›潗歲灳捡䑥瑥楡⁬㸽笠 ...
+  3 | 㸽猠瑥敄慴汩爨慥䑤瑥楡䙬潲啭汲⤨㬩 †猠湹⡣㬩 †眠湩潤⹷摡䕤敶瑮楌瑳湥牥∨潰獰慴整Ⱒ猠湹⥣਻††敲畴湲⠠
+  4 | 㸽眠湩潤⹷敲潭敶癅湥䱴獩整敮⡲瀢灯瑳瑡≥‬祳据㬩 素‬牛慥䑤瑥楡䙬潲啭汲⥝਻ 愠祳据映湵瑣潩⁮敲牦獥⡨敭...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:1:16
+Unexpected character '≴'
+> 1 | 產敳挠楬湥≴਻椊灭牯⁴⁻潆浲癅湥ⱴ甠敳慃汬慢正‬獵䕥晦捥ⱴ甠敳敍潭‬獵卥慴整素映潲⁭爢慥瑣㬢椊灭牯⁴楌歮...
+    |           ^
+  2 | 㸽挠湡灏湥搨瑡⹡摩湥楴祴爮汯ⱥ椠整⥭㬩ਊ†潣獮⁴敲摡敄慴汩牆浯牕⁬‽獵䍥污扬捡⡫⤨›潗歲灳捡䑥瑥楡⁬㸽笠 ...
+  3 | 㸽猠瑥敄慴汩爨慥䑤瑥楡䙬潲啭汲⤨㬩 †猠湹⡣㬩 †眠湩潤⹷摡䕤敶瑮楌瑳湥牥∨潰獰慴整Ⱒ猠湹⥣਻††敲畴湲⠠
+  4 | 㸽眠湩潤⹷敲潭敶癅湥䱴獩整敮⡲瀢灯瑳瑡≥‬祳据㬩 素‬牛慥䑤瑥楡䙬潲啭汲⥝਻ 愠祳据映湵瑣潩⁮敲牦獥⡨敭...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:1:19
+Unexpected character '\u{a3b}'
+> 1 | 產敳挠楬湥≴਻椊灭牯⁴⁻潆浲癅湥ⱴ甠敳慃汬慢正‬獵䕥晦捥ⱴ甠敳敍潭‬獵卥慴整素映潲⁭爢慥瑣㬢椊灭牯⁴楌歮...
+    |            ^
+  2 | 㸽挠湡灏湥搨瑡⹡摩湥楴祴爮汯ⱥ椠整⥭㬩ਊ†潣獮⁴敲摡敄慴汩牆浯牕⁬‽獵䍥污扬捡⡫⤨›潗歲灳捡䑥瑥楡⁬㸽笠 ...
+  3 | 㸽猠瑥敄慴汩爨慥䑤瑥楡䙬潲啭汲⤨㬩 †猠湹⡣㬩 †眠湩潤⹷摡䕤敶瑮楌瑳湥牥∨潰獰慴整Ⱒ猠湹⥣਻††敲畴湲⠠
+  4 | 㸽眠湩潤⹷敲潭敶癅湥䱴獩整敮⡲瀢灯瑳瑡≥‬祳据㬩 素‬牛慥䑤瑥楡䙬潲啭汲⥝਻ 愠祳据映湵瑣潩⁮敲牦獥⡨敭...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:1:16
+Unexpected character '≴'
+> 1 | 產敳挠楬湥≴਻椊灭牯⁴⁻潆浲癅湥ⱴ甠敳慃汬慢正‬獵䕥晦捥ⱴ甠敳敍潭‬獵卥慴整素映潲⁭爢慥瑣㬢椊灭牯⁴楌歮...
+    |           ^
+  2 | 㸽挠湡灏湥搨瑡⹡摩湥楴祴爮汯ⱥ椠整⥭㬩ਊ†潣獮⁴敲摡敄慴汩牆浯牕⁬‽獵䍥污扬捡⡫⤨›潗歲灳捡䑥瑥楡⁬㸽笠 ...
+  3 | 㸽猠瑥敄慴汩爨慥䑤瑥楡䙬潲啭汲⤨㬩 †猠湹⡣㬩 †眠湩潤⹷摡䕤敶瑮楌瑳湥牥∨潰獰慴整Ⱒ猠湹⥣਻††敲畴湲⠠
+  4 | 㸽眠湩潤⹷敲潭敶癅湥䱴獩整敮⡲瀢灯瑳瑡≥‬祳据㬩 素‬牛慥䑤瑥楡䙬潲啭汲⥝਻ 愠祳据映湵瑣潩⁮敲牦獥⡨敭...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+⨯ ./src/components/salon-workspace.tsx:1:19
+Unexpected character '\u{a3b}'
+[31m[1m>[0m [90m1 |[0m 產敳挠楬湥≴਻椊灭牯⁴⁻潆浲癅湥ⱴ甠敳慃汬慢正‬獵䕥晦捥ⱴ甠敳敍潭‬獵卥慴整素映潲⁭爢慥瑣㬢椊灭牯⁴楌歮...
+  [90m  |[0m            [31m[1m^[0m
+  [90m2 |[0m 㸽挠湡灏湥搨瑡⹡摩湥楴祴爮汯ⱥ椠整⥭㬩ਊ†潣獮⁴敲摡敄慴汩牆浯牕⁬‽獵䍥污扬捡⡫⤨›潗歲灳捡䑥瑥楡⁬㸽笠 ...
+  [90m3 |[0m 㸽猠瑥敄慴汩爨慥䑤瑥楡䙬潲啭汲⤨㬩 †猠湹⡣㬩 †眠湩潤⹷摡䕤敶瑮楌瑳湥牥∨潰獰慴整Ⱒ猠湹⥣਻††敲畴湲⠠
+  [90m4 |[0m 㸽眠湩潤⹷敲潭敶癅湥䱴獩整敮⡲瀢灯瑳瑡≥‬祳据㬩 素‬牛慥䑤瑥楡䙬潲啭汲⥝਻ 愠祳据映湵瑣潩⁮敲牦獥⡨敭...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+
+./src/components/salon-workspace.tsx:1:16
+Unexpected character '≴'
+[31m[1m>[0m [90m1 |[0m 產敳挠楬湥≴਻椊灭牯⁴⁻潆浲癅湥ⱴ甠敳慃汬慢正‬獵䕥晦捥ⱴ甠敳敍潭‬獵卥慴整素映潲⁭爢慥瑣㬢椊灭牯⁴楌歮...
+  [90m  |[0m           [31m[1m^[0m
+  [90m2 |[0m 㸽挠湡灏湥搨瑡⹡摩湥楴祴爮汯ⱥ椠整⥭㬩ਊ†潣獮⁴敲摡敄慴汩牆浯牕⁬‽獵䍥污扬捡⡫⤨›潗歲灳捡䑥瑥楡⁬㸽笠 ...
+  [90m3 |[0m 㸽猠瑥敄慴汩爨慥䑤瑥楡䙬潲啭汲⤨㬩 †猠湹⡣㬩 †眠湩潤⹷摡䕤敶瑮楌瑳湥牥∨潰獰慴整Ⱒ猠湹⥣਻††敲畴湲⠠
+  [90m4 |[0m 㸽眠湩潤⹷敲潭敶癅湥䱴獩整敮⡲瀢灯瑳瑡≥‬祳据㬩 素‬牛慥䑤瑥楡䙬潲啭汲⥝਻ 愠祳据映湵瑣潩⁮敲牦獥⡨敭...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+[browser] Uncaught Error: ./src/components/salon-workspace.tsx:1:19
+Unexpected character '\u{a3b}'
+> 1 | 產敳挠楬湥≴਻椊灭牯⁴⁻潆浲癅湥ⱴ甠敳慃汬慢正‬獵䕥晦捥ⱴ甠敳敍潭‬獵卥慴整素映潲⁭爢慥瑣㬢椊灭牯⁴楌歮...
+    |            ^
+  2 | 㸽挠湡灏湥搨瑡⹡摩湥楴祴爮汯ⱥ椠整⥭㬩ਊ†潣獮⁴敲摡敄慴汩牆浯牕⁬‽獵䍥污扬捡⡫⤨›潗歲灳捡䑥瑥楡⁬㸽笠 ...
+  3 | 㸽猠瑥敄慴汩爨慥䑤瑥楡䙬潲啭汲⤨㬩 †猠湹⡣㬩 †眠湩潤⹷摡䕤敶瑮楌瑳湥牥∨潰獰慴整Ⱒ猠湹⥣਻††敲畴湲⠠
+  4 | 㸽眠湩潤⹷敲潭敶癅湥䱴獩整敮⡲瀢灯瑳瑡≥‬祳据㬩 素‬牛慥䑤瑥楡䙬潲啭汲⥝਻ 愠祳据映湵瑣潩⁮敲牦獥⡨敭...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+    at <unknown> (Error: ./src/components/salon-workspace.tsx:1:19)
+    at <unknown> (Error: (./src/components/salon-workspace.tsx:1:19)
+[browser] ./src/components/salon-workspace.tsx:1:19
+Unexpected character '\u{a3b}'
+> 1 | 產敳挠楬湥≴਻椊灭牯⁴⁻潆浲癅湥ⱴ甠敳慃汬慢正‬獵䕥晦捥ⱴ甠敳敍潭‬獵卥慴整素映潲⁭爢慥瑣㬢椊灭牯⁴楌歮...
+    |            ^
+  2 | 㸽挠湡灏湥搨瑡⹡摩湥楴祴爮汯ⱥ椠整⥭㬩ਊ†潣獮⁴敲摡敄慴汩牆浯牕⁬‽獵䍥污扬捡⡫⤨›潗歲灳捡䑥瑥楡⁬㸽笠 ...
+  3 | 㸽猠瑥敄慴汩爨慥䑤瑥楡䙬潲啭汲⤨㬩 †猠湹⡣㬩 †眠湩潤⹷摡䕤敶瑮楌瑳湥牥∨潰獰慴整Ⱒ猠湹⥣਻††敲畴湲⠠
+  4 | 㸽眠湩潤⹷敲潭敶癅湥䱴獩整敮⡲瀢灯瑳瑡≥‬祳据㬩 素‬牛慥䑤瑥楡䙬潲啭汲⥝਻ 愠祳据映湵瑣潩⁮敲牦獥⡨敭...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:1:16
+Unexpected character '≴'
+> 1 | 產敳挠楬湥≴਻椊灭牯⁴⁻潆浲癅湥ⱴ甠敳慃汬慢正‬獵䕥晦捥ⱴ甠敳敍潭‬獵卥慴整素映潲⁭爢慥瑣㬢椊灭牯⁴楌歮...
+    |           ^
+  2 | 㸽挠湡灏湥搨瑡⹡摩湥楴祴爮汯ⱥ椠整⥭㬩ਊ†潣獮⁴敲摡敄慴汩牆浯牕⁬‽獵䍥污扬捡⡫⤨›潗歲灳捡䑥瑥楡⁬㸽笠 ...
+  3 | 㸽猠瑥敄慴汩爨慥䑤瑥楡䙬潲啭汲⤨㬩 †猠湹⡣㬩 †眠湩潤⹷摡䕤敶瑮楌瑳湥牥∨潰獰慴整Ⱒ猠湹⥣਻††敲畴湲⠠
+  4 | 㸽眠湩潤⹷敲潭敶癅湥䱴獩整敮⡲瀢灯瑳瑡≥‬祳据㬩 素‬牛慥䑤瑥楡䙬潲啭汲⥝਻ 愠祳据映湵瑣潩⁮敲牦獥⡨敭...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:1:19
+Unexpected character '\u{a3b}'
+> 1 | 產敳挠楬湥≴਻椊灭牯⁴⁻潆浲癅湥ⱴ甠敳慃汬慢正‬獵䕥晦捥ⱴ甠敳敍潭‬獵卥慴整素映潲⁭爢慥瑣㬢椊灭牯⁴楌歮...
+    |            ^
+  2 | 㸽挠湡灏湥搨瑡⹡摩湥楴祴爮汯ⱥ椠整⥭㬩ਊ†潣獮⁴敲摡敄慴汩牆浯牕⁬‽獵䍥污扬捡⡫⤨›潗歲灳捡䑥瑥楡⁬㸽笠 ...
+  3 | 㸽猠瑥敄慴汩爨慥䑤瑥楡䙬潲啭汲⤨㬩 †猠湹⡣㬩 †眠湩潤⹷摡䕤敶瑮楌瑳湥牥∨潰獰慴整Ⱒ猠湹⥣਻††敲畴湲⠠
+  4 | 㸽眠湩潤⹷敲潭敶癅湥䱴獩整敮⡲瀢灯瑳瑡≥‬祳据㬩 素‬牛慥䑤瑥楡䙬潲啭汲⥝਻ 愠祳据映湵瑣潩⁮敲牦獥⡨敭...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:1:16
+Unexpected character '≴'
+> 1 | 產敳挠楬湥≴਻椊灭牯⁴⁻潆浲癅湥ⱴ甠敳慃汬慢正‬獵䕥晦捥ⱴ甠敳敍潭‬獵卥慴整素映潲⁭爢慥瑣㬢椊灭牯⁴楌歮...
+    |           ^
+  2 | 㸽挠湡灏湥搨瑡⹡摩湥楴祴爮汯ⱥ椠整⥭㬩ਊ†潣獮⁴敲摡敄慴汩牆浯牕⁬‽獵䍥污扬捡⡫⤨›潗歲灳捡䑥瑥楡⁬㸽笠 ...
+  3 | 㸽猠瑥敄慴汩爨慥䑤瑥楡䙬潲啭汲⤨㬩 †猠湹⡣㬩 †眠湩潤⹷摡䕤敶瑮楌瑳湥牥∨潰獰慴整Ⱒ猠湹⥣਻††敲畴湲⠠
+  4 | 㸽眠湩潤⹷敲潭敶癅湥䱴獩整敮⡲瀢灯瑳瑡≥‬祳据㬩 素‬牛慥䑤瑥楡䙬潲啭汲⥝਻ 愠祳据映湵瑣潩⁮敲牦獥⡨敭...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+⨯ ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  [90m41 |[0m [36mtype[0m [33mModalName[0m = [32m"appointment"[0m | [32m"customer"[0m | [32m"service"[0m | [32m"stock"[0m | [32m"expense"[0m | [32m"leave"[0m | [32m...[0m
+  [90m42 |[0m [36mtype[0m [33mBookingSeed[0m = {
+[31m[1m>[0m [90m43 |[0m   branchId|: string;
+  [90m   |[0m           [31m[1m^[0m
+  [90m44 |[0m   date|: string;
+  [90m45 |[0m   startsAt|: string;
+  [90m46 |[0m   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+⨯ ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  [90m41 |[0m [36mtype[0m [33mModalName[0m = [32m"appointment"[0m | [32m"customer"[0m | [32m"service"[0m | [32m"stock"[0m | [32m"expense"[0m | [32m"leave"[0m | [32m...[0m
+  [90m42 |[0m [36mtype[0m [33mBookingSeed[0m = {
+[31m[1m>[0m [90m43 |[0m   branchId|: string;
+  [90m   |[0m           [31m[1m^[0m
+  [90m44 |[0m   date|: string;
+  [90m45 |[0m   startsAt|: string;
+  [90m46 |[0m   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+⨯ ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  [90m41 |[0m [36mtype[0m [33mModalName[0m = [32m"appointment"[0m | [32m"customer"[0m | [32m"service"[0m | [32m"stock"[0m | [32m"expense"[0m | [32m"leave"[0m | [32m...[0m
+  [90m42 |[0m [36mtype[0m [33mBookingSeed[0m = {
+[31m[1m>[0m [90m43 |[0m   branchId|: string;
+  [90m   |[0m           [31m[1m^[0m
+  [90m44 |[0m   date|: string;
+  [90m45 |[0m   startsAt|: string;
+  [90m46 |[0m   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+⨯ ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  [90m41 |[0m [36mtype[0m [33mModalName[0m = [32m"appointment"[0m | [32m"customer"[0m | [32m"service"[0m | [32m"stock"[0m | [32m"expense"[0m | [32m"leave"[0m | [32m...[0m
+  [90m42 |[0m [36mtype[0m [33mBookingSeed[0m = {
+[31m[1m>[0m [90m43 |[0m   branchId|: string;
+  [90m   |[0m           [31m[1m^[0m
+  [90m44 |[0m   date|: string;
+  [90m45 |[0m   startsAt|: string;
+  [90m46 |[0m   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+⨯ ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  [90m41 |[0m [36mtype[0m [33mModalName[0m = [32m"appointment"[0m | [32m"customer"[0m | [32m"service"[0m | [32m"stock"[0m | [32m"expense"[0m | [32m"leave"[0m | [32m...[0m
+  [90m42 |[0m [36mtype[0m [33mBookingSeed[0m = {
+[31m[1m>[0m [90m43 |[0m   branchId|: string;
+  [90m   |[0m           [31m[1m^[0m
+  [90m44 |[0m   date|: string;
+  [90m45 |[0m   startsAt|: string;
+  [90m46 |[0m   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+[browser] Uncaught Error: ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  41 | type ModalName = "appointment" | "customer" | "service" | "stock" | "expense" | "leave" | ...
+  42 | type BookingSeed = {
+> 43 |   branchId|: string;
+     |           ^
+  44 |   date|: string;
+  45 |   startsAt|: string;
+  46 |   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+    at <unknown> (Error: ./src/components/salon-workspace.tsx:43:11)
+    at <unknown> (Error: (./src/components/salon-workspace.tsx:43:11)
+[browser] ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  41 | type ModalName = "appointment" | "customer" | "service" | "stock" | "expense" | "leave" | ...
+  42 | type BookingSeed = {
+> 43 |   branchId|: string;
+     |           ^
+  44 |   date|: string;
+  45 |   startsAt|: string;
+  46 |   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  41 | type ModalName = "appointment" | "customer" | "service" | "stock" | "expense" | "leave" | ...
+  42 | type BookingSeed = {
+> 43 |   branchId|: string;
+     |           ^
+  44 |   date|: string;
+  45 |   startsAt|: string;
+  46 |   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+⨯ ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  [90m41 |[0m [36mtype[0m [33mModalName[0m = [32m"appointment"[0m | [32m"customer"[0m | [32m"service"[0m | [32m"stock"[0m | [32m"expense"[0m | [32m"leave"[0m | [32m...[0m
+  [90m42 |[0m [36mtype[0m [33mBookingSeed[0m = {
+[31m[1m>[0m [90m43 |[0m   branchId|: string;
+  [90m   |[0m           [31m[1m^[0m
+  [90m44 |[0m   date|: string;
+  [90m45 |[0m   startsAt|: string;
+  [90m46 |[0m   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+[browser] ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  41 | type ModalName = "appointment" | "customer" | "service" | "stock" | "expense" | "leave" | ...
+  42 | type BookingSeed = {
+> 43 |   branchId|: string;
+     |           ^
+  44 |   date|: string;
+  45 |   startsAt|: string;
+  46 |   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] Uncaught Error: ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  41 | type ModalName = "appointment" | "customer" | "service" | "stock" | "expense" | "leave" | ...
+  42 | type BookingSeed = {
+> 43 |   branchId|: string;
+     |           ^
+  44 |   date|: string;
+  45 |   startsAt|: string;
+  46 |   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+    at <unknown> (Error: ./src/components/salon-workspace.tsx:43:11)
+    at <unknown> (Error: (./src/components/salon-workspace.tsx:43:11)
+[browser] ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  41 | type ModalName = "appointment" | "customer" | "service" | "stock" | "expense" | "leave" | ...
+  42 | type BookingSeed = {
+> 43 |   branchId|: string;
+     |           ^
+  44 |   date|: string;
+  45 |   startsAt|: string;
+  46 |   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  41 | type ModalName = "appointment" | "customer" | "service" | "stock" | "expense" | "leave" | ...
+  42 | type BookingSeed = {
+> 43 |   branchId|: string;
+     |           ^
+  44 |   date|: string;
+  45 |   startsAt|: string;
+  46 |   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+⨯ ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  [90m41 |[0m [36mtype[0m [33mModalName[0m = [32m"appointment"[0m | [32m"customer"[0m | [32m"service"[0m | [32m"stock"[0m | [32m"expense"[0m | [32m"leave"[0m | [32m...[0m
+  [90m42 |[0m [36mtype[0m [33mBookingSeed[0m = {
+[31m[1m>[0m [90m43 |[0m   branchId|: string;
+  [90m   |[0m           [31m[1m^[0m
+  [90m44 |[0m   date|: string;
+  [90m45 |[0m   startsAt|: string;
+  [90m46 |[0m   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+[browser] Uncaught Error: ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  41 | type ModalName = "appointment" | "customer" | "service" | "stock" | "expense" | "leave" | ...
+  42 | type BookingSeed = {
+> 43 |   branchId|: string;
+     |           ^
+  44 |   date|: string;
+  45 |   startsAt|: string;
+  46 |   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+    at <unknown> (Error: ./src/components/salon-workspace.tsx:43:11)
+    at <unknown> (Error: (./src/components/salon-workspace.tsx:43:11)
+[browser] ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  41 | type ModalName = "appointment" | "customer" | "service" | "stock" | "expense" | "leave" | ...
+  42 | type BookingSeed = {
+> 43 |   branchId|: string;
+     |           ^
+  44 |   date|: string;
+  45 |   startsAt|: string;
+  46 |   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  41 | type ModalName = "appointment" | "customer" | "service" | "stock" | "expense" | "leave" | ...
+  42 | type BookingSeed = {
+> 43 |   branchId|: string;
+     |           ^
+  44 |   date|: string;
+  45 |   startsAt|: string;
+  46 |   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+⨯ ./src/components/salon-workspace.tsx:41:32
+Expected ';', got '?'
+  [90m39 |[0m [36mconst[0m navItems = [[32m"Overview"[0m, [32m"Calendar"[0m, [32m"Customers"[0m, [32m"Point of sale"[0m, [32m"Services"[0m, [32m"Inven...[0m
+  [90m40 |[0m [36mtype[0m [33mNavItem[0m = ([36mtypeof[0m navItems)[number];
+[31m[1m>[0m [90m41 |[0m [36mtype[0m [33mModalName[0m = [32m"appointment"[0m ? [32m"customer"[0m ? [32m"service"[0m ? [32m"stock"[0m ? [32m"expense"[0m ? [32m"leave"[0m ? [32m...[0m
+  [90m   |[0m                                [31m[1m^[0m
+  [90m42 |[0m [36mtype[0m [33mBookingSeed[0m = {
+  [90m43 |[0m   branchId?: string;
+  [90m44 |[0m   date?: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+[browser] Uncaught Error: ./src/components/salon-workspace.tsx:41:32
+Expected ';', got '?'
+  39 | const navItems = ["Overview", "Calendar", "Customers", "Point of sale", "Services", "Inven...
+  40 | type NavItem = (typeof navItems)[number];
+> 41 | type ModalName = "appointment" ? "customer" ? "service" ? "stock" ? "expense" ? "leave" ? ...
+     |                                ^
+  42 | type BookingSeed = {
+  43 |   branchId?: string;
+  44 |   date?: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+    at <unknown> (Error: ./src/components/salon-workspace.tsx:41:32)
+    at <unknown> (Error: (./src/components/salon-workspace.tsx:41:32)
+⨯ ./src/components/salon-workspace.tsx:313:95
+Expected ':', got ';'
+  [90m311 |[0m ...[32m""[0m);
+  [90m312 |[0m ...[32m""[0m);
+[31m[1m>[0m [90m313 |[0m ...[33meData[0m[[32m"appointments"[0m][number] ? [36mnull[0m>([36mnull[0m);
+  [90m    |[0m                                               [31m[1m^[0m
+  [90m314 |[0m ...
+  [90m315 |[0m ...data.identity.branchId || [32m"all"[0m, date, view });
+  [90m316 |[0m ...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+[browser] Uncaught Error: ./src/components/salon-workspace.tsx:313:95
+Expected ':', got ';'
+  311 | ..."");
+  312 | ..."");
+> 313 | ...eData["appointments"][number] ? null>(null);
+      |                                               ^
+  314 | ...
+  315 | ...data.identity.branchId || "all", date, view });
+  316 | ...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+    at <unknown> (Error: ./src/components/salon-workspace.tsx:313:95)
+    at <unknown> (Error: (./src/components/salon-workspace.tsx:313:95)
+[browser] ./src/components/salon-workspace.tsx:313:95
+Expected ':', got ';'
+  311 | ..."");
+  312 | ..."");
+> 313 | ...eData["appointments"][number] ? null>(null);
+      |                                               ^
+  314 | ...
+  315 | ...data.identity.branchId || "all", date, view });
+  316 | ...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:313:95
+Expected ':', got ';'
+  311 | ..."");
+  312 | ..."");
+> 313 | ...eData["appointments"][number] ? null>(null);
+      |                                               ^
+  314 | ...
+  315 | ...data.identity.branchId || "all", date, view });
+  316 | ...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:313:95
+Expected ':', got ';'
+  311 | ..."");
+  312 | ..."");
+> 313 | ...eData["appointments"][number] ? null>(null);
+      |                                               ^
+  314 | ...
+  315 | ...data.identity.branchId || "all", date, view });
+  316 | ...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:697:109
+Expected ':', got ';'
+  695 | ...
+  696 | ...ata; open: () => void; submit: SubmitFn }) {
+> 697 | ...fer" ? "stocktake" ? "recipes">("products");
+      |                                               ^
+  698 | ...
+  699 | ...<= item.reorderLevel);
+  700 | ...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:697:109
+Expected ':', got ';'
+  695 | ...
+  696 | ...ata; open: () => void; submit: SubmitFn }) {
+> 697 | ...fer" ? "stocktake" ? "recipes">("products");
+      |                                               ^
+  698 | ...
+  699 | ...<= item.reorderLevel);
+  700 | ...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:1286:141
+Expected ':', got ';'
+  1284 | ...
+  1285 | ...
+> 1286 | ...em.id === bookingSeed.customerId) || null);
+       |                                              ^
+  1287 | ...
+  1288 | ...
+  1289 | ...ed.startsAt : bookingSeed.startsAt ? new Date(`${bookingSeed.date || today}T${booking...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:1286:141
+Expected ':', got ';'
+  1284 | ...
+  1285 | ...
+> 1286 | ...em.id === bookingSeed.customerId) || null);
+       |                                              ^
+  1287 | ...
+  1288 | ...
+  1289 | ...ed.startsAt : bookingSeed.startsAt ? new Date(`${bookingSeed.date || today}T${booking...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+⨯ ./src/components/salon-workspace.tsx:1286:141
+Expected ':', got ';'
+  [90m1284 |[0m ...
+  [90m1285 |[0m ...
+[31m[1m>[0m [90m1286 |[0m ...em.id === bookingSeed.customerId) || [36mnull[0m);
+  [90m     |[0m                                              [31m[1m^[0m
+  [90m1287 |[0m ...
+  [90m1288 |[0m ...
+  [90m1289 |[0m ...ed.startsAt : bookingSeed.startsAt ? [36mnew[0m [33mDate[0m([32m`[0m${bookingSeed.date || today[32m}T[0m${booking...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+[browser] Uncaught Error: ./src/components/salon-workspace.tsx:1286:141
+Expected ':', got ';'
+  1284 | ...
+  1285 | ...
+> 1286 | ...em.id === bookingSeed.customerId) || null);
+       |                                              ^
+  1287 | ...
+  1288 | ...
+  1289 | ...ed.startsAt : bookingSeed.startsAt ? new Date(`${bookingSeed.date || today}T${booking...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+    at <unknown> (Error: ./src/components/salon-workspace.tsx:1286:141)
+    at <unknown> (Error: (./src/components/salon-workspace.tsx:1286:141)
+[browser] ./src/components/salon-workspace.tsx:1286:141
+Expected ':', got ';'
+  1284 | ...
+  1285 | ...
+> 1286 | ...em.id === bookingSeed.customerId) || null);
+       |                                              ^
+  1287 | ...
+  1288 | ...
+  1289 | ...ed.startsAt : bookingSeed.startsAt ? new Date(`${bookingSeed.date || today}T${booking...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:1286:141
+Expected ':', got ';'
+  1284 | ...
+  1285 | ...
+> 1286 | ...em.id === bookingSeed.customerId) || null);
+       |                                              ^
+  1287 | ...
+  1288 | ...
+  1289 | ...ed.startsAt : bookingSeed.startsAt ? new Date(`${bookingSeed.date || today}T${booking...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+⨯ ./src/components/salon-workspace.tsx:1286:141
+Expected ':', got ';'
+  [90m1284 |[0m ...
+  [90m1285 |[0m ...
+[31m[1m>[0m [90m1286 |[0m ...em.id === bookingSeed.customerId) || [36mnull[0m);
+  [90m     |[0m                                              [31m[1m^[0m
+  [90m1287 |[0m ...
+  [90m1288 |[0m ...
+  [90m1289 |[0m ...ed.startsAt : bookingSeed.startsAt ? [36mnew[0m [33mDate[0m([32m`[0m${bookingSeed.date || today[32m}T[0m${booking...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+[browser] ./src/components/salon-workspace.tsx:1286:141
+Expected ':', got ';'
+  1284 | ...
+  1285 | ...
+> 1286 | ...em.id === bookingSeed.customerId) || null);
+       |                                              ^
+  1287 | ...
+  1288 | ...
+  1289 | ...ed.startsAt : bookingSeed.startsAt ? new Date(`${bookingSeed.date || today}T${booking...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] Uncaught Error: ./src/components/salon-workspace.tsx:1286:141
+Expected ':', got ';'
+  1284 | ...
+  1285 | ...
+> 1286 | ...em.id === bookingSeed.customerId) || null);
+       |                                              ^
+  1287 | ...
+  1288 | ...
+  1289 | ...ed.startsAt : bookingSeed.startsAt ? new Date(`${bookingSeed.date || today}T${booking...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+    at <unknown> (Error: ./src/components/salon-workspace.tsx:1286:141)
+    at <unknown> (Error: (./src/components/salon-workspace.tsx:1286:141)
+[browser] ./src/components/salon-workspace.tsx:1286:141
+Expected ':', got ';'
+  1284 | ...
+  1285 | ...
+> 1286 | ...em.id === bookingSeed.customerId) || null);
+       |                                              ^
+  1287 | ...
+  1288 | ...
+  1289 | ...ed.startsAt : bookingSeed.startsAt ? new Date(`${bookingSeed.date || today}T${booking...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:1286:141
+Expected ':', got ';'
+  1284 | ...
+  1285 | ...
+> 1286 | ...em.id === bookingSeed.customerId) || null);
+       |                                              ^
+  1287 | ...
+  1288 | ...
+  1289 | ...ed.startsAt : bookingSeed.startsAt ? new Date(`${bookingSeed.date || today}T${booking...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+⨯ ./src/components/salon-workspace.tsx:1286:141
+Expected ':', got ';'
+  [90m1284 |[0m ...
+  [90m1285 |[0m ...
+[31m[1m>[0m [90m1286 |[0m ...em.id === bookingSeed.customerId) || [36mnull[0m);
+  [90m     |[0m                                              [31m[1m^[0m
+  [90m1287 |[0m ...
+  [90m1288 |[0m ...
+  [90m1289 |[0m ...ed.startsAt : bookingSeed.startsAt ? [36mnew[0m [33mDate[0m([32m`[0m${bookingSeed.date || today[32m}T[0m${booking...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+[browser] ./src/components/salon-workspace.tsx:1286:141
+Expected ':', got ';'
+  1284 | ...
+  1285 | ...
+> 1286 | ...em.id === bookingSeed.customerId) || null);
+       |                                              ^
+  1287 | ...
+  1288 | ...
+  1289 | ...ed.startsAt : bookingSeed.startsAt ? new Date(`${bookingSeed.date || today}T${booking...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] Uncaught Error: ./src/components/salon-workspace.tsx:1286:141
+Expected ':', got ';'
+  1284 | ...
+  1285 | ...
+> 1286 | ...em.id === bookingSeed.customerId) || null);
+       |                                              ^
+  1287 | ...
+  1288 | ...
+  1289 | ...ed.startsAt : bookingSeed.startsAt ? new Date(`${bookingSeed.date || today}T${booking...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+    at <unknown> (Error: ./src/components/salon-workspace.tsx:1286:141)
+    at <unknown> (Error: (./src/components/salon-workspace.tsx:1286:141)
+[browser] ./src/components/salon-workspace.tsx:1286:141
+Expected ':', got ';'
+  1284 | ...
+  1285 | ...
+> 1286 | ...em.id === bookingSeed.customerId) || null);
+       |                                              ^
+  1287 | ...
+  1288 | ...
+  1289 | ...ed.startsAt : bookingSeed.startsAt ? new Date(`${bookingSeed.date || today}T${booking...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/components/salon-workspace.tsx:1286:141
+Expected ':', got ';'
+  1284 | ...
+  1285 | ...
+> 1286 | ...em.id === bookingSeed.customerId) || null);
+       |                                              ^
+  1287 | ...
+  1288 | ...
+  1289 | ...ed.startsAt : bookingSeed.startsAt ? new Date(`${bookingSeed.date || today}T${booking...
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx 
+    at handleErrors (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+⨯ ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  [90m41 |[0m [36mtype[0m [33mModalName[0m = [32m"appointment"[0m | [32m"customer"[0m | [32m"service"[0m | [32m"stock"[0m | [32m"expense"[0m | [32m"leave"[0m | [32m...[0m
+  [90m42 |[0m [36mtype[0m [33mBookingSeed[0m = {
+[31m[1m>[0m [90m43 |[0m   branchId|: string;
+  [90m   |[0m           [31m[1m^[0m
+  [90m44 |[0m   date|: string;
+  [90m45 |[0m   startsAt|: string;
+  [90m46 |[0m   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+⨯ ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  [90m41 |[0m [36mtype[0m [33mModalName[0m = [32m"appointment"[0m | [32m"customer"[0m | [32m"service"[0m | [32m"stock"[0m | [32m"expense"[0m | [32m"leave"[0m | [32m...[0m
+  [90m42 |[0m [36mtype[0m [33mBookingSeed[0m = {
+[31m[1m>[0m [90m43 |[0m   branchId|: string;
+  [90m   |[0m           [31m[1m^[0m
+  [90m44 |[0m   date|: string;
+  [90m45 |[0m   startsAt|: string;
+  [90m46 |[0m   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+⨯ ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  [90m41 |[0m [36mtype[0m [33mModalName[0m = [32m"appointment"[0m | [32m"customer"[0m | [32m"service"[0m | [32m"stock"[0m | [32m"expense"[0m | [32m"leave"[0m | [32m...[0m
+  [90m42 |[0m [36mtype[0m [33mBookingSeed[0m = {
+[31m[1m>[0m [90m43 |[0m   branchId|: string;
+  [90m   |[0m           [31m[1m^[0m
+  [90m44 |[0m   date|: string;
+  [90m45 |[0m   startsAt|: string;
+  [90m46 |[0m   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+⨯ ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  [90m41 |[0m [36mtype[0m [33mModalName[0m = [32m"appointment"[0m | [32m"customer"[0m | [32m"service"[0m | [32m"stock"[0m | [32m"expense"[0m | [32m"leave"[0m | [32m...[0m
+  [90m42 |[0m [36mtype[0m [33mBookingSeed[0m = {
+[31m[1m>[0m [90m43 |[0m   branchId|: string;
+  [90m   |[0m           [31m[1m^[0m
+  [90m44 |[0m   date|: string;
+  [90m45 |[0m   startsAt|: string;
+  [90m46 |[0m   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+⨯ ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  [90m41 |[0m [36mtype[0m [33mModalName[0m = [32m"appointment"[0m | [32m"customer"[0m | [32m"service"[0m | [32m"stock"[0m | [32m"expense"[0m | [32m"leave"[0m | [32m...[0m
+  [90m42 |[0m [36mtype[0m [33mBookingSeed[0m = {
+[31m[1m>[0m [90m43 |[0m   branchId|: string;
+  [90m   |[0m           [31m[1m^[0m
+  [90m44 |[0m   date|: string;
+  [90m45 |[0m   startsAt|: string;
+  [90m46 |[0m   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+[browser] Uncaught Error: ./src/components/salon-workspace.tsx:43:11
+Expected ';', got '|'
+  41 | type ModalName = "appointment" | "customer" | "service" | "stock" | "expense" | "leave" | ...
+  42 | type BookingSeed = {
+> 43 |   branchId|: string;
+     |           ^
+  44 |   date|: string;
+  45 |   startsAt|: string;
+  46 |   staffId|: string;
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+    at <unknown> (Error: ./src/components/salon-workspace.tsx:43:11)
+    at <unknown> (Error: (./src/components/salon-workspace.tsx:43:11)
+⨯ ./src/components/salon-workspace.tsx:136:47
+Expected ',', got ':'
+  [90m134 |[0m
+  [90m135 |[0m   [36mfunction[0m openAppointment(seed: [33mBookingSeed[0m | [33mReact[0m.[33mSyntheticEvent[0m = {}) {
+[31m[1m>[0m [90m136 |[0m     setBookingSeed([32m"nativeEvent"[0m [36min[0m seed | {} : seed);
+  [90m    |[0m                                               [31m[1m^[0m
+  [90m137 |[0m     setModal([32m"appointment"[0m);
+  [90m138 |[0m     setError([32m""[0m);
+  [90m139 |[0m   }
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+[browser] Uncaught Error: ./src/components/salon-workspace.tsx:136:47
+Expected ',', got ':'
+  134 |
+  135 |   function openAppointment(seed: BookingSeed | React.SyntheticEvent = {}) {
+> 136 |     setBookingSeed("nativeEvent" in seed | {} : seed);
+      |                                               ^
+  137 |     setModal("appointment");
+  138 |     setError("");
+  139 |   }
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+    at <unknown> (Error: ./src/components/salon-workspace.tsx:136:47)
+    at <unknown> (Error: (./src/components/salon-workspace.tsx:136:47)
+⨯ ./src/components/salon-workspace.tsx:344:261
+Expected '</', got ')'
+  [90m342 |[0m ...
+  [90m343 |[0m ...
+[31m[1m>[0m [90m344 |[0m ...[35metView(event.target.value as "day" ? "week")}><option value="day">Day</option[0m><option ...
+  [90m    |[0m                                               [31m[1m^[0m
+  [90m345 |[0m ...[35mv className="grid border-b border-black/[0m[35m8[0m[32m" style={{ gridTemplateColumns: `80px repeat(...[0m
+  [90m346 |[0m ...
+  [90m347 |[0m ...-[35m4[0m md:grid-cols-[35m4[0m[32m"><Info label="[0m[33mCustomer[0m[32m" value={`${selected.customer}  -  ${selected....[0m
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+[browser] Uncaught Error: ./src/components/salon-workspace.tsx:344:261
+Expected '</', got ')'
+  342 | ...
+  343 | ...
+> 344 | ...etView(event.target.value as "day" ? "week")}><option value="day">Day</option><option ...
+      |                                               ^
+  345 | ...v className="grid border-b border-black/8" style={{ gridTemplateColumns: `80px repeat(...
+  346 | ...
+  347 | ...-4 md:grid-cols-4"><Info label="Customer" value={`${selected.customer}  -  ${selected....
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/salon-workspace.tsx
+    ./src/app/dashboard/page.tsx
+
+
+    at <unknown> (Error: ./src/components/salon-workspace.tsx:344:261)
+    at <unknown> (Error: (./src/components/salon-workspace.tsx:344:261)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477:13)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477:13)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477:13)
+[browser] In HTML, <form> cannot be a descendant of <form>.
+This will cause a hydration error.
+
+  ...
+    <InnerScrollAndFocusHandlerOld focusAndScrollRef={{...}} cacheNode={{rsc:<Fragment>, ...}}>
+      <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+        <LoadingBoundary name="dashboard/" loading={null}>
+          <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+            <RedirectBoundary>
+              <RedirectErrorBoundary router={{...}}>
+                <InnerLayoutRouter url="/dashboard" tree={[...]} params={{}} cacheNode={{rsc:<Fragment>, ...}} ...>
+                  <SegmentViewNode type="page" pagePath="dashboard/...">
+                    <SegmentTrieNode>
+                    <DashboardPage>
+                      <SalonWorkspace initialData={{identity:{...}, ...}} initialDetail={{...}}>
+                        <div className="min-h-scre...">
+                          <aside>
+                          <div>
+                          <OperationModal name="appointment" data={{identity:{...}, ...}} busy={false} error="" ...>
+                            <AppointmentModalV2 data={{identity:{...}, ...}} busy={false} error="" bookingSeed={{}} ...>
+                              <div className="fixed inse...">
+>                               <form
+>                                 onSubmit={function save}
+>                                 className="max-h-[94vh] w-full max-w-6xl overflow-y-auto rounded-[2rem] bg-[#fbfaf8]..."
+>                               >
+                                  <div>
+                                  ...
+                                    <CustomerPicker branchId="cmq9ronxs0..." value="" initialCustomers={[...]} ...>
+                                      <div className="rounded-2x...">
+                                        <div>
+                                        <div>
+                                        <div className="fixed inse...">
+>                                         <form
+>                                           onSubmit={function createCustomer}
+>                                           className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl"
+>                                         >
+                  ...
+                ...
+      ...
+ 
+    at validateDOMNesting (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:1963:372)
+    at completeWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6925:25)
+    at runWithFiberInDEV (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at completeUnitOfWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9622:23)
+    at performUnitOfWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9557:28)
+    at workLoopSync (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9449:40)
+    at renderRootSync (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9433:13)
+    at performWorkOnRoot (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9061:186)
+    at performSyncWorkOnRoot (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10263:9)
+    at flushSyncWorkAcrossRoots_impl (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10179:316)
+    at processRootScheduleInMicrotask (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10200:106)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10274:158) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:1963:372)
+[browser] <form> cannot contain a nested <form>.
+See this log for the ancestor stack trace. 
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:1965:21)
+    at runWithFiberInDEV (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at validateDOMNesting (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:1964:178)
+    at completeWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6925:25)
+    at runWithFiberInDEV (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at completeUnitOfWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9622:23)
+    at performUnitOfWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9557:28)
+    at workLoopSync (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9449:40)
+    at renderRootSync (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9433:13)
+    at performWorkOnRoot (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9061:186)
+    at performSyncWorkOnRoot (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10263:9)
+    at flushSyncWorkAcrossRoots_impl (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10179:316)
+    at processRootScheduleInMicrotask (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10200:106)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10274:158) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:1965:21)
+[browser] Uncaught Error: Objects are not valid as a React child (found: object with keys {code, message, details}). If you meant to render a collection of children, use an array instead.
+    at throwOnInvalidObjectTypeImpl (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3922:15)
+    at throwOnInvalidObjectType (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3926:110)
+    at reconcileChildFibersImpl (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:4249:17)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:4261:39)
+    at reconcileChildren (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:5898:51)
+    at beginWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6758:1573)
+    at runWithFiberInDEV (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at performUnitOfWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9555:97)
+    at workLoopSync (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9449:40)
+    at renderRootSync (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9433:13)
+    at performWorkOnRoot (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9098:47)
+    at performWorkOnRootViaSchedulerTask (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_1amofcm._.js:2647:64)
+    at BookingPage (src\app\book\[slug]\page.tsx:16:10)
+  14 |   const branch = tenant?.branches[0];
+  15 |   if (!tenant || tenant.status !== "ACTIVE" || !branch) notFound();
+> 16 |   return <BookingFlow salon={{
+     |          ^
+  17 |     id: tenant.id,
+  18 |     branchId: branch.id,
+  19 |     name: tenant.name,
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477:13)
+[browser] Uncaught Error: Objects are not valid as a React child (found: object with keys {code, message, details}). If you meant to render a collection of children, use an array instead.
+    at throwOnInvalidObjectTypeImpl (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3922:15)
+    at throwOnInvalidObjectType (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3926:110)
+    at reconcileChildFibersImpl (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:4249:17)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:4261:39)
+    at reconcileChildren (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:5898:51)
+    at beginWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6758:1573)
+    at runWithFiberInDEV (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at performUnitOfWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9555:97)
+    at workLoopSync (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9449:40)
+    at renderRootSync (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9433:13)
+    at performWorkOnRoot (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9098:47)
+    at performWorkOnRootViaSchedulerTask (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_1amofcm._.js:2647:64)
+    at BookingPage (src\app\book\[slug]\page.tsx:16:10)
+  14 |   const branch = tenant?.branches[0];
+  15 |   if (!tenant || tenant.status !== "ACTIVE" || !branch) notFound();
+> 16 |   return <BookingFlow salon={{
+     |          ^
+  17 |     id: tenant.id,
+  18 |     branchId: branch.id,
+  19 |     name: tenant.name,
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477:13)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477:13)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477:13)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477:13)
+[browser] Uncaught Error: Objects are not valid as a React child (found: object with keys {code, message, details}). If you meant to render a collection of children, use an array instead.
+    at throwOnInvalidObjectTypeImpl (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3922:15)
+    at throwOnInvalidObjectType (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3926:110)
+    at reconcileChildFibersImpl (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:4249:17)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:4261:39)
+    at reconcileChildren (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:5898:51)
+    at beginWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6758:1573)
+    at runWithFiberInDEV (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at performUnitOfWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9555:97)
+    at workLoopSync (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9449:40)
+    at renderRootSync (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9433:13)
+    at performWorkOnRoot (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9098:47)
+    at performWorkOnRootViaSchedulerTask (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_1amofcm._.js:2647:64)
+    at BookingPage (src\app\book\[slug]\page.tsx:16:10)
+  14 |   const branch = tenant?.branches[0];
+  15 |   if (!tenant || tenant.status !== "ACTIVE" || !branch) notFound();
+> 16 |   return <BookingFlow salon={{
+     |          ^
+  17 |     id: tenant.id,
+  18 |     branchId: branch.id,
+  19 |     name: tenant.name,
+[browser] In HTML, <form> cannot be a descendant of <form>.
+This will cause a hydration error.
+
+  ...
+    <InnerScrollAndFocusHandlerOld focusAndScrollRef={{scrollRef:null, ...}} cacheNode={{rsc:{...}, ...}}>
+      <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+        <LoadingBoundary name="dashboard/" loading={null}>
+          <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+            <RedirectBoundary>
+              <RedirectErrorBoundary router={{...}}>
+                <InnerLayoutRouter url="/dashboard" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+                  <SegmentViewNode type="page" pagePath="dashboard/...">
+                    <SegmentTrieNode>
+                    <DashboardPage>
+                      <SalonWorkspace initialData={{identity:{...}, ...}} initialDetail={{...}}>
+                        <div className="min-h-scre...">
+                          <aside>
+                          <div>
+                          <OperationModal name="appointment" data={{identity:{...}, ...}} busy={false} error="" ...>
+                            <AppointmentModalV2 data={{identity:{...}, ...}} busy={false} error="" bookingSeed={{}} ...>
+                              <div className="fixed inse...">
+>                               <form
+>                                 onSubmit={function save}
+>                                 className="max-h-[94vh] w-full max-w-6xl overflow-y-auto rounded-[2rem] bg-[#fbfaf8]..."
+>                               >
+                                  <div>
+                                  ...
+                                    <CustomerPicker branchId="cmq9ronxs0..." value="" initialCustomers={[...]} ...>
+                                      <div className="rounded-2x...">
+                                        <div>
+                                        <div>
+                                        <div className="fixed inse...">
+>                                         <form
+>                                           onSubmit={function createCustomer}
+>                                           className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl"
+>                                         >
+                  ...
+                ...
+      ...
+ 
+    at validateDOMNesting (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:1963:372)
+    at completeWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6925:25)
+    at runWithFiberInDEV (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at completeUnitOfWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9622:23)
+    at performUnitOfWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9557:28)
+    at workLoopSync (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9449:40)
+    at renderRootSync (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9433:13)
+    at performWorkOnRoot (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9061:186)
+    at performSyncWorkOnRoot (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10263:9)
+    at flushSyncWorkAcrossRoots_impl (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10179:316)
+    at processRootScheduleInMicrotask (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10200:106)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10274:158) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:1963:372)
+[browser] <form> cannot contain a nested <form>.
+See this log for the ancestor stack trace. 
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:1965:21)
+    at runWithFiberInDEV (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at validateDOMNesting (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:1964:178)
+    at completeWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6925:25)
+    at runWithFiberInDEV (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at completeUnitOfWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9622:23)
+    at performUnitOfWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9557:28)
+    at workLoopSync (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9449:40)
+    at renderRootSync (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9433:13)
+    at performWorkOnRoot (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9061:186)
+    at performSyncWorkOnRoot (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10263:9)
+    at flushSyncWorkAcrossRoots_impl (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10179:316)
+    at processRootScheduleInMicrotask (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10200:106)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10274:158) (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:1965:21)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477:13)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477:13)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477:13)
+[browser] Uncaught Error: Objects are not valid as a React child (found: object with keys {code, message, details}). If you meant to render a collection of children, use an array instead.
+    at throwOnInvalidObjectTypeImpl (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3922:15)
+    at throwOnInvalidObjectType (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3926:110)
+    at reconcileChildFibersImpl (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:4249:17)
+    at <unknown> (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:4261:39)
+    at reconcileChildren (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:5898:51)
+    at beginWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6758:1573)
+    at runWithFiberInDEV (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at performUnitOfWork (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9555:97)
+    at workLoopSync (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9449:40)
+    at renderRootSync (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9433:13)
+    at performWorkOnRoot (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9098:47)
+    at performWorkOnRootViaSchedulerTask (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_1amofcm._.js:2647:64)
+    at BookingPage (src\app\book\[slug]\page.tsx:16:10)
+  14 |   const branch = tenant?.branches[0];
+  15 |   if (!tenant || tenant.status !== "ACTIVE" || !branch) notFound();
+> 16 |   return <BookingFlow salon={{
+     |          ^
+  17 |     id: tenant.id,
+  18 |     branchId: branch.id,
+  19 |     name: tenant.name,
+⨯ Error: Permission denied
+    at requireOperationsContext (src\lib\operations-auth.ts:26:45)
+    at async loadDashboard (src\app\dashboard\page.tsx:24:21)
+    at async DashboardPage (src\app\dashboard\page.tsx:9:16)
+  24 | ... const session = await readSession();
+  25 | ... if (!session) throw new OperationsError("UNAUTHENTICATED", "Authentication required", ...
+> 26 | ... if (!can(session.role, permission)) throw new OperationsError("FORBIDDEN", "Permission...
+     |                                               ^
+  27 | ... if (!session.tenantId) throw new OperationsError("FORBIDDEN", "A salon workspace is re...
+  28 | ... const tenantId = session.tenantId;
+  29 | ... {
+  code: 'FORBIDDEN',
+  status: 403,
+  details: undefined,
+  digest: '593282659'
+}
+[browser] Uncaught Error: Permission denied
+    at requireOperationsContext (src\lib\operations-auth.ts:26:45)
+    at  loadDashboard (src\app\dashboard\page.tsx:24:21)
+    at  DashboardPage (src\app\dashboard\page.tsx:9:16)
+    at resolveErrorDev (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_164kp-6._.js:1919:150)
+    at processFullStringRow (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_164kp-6._.js:2434:29)
+    at processFullBinaryRow (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_164kp-6._.js:2393:9)
+    at processBinaryChunk (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_164kp-6._.js:2502:221)
+    at progress (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_164kp-6._.js:2689:13)
+  24 | ... const session = await readSession();
+  25 | ... if (!session) throw new OperationsError("UNAUTHENTICATED", "Authentication required", ...
+> 26 | ... if (!can(session.role, permission)) throw new OperationsError("FORBIDDEN", "Permission...
+     |                                               ^
+  27 | ... if (!session.tenantId) throw new OperationsError("FORBIDDEN", "A salon workspace is re...
+  28 | ... const tenantId = session.tenantId;
+  29 | ...
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477:13)
+⨯ Error: This salon workspace is not active
+    at requireOperationsContext (src\lib\operations-auth.ts:46:11)
+    at async loadDashboard (src\app\dashboard\page.tsx:24:21)
+    at async DashboardPage (src\app\dashboard\page.tsx:9:16)
+  44 |   }
+  45 |   if (user.tenant.status !== "ACTIVE") {
+> 46 |     throw new OperationsError("TENANT_SUSPENDED", "This salon workspace is not active", 403);
+     |           ^
+  47 |   }
+  48 |
+  49 |   const branches = user.role === "OWNER" {
+  code: 'TENANT_SUSPENDED',
+  status: 403,
+  details: undefined,
+  digest: '4153652340'
+}
+[browser] Uncaught Error: This salon workspace is not active
+    at requireOperationsContext (src\lib\operations-auth.ts:46:11)
+    at  loadDashboard (src\app\dashboard\page.tsx:24:21)
+    at  DashboardPage (src\app\dashboard\page.tsx:9:16)
+    at resolveErrorDev (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_164kp-6._.js:1919:105)
+    at processFullStringRow (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_164kp-6._.js:2434:29)
+    at processFullBinaryRow (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_164kp-6._.js:2393:9)
+    at processBinaryChunk (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_164kp-6._.js:2502:221)
+    at progress (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_164kp-6._.js:2689:13)
+  44 |   }
+  45 |   if (user.tenant.status !== "ACTIVE") {
+> 46 |     throw new OperationsError("TENANT_SUSPENDED", "This salon workspace is not active", 403);
+     |           ^
+  47 |   }
+  48 |
+  49 |   const branches = user.role === "OWNER"
+⨯ Error: This salon workspace is not active
+    at requireOperationsContext (src\lib\operations-auth.ts:46:11)
+    at async loadDashboard (src\app\dashboard\page.tsx:24:21)
+    at async DashboardPage (src\app\dashboard\page.tsx:9:16)
+  44 |   }
+  45 |   if (user.tenant.status !== "ACTIVE") {
+> 46 |     throw new OperationsError("TENANT_SUSPENDED", "This salon workspace is not active", 403);
+     |           ^
+  47 |   }
+  48 |
+  49 |   const branches = user.role === "OWNER" {
+  code: 'TENANT_SUSPENDED',
+  status: 403,
+  details: undefined,
+  digest: '4153652340'
+}
+[browser] Uncaught Error: This salon workspace is not active
+    at requireOperationsContext (src\lib\operations-auth.ts:46:11)
+    at  loadDashboard (src\app\dashboard\page.tsx:24:21)
+    at  DashboardPage (src\app\dashboard\page.tsx:9:16)
+    at resolveErrorDev (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_164kp-6._.js:1919:150)
+    at processFullStringRow (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_164kp-6._.js:2434:29)
+    at processFullBinaryRow (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_164kp-6._.js:2393:9)
+    at processBinaryChunk (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_164kp-6._.js:2502:221)
+    at progress (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_164kp-6._.js:2689:13)
+  44 |   }
+  45 |   if (user.tenant.status !== "ACTIVE") {
+> 46 |     throw new OperationsError("TENANT_SUSPENDED", "This salon workspace is not active", 403);
+     |           ^
+  47 |   }
+  48 |
+  49 |   const branches = user.role === "OWNER"
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/sagar/OneDrive/Documents/Salon Management/.next/dev/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477:13)
+Error: Turbopack build failed with 1 errors:
+./src/app
+Error: Next.js inferred your workspace root, but it may not be correct.
+    We couldn't find the Next.js package (next/package.json) from the project directory: C:\Users\sagar\OneDrive\Documents\Salon Management\src\app
+     To fix this, set turbopack.root in your Next.js config, or ensure the Next.js package is resolvable from this directory.
+    Note: For security and performance reasons, files outside of the project directory will not be compiled.
+    See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+
+    at ignore-listed frames

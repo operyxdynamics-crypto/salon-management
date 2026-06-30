@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7f1e7;
+  --foreground: #201d1a;
+  --brand-black: #0e0c09;
+  --brand-gold: #d6b35e;
+  --brand-gold-soft: #f4e6bd;
+  --brand-ivory: #fffaf0;
+  --brand-green: #203a36;
+  --brand-rose: #9e5d55;
+  --brand-peach: #d19a85;
+  --brand-blue: #365f91;
+  --brand-amber: #9a6a18;
+  --brand-violet: #72569a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-dm-sans);
+  --font-serif: var(--font-lora);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgb(214 179 94 / 0.18), transparent 34rem),
+    linear-gradient(135deg, #fffaf0 0%, #f7f1e7 44%, #efe8db 100%);
+  color: var(--foreground);
+  font-family: var(--font-dm-sans), Arial, sans-serif;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a {
+  cursor: pointer;
+}
+
+::selection {
+  background: #d9a28e;
+  color: #201d1a;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c6c0b8;
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+
+@layer components {
+  .primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    border: 1px solid rgb(214 179 94 / 0.22);
+    background: linear-gradient(135deg, #13231f, #203a36 58%, #335f52);
+    padding: 0.7rem 1rem;
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 700;
+    box-shadow: 0 12px 26px rgb(16 26 23 / 0.18);
+    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  }
+
+  .primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #1a302b, #294a44 58%, #3d6c60);
+    box-shadow: 0 16px 34px rgb(16 26 23 / 0.24);
+    transform: translateY(-1px);
+  }
+
+  .primary:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  .field {
+    width: 100%;
+    border: 1px solid rgb(70 55 35 / 0.12);
+    border-radius: 1rem;
+    background: linear-gradient(180deg, #fff, #fffaf3);
+    padding: 0.78rem 0.95rem;
+    color: #252320;
+    font-size: 0.875rem;
+    outline: none;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.8);
+    transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  }
+
+  .field:focus {
+    border-color: #d6b35e;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgb(214 179 94 / 0.18);
+  }
+
+  .surface-card {
+    border: 1px solid rgb(70 55 35 / 0.09);
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.96), rgb(255 250 240 / 0.9));
+    box-shadow: 0 20px 60px rgb(45 34 20 / 0.08);
+  }
+
+  .gold-divider {
+    background: linear-gradient(180deg, #f4e6bd, #d6b35e 52%, #9e7a2e);
+  }
+
+  .soft-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #fffaf0;
+  }
+
+  .soft-table tbody tr {
+    transition: background 150ms ease, transform 150ms ease;
+  }
+
+  .soft-table tbody tr:hover {
+    background: #fff7e6;
+  }
+}

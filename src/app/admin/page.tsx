@@ -44,9 +44,13 @@ export default async function AdminPage() {
     adminName: session.name,
     metrics: {
       tenants: tenants.length,
-      activeTenants: tenants.filter((tenant) => tenant.status === "ACTIVE").length,
-      pendingBranches: tenants.flatMap((tenant) => tenant.branches).filter((branch) => branch.publicationStatus === "PENDING_REVIEW").length,
-      approvedBranches: tenants.flatMap((tenant) => tenant.branches).filter((branch) => branch.publicationStatus === "APPROVED").length,
+      activeTenants: tenants.filter((tenant: any) => tenant.status === "ACTIVE").length,
+      pendingBranches: tenants
+  .flatMap((tenant: any) => tenant.branches)
+  .filter((branch: any) => branch.publicationStatus === "PENDING_REVIEW").length,
+      approvedBranches: tenants
+  .flatMap((tenant: any) => tenant.branches)
+  .filter((branch: any) => branch.publicationStatus === "APPROVED").length,
       appointments: appointmentCount,
       recordedRevenue: Number(paidTotals._sum.total ?? 0),
     },

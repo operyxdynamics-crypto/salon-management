@@ -10,13 +10,15 @@
   "lint": "eslint",
   "typecheck": "tsc --noEmit",
   "test": "vitest run",
+  "verify": "npm run lint && npm run typecheck && npm test && npm run build",
+  "ship": "node scripts/ship.mjs",
   "db:generate": "prisma generate",
   "db:migrate": "prisma migrate dev",
   "db:studio": "prisma studio",
   "db:seed": "node prisma/seed.mjs"
 },
   "engines": {
-    "node": ">=20.9.0"
+    "node": "22.x"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1067.0",

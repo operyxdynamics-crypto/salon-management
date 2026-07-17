@@ -312,6 +312,9 @@ export async function getWorkspaceData({
       role,
       tenantName,
       tenantSlug,
+      // Lets a person's own screen know which row on the roster is theirs - so a stylist can clock
+      // themselves in without a manager, and without being handed the whole team's controls.
+      currentStaffId: currentStaffId ?? null,
       branchId: selectedBranch?.id ?? null,
       selectedBranchIds: branchIds,
       branchName: selectedBranch?.name ?? (scope === "multi" ? `${branchIds.length} branches` : "All branches"),

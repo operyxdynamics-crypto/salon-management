@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { assessCheckIn, type CheckInAssessment } from "@/lib/attendance";
 import { db } from "@/lib/db";
 import { OperationsError, operationsErrorResponse, requireOperationsContext } from "@/lib/operations-auth";
 
@@ -8,6 +9,14 @@ const postSchema = z.discriminatedUnion("action", [
     branchId: z.string().min(1),
     staffId: z.string().optional(),
     clockIn: z.iso.datetime().optional(),
+    /**
+     * Where the device says it is. Optional on purpose: a refused permission, an old phone, or a
+     * basement with no signal must never stop someone starting their shift. Absent location means
+     * the record needs a human, not that the person is turned away.
+     */
+    latitude: z.number().min(-90).max(90).optional(),
+    longitude: z.number().min(-180).max(180).optional(),
+    accuracyMeters: z.number().nonnegative().max(100_000).optional(),
     idempotencyKey: z.string().min(12).max(120),
   }),
   z.object({
@@ -93,13 +102,24 @@ export async function GET(request: Request) {
         rows: staff.map((member) => {
           const approved = member.attendance.filter((entry) => entry.status === "APPROVED");
           const pending = member.attendance.filter((entry) => entry.status === "PENDING");
-          const firstClockIn = approved[0]?.clockIn ?? null;
-          const openEntry = approved.find((entry) => !entry.clockOut) ?? null;
+          // Two different questions, two different filters.
+          //
+          // "Is this person here?" counts anything not rejected - someone who arrived late is
+          // standing in the salon whether or not a manager has blessed the record yet, and showing
+          // them as ABSENT would be a lie the front desk can see through.
+          //
+          // "What are they owed?" counts approved only. That is the whole point of the queue.
+          const live = member.attendance.filter((entry) => entry.status !== "REJECTED");
+          const firstClockIn = live[0]?.clockIn ?? null;
+          const openEntry = live.find((entry) => !entry.clockOut) ?? null;
           const shift = member.shifts[0] ?? null;
           const workedMinutes = approved.reduce((sum, entry) => sum + minutesBetween(entry.clockIn, entry.clockOut), 0);
           const expectedMinutes = shift ? minutesBetween(shift.startsAt, shift.endsAt) : 0;
-          const lateMinutes = shift && firstClockIn ? Math.max(0, Math.round((firstClockIn.getTime() - shift.startsAt.getTime()) / 60_000)) : 0;
-          const state = member.leaves.length ? "ON_LEAVE" : openEntry ? "CLOCKED_IN" : approved.length ? "PRESENT" : shift ? "ABSENT" : "OFF";
+          // Read the lateness decided at check-in rather than recomputing it. The stored value
+          // already honoured the branch's grace period, and a roster edited afterwards must not
+          // retroactively make someone late.
+          const lateMinutes = live[0]?.lateMinutes ?? 0;
+          const state = member.leaves.length ? "ON_LEAVE" : openEntry ? "CLOCKED_IN" : live.length ? "PRESENT" : shift ? "ABSENT" : "OFF";
           return {
             staffId: member.id,
             name: member.user.name,
@@ -122,6 +142,12 @@ export async function GET(request: Request) {
               status: entry.status,
               source: entry.source,
               note: entry.note,
+              // The evidence a reviewer needs to judge a pending day, without leaving the queue.
+              kind: entry.kind,
+              distanceMeters: entry.distanceMeters,
+              accuracyMeters: entry.accuracyMeters,
+              lateMinutes: entry.lateMinutes,
+              reviewedAt: entry.reviewedAt?.toISOString() ?? null,
             })),
           };
         }),
@@ -149,8 +175,10 @@ export async function POST(request: Request) {
     if (existing) return Response.json({ data: existing });
 
     if (parsed.data.action === "CLOCK_OUT") {
+      // PENDING counts as open. A check-in awaiting approval is still someone at work, and refusing
+      // to let them clock out would strand them clocked in until a manager got round to it.
       const open = await db.attendance.findFirst({
-        where: { staffId: staff.id, branchId: context.branch!.id, clockOut: null, status: "APPROVED" },
+        where: { staffId: staff.id, branchId: context.branch!.id, clockOut: null, status: { in: ["APPROVED", "PENDING"] } },
         orderBy: { clockIn: "desc" },
       });
       if (!open) throw new OperationsError("CONFLICT", "No open clock-in was found", 409);
@@ -167,11 +195,43 @@ export async function POST(request: Request) {
     const clockIn = "clockIn" in parsed.data && parsed.data.clockIn ? new Date(parsed.data.clockIn) : new Date();
     const clockOut = "clockOut" in parsed.data && parsed.data.clockOut ? new Date(parsed.data.clockOut) : null;
     if (clockOut && clockOut <= clockIn) throw new OperationsError("VALIDATION", "Clock-out must be after clock-in", 400);
+    // Assess a real clock-in against the branch geofence and the rostered shift. A correction
+    // request or a manager's manual entry is a human statement about the past, so location and
+    // lateness say nothing useful about it.
+    let assessment: CheckInAssessment | null = null;
     if (parsed.data.action === "CLOCK_IN") {
-      const open = await db.attendance.findFirst({ where: { staffId: staff.id, branchId: context.branch!.id, clockOut: null, status: "APPROVED" } });
+      const open = await db.attendance.findFirst({
+        where: { staffId: staff.id, branchId: context.branch!.id, clockOut: null, status: { in: ["APPROVED", "PENDING"] } },
+      });
       if (open) throw new OperationsError("CONFLICT", "This team member is already clocked in", 409);
+
+      const branch = await db.branch.findUnique({
+        where: { id: context.branch!.id },
+        select: { latitude: true, longitude: true, geofenceRadiusMeters: true, lateGraceMinutes: true },
+      });
+      // The shift they are starting: the one covering now, or the next one today.
+      const shift = await db.shift.findFirst({
+        where: { staffId: staff.id, branchId: context.branch!.id, endsAt: { gt: clockIn } },
+        orderBy: { startsAt: "asc" },
+        select: { startsAt: true },
+      });
+
+      assessment = assessCheckIn({
+        clockIn,
+        shiftStart: shift?.startsAt ?? null,
+        branch: {
+          latitude: branch?.latitude === null || branch?.latitude === undefined ? null : Number(branch.latitude),
+          longitude: branch?.longitude === null || branch?.longitude === undefined ? null : Number(branch.longitude),
+          geofenceRadiusMeters: branch?.geofenceRadiusMeters ?? 150,
+          lateGraceMinutes: branch?.lateGraceMinutes ?? 0,
+        },
+        location: parsed.data.latitude !== undefined && parsed.data.longitude !== undefined
+          ? { latitude: parsed.data.latitude, longitude: parsed.data.longitude, accuracyMeters: parsed.data.accuracyMeters ?? null }
+          : null,
+      });
     }
-    const status = parsed.data.action === "REQUEST_CORRECTION" ? "PENDING" : "APPROVED";
+
+    const status = assessment?.status ?? (parsed.data.action === "REQUEST_CORRECTION" ? "PENDING" : "APPROVED");
     const source = parsed.data.action === "CLOCK_IN" ? "CLOCK" : parsed.data.action === "REQUEST_CORRECTION" ? "CORRECTION_REQUEST" : "MANUAL";
     const created = await db.$transaction(async (tx) => {
       const record = await tx.attendance.create({
@@ -182,7 +242,15 @@ export async function POST(request: Request) {
           clockOut,
           status,
           source,
-          note: "note" in parsed.data ? parsed.data.note : null,
+          // The reasons are written onto the record so the approvals queue can say *why* without
+          // recomputing them from a geofence that may have moved since.
+          note: "note" in parsed.data ? parsed.data.note : assessment?.reasons.join(" · ") || null,
+          latitude: parsed.data.action === "CLOCK_IN" ? parsed.data.latitude ?? null : null,
+          longitude: parsed.data.action === "CLOCK_IN" ? parsed.data.longitude ?? null : null,
+          accuracyMeters: parsed.data.action === "CLOCK_IN" ? Math.round(parsed.data.accuracyMeters ?? 0) || null : null,
+          distanceMeters: assessment?.distanceMeters ?? null,
+          kind: assessment?.kind ?? "ON_SITE",
+          lateMinutes: assessment?.lateMinutes ?? 0,
           idempotencyKey: parsed.data.idempotencyKey,
         },
       });
@@ -203,7 +271,17 @@ export async function PATCH(request: Request) {
     const existing = await db.attendance.findFirst({ where: { id: parsed.data.attendanceId, branchId: context.branch!.id } });
     if (!existing) throw new OperationsError("NOT_FOUND", "Attendance record not found", 404);
     const updated = await db.$transaction(async (tx) => {
-      const record = await tx.attendance.update({ where: { id: existing.id }, data: { status: parsed.data.status, note: parsed.data.note ?? existing.note } });
+      const record = await tx.attendance.update({
+        where: { id: existing.id },
+        data: {
+          status: parsed.data.status,
+          note: parsed.data.note ?? existing.note,
+          // Who signed off on a late or off-site day, and when. Attendance decides pay, so
+          // "approved" without a name is not an answer anyone can stand behind later.
+          reviewedById: context.user.id,
+          reviewedAt: new Date(),
+        },
+      });
       await tx.auditLog.create({ data: { userId: context.user.id, tenantId: context.tenant.id, action: parsed.data.status === "APPROVED" ? "ATTENDANCE_APPROVED" : "ATTENDANCE_REJECTED", entity: "Attendance", entityId: record.id, metadata: { branchId: context.branch!.id } } });
       return record;
     });

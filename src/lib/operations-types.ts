@@ -4,6 +4,14 @@ export type WorkspaceData = {
     role: string;
     tenantName: string;
     tenantSlug: string;
+    /**
+     * The signed-in person's own staff profile, when they have one.
+     *
+     * An owner or accountant may have no staff record at all - they are a user of the business, not
+     * a person on the roster - so this is null for them, and anything that clocks in has to cope
+     * with that rather than assume everyone has a shift.
+     */
+    currentStaffId: string | null;
     branchId: string | null;
     selectedBranchIds: string[];
     branchName: string;

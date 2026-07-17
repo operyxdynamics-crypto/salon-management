@@ -193,6 +193,14 @@ model Branch {
   /// stays inside the 16-character limit GST allows.
   invoiceCode           String?
 
+  /// How close to the branch a person must be for a check-in to count as on-site. Consumer GPS is
+  /// good to roughly 10-50m outdoors and far worse inside a building, so this is deliberately
+  /// generous - a radius tighter than the error margin just rejects honest staff.
+  geofenceRadiusMeters  Int                        @default(150)
+  /// Minutes after shift start that still count as on time. Zero means any lateness needs approval.
+  /// Kept as a setting because the right answer is a management decision, not a code decision.
+  lateGraceMinutes      Int                        @default(0)
+
   ownershipModel        BranchOwnershipModel       @default(COCO)
   /// Who owns the asset. Affects franchise economics, not invoicing.
   ownerEntityId         String?
@@ -274,6 +282,7 @@ model User {
   blockedTimes        BlockedTime[]          @relation("BlockedTimeCreatedBy")
   uploadedDocuments   VerificationDocument[] @relation("DocumentUploader")
   reviewedDocuments   VerificationDocument[] @relation("DocumentReviewer")
+  reviewedAttendance  Attendance[]           @relation("AttendanceReviewer")
   branchReviews       BranchReview[]
   adminNotes          AdminNote[]
   sentInvitations     OwnerInvitation[]      @relation("InvitationSender")
@@ -291,6 +300,9 @@ model Staff {
   jobTitle                String
   bio                     String?
   commissionRate          Decimal                  @default(0) @db.Decimal(5, 2)
+  /// Fixed monthly pay, before commission and tips. Zero means this person earns on commission
+  /// only, which is a real arrangement in salons - not a missing value.
+  monthlySalary           Decimal                  @default(0) @db.Decimal(10, 2)
   services                StaffService[]
   appointments            Appointment[]
   shifts                  Shift[]
@@ -1299,15 +1311,44 @@ model Attendance {
   branch         Branch?   @relation(fields: [branchId], references: [id], onDelete: SetNull)
   clockIn        DateTime
   clockOut       DateTime?
+  /// PENDING until someone with staff rights approves. A check-in is never blocked - work starts
+  /// whether or not the paperwork is right - but only an APPROVED one counts towards pay.
   status         String    @default("APPROVED")
   source         String    @default("CLOCK")
   note           String?
+
+  /// Where the person was when they clocked in, as their device reported it.
+  ///
+  /// Recorded rather than trusted. Phone GPS can be spoofed and is unreliable indoors, so this is
+  /// evidence for a human to weigh - which is exactly why an off-site check-in goes to approval
+  /// instead of being silently rejected or silently accepted.
+  latitude       Decimal?  @db.Decimal(10, 7)
+  longitude      Decimal?  @db.Decimal(10, 7)
+  /// The device's own claimed accuracy, in metres. A 2km accuracy reading means the coordinates
+  /// are worthless, and the reviewer should see that rather than a confident-looking distance.
+  accuracyMeters Int?
+  /// Distance from the branch at check-in. Null when the device gave no location at all.
+  distanceMeters Int?
+  /// ON_SITE inside the branch geofence, OFF_SITE outside it or with no location. Field work is not
+  /// a separate mode someone has to remember to switch on: being elsewhere is what makes it field
+  /// work, and the same approval catches both that and a spoofed location.
+  kind           String    @default("ON_SITE")
+  /// Minutes past the shift start, after the branch's grace period. Zero when on time or when there
+  /// is no shift rostered to be late for.
+  lateMinutes    Int       @default(0)
+
+  reviewedById   String?
+  reviewedBy     User?     @relation("AttendanceReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt     DateTime?
+
   idempotencyKey String?   @unique
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
   @@index([branchId, clockIn])
   @@index([staffId, clockIn])
+  /// The approvals queue reads this constantly.
+  @@index([branchId, status])
 }
 
 model Campaign {

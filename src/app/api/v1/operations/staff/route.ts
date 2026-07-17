@@ -14,6 +14,8 @@ const createSchema = z.object({
   role: z.enum(["MANAGER", "RECEPTIONIST", "STYLIST", "ACCOUNTANT"]),
   jobTitle: z.string().trim().min(2).max(100),
   commissionRate: z.number().min(0).max(100).default(0),
+  /// Zero is a real answer - commission-only staff - not a missing value.
+  monthlySalary: z.number().min(0).max(10_000_000).default(0),
 });
 
 const updateSchema = z.object({
@@ -24,6 +26,7 @@ const updateSchema = z.object({
   role: z.enum(["MANAGER", "RECEPTIONIST", "STYLIST", "ACCOUNTANT"]).optional(),
   jobTitle: z.string().trim().min(2).max(100).optional(),
   commissionRate: z.number().min(0).max(100).optional(),
+  monthlySalary: z.number().min(0).max(10_000_000).optional(),
   isActive: z.boolean().optional(),
   temporaryPassword: z.string().min(8).max(100).optional(),
 });
@@ -61,6 +64,7 @@ export async function POST(request: Request) {
           branchId: parsed.data.primaryBranchId,
           jobTitle: parsed.data.jobTitle,
           commissionRate: parsed.data.commissionRate,
+          monthlySalary: parsed.data.monthlySalary,
           branchAssignments: {
             create: branchIds.map((branchId) => ({ branchId, isPrimary: branchId === parsed.data.primaryBranchId })),
           },
@@ -129,6 +133,7 @@ export async function PATCH(request: Request) {
           branchId: primaryBranchId,
           jobTitle: parsed.data.jobTitle,
           commissionRate: parsed.data.commissionRate,
+          monthlySalary: parsed.data.monthlySalary,
         },
         include: { user: true, branchAssignments: true },
       });

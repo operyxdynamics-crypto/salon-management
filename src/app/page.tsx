@@ -1,185 +1,247 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
+  Boxes,
   CalendarDays,
-  Check,
-  Clock3,
-  MapPin,
-  Search,
+  CreditCard,
+  FileText,
+  Percent,
+  ReceiptText,
   ShieldCheck,
-  Sparkles,
-  Star,
+  Store,
+  Users,
 } from "lucide-react";
-import { BrandMark, brandName, brandTagline } from "@/components/brand-mark";
-import { db } from "@/lib/db";
+import { BrandMark, brandName } from "@/components/brand-mark";
 
-const categories = ["Haircut", "Hair colour", "Facial", "Nails", "Makeup", "Spa"];
+/**
+ * The Operyx home page.
+ *
+ * Sells the software to salon owners. It used to be a consumer marketplace - a salon search bar and
+ * "Book" cards - while the headline talked about POS and inventory, so it pitched two audiences and
+ * landed neither. Everything built here for months is the operator's workspace, so that is what
+ * this page is about.
+ *
+ * Deliberately static: no database call. The old page queried published branches on every request,
+ * which meant the marketing site went down whenever Postgres was asleep. A page whose job is to say
+ * what the product does should not depend on the product's database being awake.
+ */
 
-export const dynamic = "force-dynamic";
+export const metadata = {
+  title: "Operyx — salon operations, automated",
+  description:
+    "Bookings, billing, GST invoices, stock, staff and reports in one workspace. Built for Indian salons, from a single chair to a franchise network.",
+};
 
-export default async function MarketplacePage() {
-  const databaseSalons = await db.branch.findMany({
-    where: { isPublished: true, publicationStatus: "APPROVED", tenant: { status: "ACTIVE" } },
-    include: { tenant: { include: { services: { where: { isActive: true }, take: 3 } } } },
-    orderBy: [{ rating: "desc" }, { reviewCount: "desc" }],
-  }).catch(() => []);
-  const salons = databaseSalons.map((branch, index) => ({
-    id: branch.tenant.slug,
-    name: branch.tenant.name,
-    area: `${branch.address}, ${branch.city}`,
-    distance: index === 0 ? "1.2 km" : "Nearby",
-    rating: Number(branch.rating),
-    reviews: branch.reviewCount,
-    price: "₹₹",
-    badge: index === 0 ? "Top rated" : "Verified",
-    accent: ["from-[#1C459D] to-[#16B994]", "from-[#173279] to-[#1969A2]", "from-[#173279] to-[#16B994]"][index % 3],
-    description: "Contemporary beauty services delivered by verified professionals in a welcoming space.",
-    nextSlot: "Today, 4:30 PM",
-    services: branch.tenant.services.map((service) => service.category),
-  }));
+const counterFeatures = [
+  { icon: CalendarDays, title: "Bookings", body: "The day as a list, not a puzzle. Who is here, who is next, who has not paid." },
+  { icon: CreditCard, title: "Billing", body: "One screen from customer to payment. Split tenders, cash change, held sales." },
+  { icon: ReceiptText, title: "GST invoices", body: "Tax invoice or bill of supply, correct either way. A4 to file, A5 for the counter." },
+  { icon: Boxes, title: "Products & stock", body: "Catalogue, categories, brands and units together. Stock moves when you sell." },
+  { icon: Users, title: "Team", body: "Attendance, shifts, commission. Each person sees only their own work." },
+  { icon: Percent, title: "Offers", body: "Memberships, packages, gift cards, coupons and points that survive a refund." },
+];
+
+export default function HomePage() {
   return (
-    <main className="min-h-screen bg-[#F7FAFC] text-[#173279]">
-      <header className="sticky top-0 z-30 border-b border-[#173279]/5 bg-[#F7FAFC]/90 backdrop-blur-xl">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 lg:px-8">
-          <Link href="/" className="flex items-center gap-2.5">
-            <BrandMark />
-          </Link>
-          <nav className="hidden items-center gap-8 text-sm font-medium md:flex">
-            <a href="#discover" className="hover:text-[#1969A2]">Discover</a>
-            <a href="#how-it-works" className="hover:text-[#1969A2]">How it works</a>
-            <Link href="/workspace/home" className="hover:text-[#1969A2]">For salons</Link>
+    <main className="min-h-screen bg-white text-[#1F2937]">
+      {/* ---------------------------------------------------------------- header */}
+      <header className="sticky top-0 z-30 border-b border-black/5 bg-white/85 backdrop-blur-xl">
+        <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-5 lg:px-8">
+          <Link href="/" aria-label={brandName}><BrandMark /></Link>
+          <nav className="hidden items-center gap-8 text-sm font-semibold text-[#6B7280] md:flex">
+            <a href="#counter" className="transition hover:text-[#5B2A86]">What it does</a>
+            <a href="#gst" className="transition hover:text-[#5B2A86]">GST</a>
+            <a href="#scale" className="transition hover:text-[#5B2A86]">Franchise</a>
           </nav>
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="hidden rounded-full px-4 py-2 text-sm font-semibold sm:block">Sign in</Link>
-            <Link href="/workspace/home" className="rounded-full bg-[#173279] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#173279]">
-              Salon workspace
+          <div className="flex items-center gap-2">
+            <Link href="/login" className="rounded-full px-4 py-2.5 text-sm font-bold text-[#5B2A86] transition hover:bg-[#F3E8FF]">Sign in</Link>
+            <Link href="/onboarding/register" className="rounded-full bg-[#5B2A86] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#472066]">
+              Start free
             </Link>
           </div>
         </div>
       </header>
 
-      <section className="relative overflow-hidden px-5 pb-20 pt-16 lg:px-8 lg:pb-28 lg:pt-24">
-        <div className="absolute -right-28 top-10 size-[420px] rounded-full bg-[#16B994]/20 blur-3xl" />
-        <div className="absolute -left-36 bottom-0 size-[360px] rounded-full bg-[#1C459D]/15 blur-3xl" />
-        <div className="relative mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_480px] lg:items-center">
-          <div className="max-w-3xl">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#16B994]/25 bg-white/70 px-4 py-2 text-sm font-semibold text-[#1789AA]">
-              <Sparkles size={15} /> {brandTagline}
-            </div>
-            <h1 className="font-serif text-5xl leading-[1.04] tracking-[-0.04em] sm:text-6xl lg:text-8xl">
-              Salon operations and bookings, automated by {brandName}.
-            </h1>
-            <p className="mt-7 max-w-2xl text-lg leading-8 text-[#5e6977]">
-              Run appointments, customers, POS, invoices, inventory, staff, and reporting from one installable workspace.
-            </p>
+      {/* ---------------------------------------------------------------- hero */}
+      <section className="relative overflow-hidden px-5 pb-20 pt-16 lg:px-8 lg:pt-24">
+        <div className="pointer-events-none absolute -right-32 -top-24 size-[460px] rounded-full bg-[#F3E8FF] blur-3xl" />
+        <div className="relative mx-auto max-w-6xl">
+          <p className="inline-flex items-center gap-2 rounded-full border border-[#E3D9EE] bg-[#FBF9FD] px-4 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-[#5B2A86]">
+            Operations. Automated.
+          </p>
+          <h1 className="mt-6 max-w-4xl font-serif text-5xl leading-[1.05] tracking-[-0.03em] sm:text-6xl lg:text-7xl">
+            Run the whole salon from the front desk.
+          </h1>
+          <p className="mt-7 max-w-2xl text-lg leading-8 text-[#6B7280]">
+            Bookings, billing, GST invoices, stock, staff and reports — one workspace your reception
+            team can use on day one, without training.
+          </p>
+          <div className="mt-9 flex flex-wrap items-center gap-3">
+            <Link href="/onboarding/register" className="inline-flex items-center gap-2 rounded-full bg-[#5B2A86] px-7 py-3.5 text-sm font-bold text-white transition hover:bg-[#472066]">
+              Start free <ArrowRight size={17} />
+            </Link>
+            <Link href="/login" className="inline-flex items-center gap-2 rounded-full border border-[#E3D9EE] px-7 py-3.5 text-sm font-bold text-[#5B2A86] transition hover:bg-[#F3E8FF]">
+              Sign in
+            </Link>
           </div>
-          <div className="hidden rounded-[2.5rem] border border-[#16B994]/20 bg-white/75 p-8 shadow-[0_24px_80px_rgba(23,50,121,0.12)] lg:block">
-            <Image src="/operyx-logo.png" alt={`${brandName} logo`} width={640} height={384} className="w-full object-contain" priority />
-          </div>
-
-          <div className="lg:col-span-2">
-            <div className="grid max-w-5xl gap-2 rounded-3xl border border-[#173279]/5 bg-white p-2 shadow-[0_24px_80px_rgba(23,50,121,0.10)] md:grid-cols-[1.2fr_1fr_auto] md:rounded-full">
-              <label className="flex items-center gap-3 rounded-full px-5 py-3.5">
-                <Search size={20} className="text-[#1969A2]" />
-                <input className="w-full bg-transparent text-sm outline-none placeholder:text-[#8a98a8]" placeholder="Service or salon" />
-              </label>
-              <label className="flex items-center gap-3 border-[#173279]/10 px-5 py-3.5 md:border-l">
-                <MapPin size={20} className="text-[#1969A2]" />
-                <input className="w-full bg-transparent text-sm outline-none placeholder:text-[#8a98a8]" placeholder="Bengaluru" />
-              </label>
-              <a href="#discover" className="flex items-center justify-center gap-2 rounded-full bg-[#1969A2] px-7 py-3.5 text-sm font-bold text-white hover:bg-[#1789AA]">
-                Find salons <ArrowRight size={17} />
-              </a>
-            </div>
-
-            <div className="mt-6 flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <button key={category} className="rounded-full border border-[#173279]/10 bg-white/60 px-4 py-2 text-sm font-medium transition hover:border-[#16B994]/50 hover:bg-white">
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
+          <p className="mt-5 text-sm text-[#9CA3AF]">
+            Works on the counter PC, a tablet, or a phone. Installs like an app.
+          </p>
         </div>
       </section>
 
-      <section id="discover" className="bg-white px-5 py-20 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-            <div>
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#1969A2]">Verified near you</p>
-              <h2 className="mt-2 font-serif text-4xl tracking-tight sm:text-5xl">Salons worth showing up for</h2>
-            </div>
-            <button className="flex items-center gap-2 text-sm font-bold text-[#1789AA]">View all salons <ArrowRight size={16} /></button>
-          </div>
+      {/* ---------------------------------------------------------------- what it does */}
+      <section id="counter" className="border-y border-black/5 bg-[#FBF9FD] px-5 py-20 lg:px-8">
+        <div className="mx-auto max-w-6xl">
+          <h2 className="max-w-2xl font-serif text-4xl tracking-tight sm:text-5xl">
+            Everything the counter touches, in one place.
+          </h2>
+          <p className="mt-4 max-w-2xl text-[#6B7280]">
+            Not modules bolted together. A sale moves stock, pays commission, earns points and files
+            its own GST — because it is one system, not seven.
+          </p>
 
-          <div className="mt-10 grid gap-6 lg:grid-cols-3">
-            {salons.map((salon, index) => (
-              <article key={salon.id} className="group overflow-hidden rounded-[2rem] border border-[#173279]/8 bg-[#fbfdff] transition hover:-translate-y-1 hover:shadow-xl">
-                <div className={`relative h-64 bg-gradient-to-br ${salon.accent} p-6`}>
-                  <div className="absolute inset-0 opacity-30 [background-image:radial-gradient(circle_at_30%_20%,white_0,transparent_24%),radial-gradient(circle_at_80%_80%,white_0,transparent_20%)]" />
-                  <span className="relative inline-flex rounded-full bg-white/90 px-3 py-1.5 text-xs font-bold text-[#173279]">{salon.badge}</span>
-                  <div className="absolute bottom-6 left-6 font-serif text-6xl text-white/90">0{index + 1}</div>
-                  <button aria-label="Save salon" className="absolute right-6 top-6 grid size-10 place-items-center rounded-full bg-white/90 text-lg">♡</button>
-                </div>
-                <div className="p-6">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <h3 className="font-serif text-2xl font-semibold">{salon.name}</h3>
-                      <p className="mt-1 flex items-center gap-1.5 text-sm text-[#667386]"><MapPin size={14} /> {salon.area} · {salon.distance}</p>
-                    </div>
-                    <div className="flex items-center gap-1 rounded-full bg-[#E8FBFB] px-2.5 py-1 text-sm font-bold text-[#1789AA]"><Star size={14} fill="currentColor" /> {salon.rating}</div>
-                  </div>
-                  <p className="mt-4 text-sm leading-6 text-[#667386]">{salon.description}</p>
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {salon.services.map((service) => <span key={service} className="rounded-full bg-[#eaf4fb] px-3 py-1 text-xs font-semibold">{service}</span>)}
-                  </div>
-                  <div className="mt-6 flex items-center justify-between border-t border-[#173279]/8 pt-5">
-                    <div>
-                      <p className="text-xs text-[#667386]">Next available</p>
-                      <p className="mt-1 flex items-center gap-1.5 text-sm font-bold text-[#1789AA]"><Clock3 size={15} /> {salon.nextSlot}</p>
-                    </div>
-                    <Link href={`/book/${salon.id}`} className="rounded-full bg-[#173279] px-5 py-2.5 text-sm font-bold text-white">Book</Link>
-                  </div>
-                </div>
-              </article>
+          <div className="mt-12 grid gap-px overflow-hidden rounded-[1.75rem] border border-[#E3D9EE] bg-[#E3D9EE] sm:grid-cols-2 lg:grid-cols-3">
+            {counterFeatures.map(({ icon: Icon, title, body }) => (
+              <div key={title} className="bg-white p-7">
+                <span className="grid size-11 place-items-center rounded-xl bg-[#F3E8FF] text-[#5B2A86]"><Icon size={19} /></span>
+                <h3 className="mt-5 text-lg font-bold text-[#1F2937]">{title}</h3>
+                <p className="mt-2 text-sm leading-6 text-[#6B7280]">{body}</p>
+              </div>
             ))}
           </div>
-          {!salons.length && <div className="mt-10 rounded-[2rem] border border-dashed border-[#173279]/15 bg-[#fbfdff] p-12 text-center"><h3 className="font-serif text-3xl">No approved salons yet</h3><p className="mt-3 text-[#667386]">New salons will appear here after branch verification and approval.</p></div>}
         </div>
       </section>
 
-      <section id="how-it-works" className="px-5 py-20 lg:px-8">
-        <div className="mx-auto grid max-w-7xl gap-12 rounded-[2.5rem] bg-[#173279] p-8 text-white lg:grid-cols-[.8fr_1.2fr] lg:p-14">
+      {/* ---------------------------------------------------------------- GST */}
+      <section id="gst" className="px-5 py-24 lg:px-8">
+        <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-[1fr_1fr] lg:items-center">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#16B994]">Simple by design</p>
-            <h2 className="mt-3 font-serif text-4xl leading-tight">From “I need a trim” to booked in minutes.</h2>
-            <p className="mt-5 leading-7 text-white/65">Every salon is verified before it appears. Every operations record connects back to real appointments, invoices, and reports.</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#5B2A86]">GST, done properly</p>
+            <h2 className="mt-3 font-serif text-4xl leading-tight tracking-tight sm:text-5xl">
+              An invoice is a legal record, not a receipt.
+            </h2>
+            <p className="mt-5 leading-7 text-[#6B7280]">
+              Most salon software prints a total and calls it a tax invoice. Operyx keeps what the law
+              asks for: the supplier and their GSTIN, the place of supply, an HSN or SAC code on every
+              line, and the tax split correctly — CGST and SGST within the state, IGST across it.
+            </p>
+            <ul className="mt-7 space-y-3.5">
+              {[
+                "Rates come from one tax master, so a service cannot drift from it.",
+                "Every serial is unique per branch, per year, and inside GST's 16 characters.",
+                "Rates and codes are snapshotted onto the bill, so re-pricing tomorrow never rewrites yesterday.",
+              ].map((line) => (
+                <li key={line} className="flex gap-3 text-sm leading-6 text-[#4B5563]">
+                  <ShieldCheck size={17} className="mt-0.5 shrink-0 text-[#5B2A86]" />{line}
+                </li>
+              ))}
+            </ul>
           </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            {[
-              [Search, "Discover", "Browse by service, location, rating, and real availability."],
-              [CalendarDays, "Book instantly", "Choose your professional and time with immediate confirmation."],
-              [ShieldCheck, "Operate clearly", "Verified businesses, transparent pricing, and connected salon records."],
-            ].map(([Icon, title, body]) => {
-              const StepIcon = Icon as typeof Search;
-              return (
-                <div key={title as string} className="rounded-3xl bg-white/8 p-6">
-                  <StepIcon className="text-[#16B994]" />
-                  <h3 className="mt-8 text-lg font-bold">{title as string}</h3>
-                  <p className="mt-2 text-sm leading-6 text-white/60">{body as string}</p>
-                </div>
-              );
-            })}
+
+          {/* A real invoice, not a stock photo of one. */}
+          <div className="rounded-[1.75rem] border border-[#E3D9EE] bg-white p-7 shadow-[0_24px_70px_rgba(91,42,134,0.10)]">
+            <div className="flex items-start justify-between border-b-2 border-[#5B2A86] pb-4">
+              <div>
+                <p className="font-serif text-xl font-semibold text-[#5B2A86]">Velvet Glow Salon</p>
+                <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#9CA3AF]">Tax invoice</p>
+              </div>
+              <p className="font-serif text-sm text-[#5B2A86]">WHF/2526/00001</p>
+            </div>
+            <table className="mt-4 w-full text-left text-xs">
+              <thead>
+                <tr className="text-[9px] uppercase tracking-[0.1em] text-[#9CA3AF]">
+                  <th className="pb-2 font-semibold">Description</th>
+                  <th className="pb-2 font-semibold">HSN/SAC</th>
+                  <th className="pb-2 text-right font-semibold">GST</th>
+                  <th className="pb-2 text-right font-semibold">Total</th>
+                </tr>
+              </thead>
+              <tbody className="text-[#4B5563]">
+                <tr className="border-t border-[#EFEAF3]">
+                  <td className="py-2.5 font-semibold text-[#1F2937]">Keratin hair spa</td>
+                  <td className="py-2.5 tabular-nums">999721</td>
+                  <td className="py-2.5 text-right tabular-nums">18%</td>
+                  <td className="py-2.5 text-right font-bold tabular-nums">₹1,298</td>
+                </tr>
+                <tr className="border-t border-[#EFEAF3]">
+                  <td className="py-2.5 font-semibold text-[#1F2937]">Argan shampoo 200ml</td>
+                  <td className="py-2.5 tabular-nums">3305</td>
+                  <td className="py-2.5 text-right tabular-nums">18%</td>
+                  <td className="py-2.5 text-right font-bold tabular-nums">₹118</td>
+                </tr>
+              </tbody>
+            </table>
+            <div className="mt-4 space-y-1.5 border-t border-[#EFEAF3] pt-4 text-xs">
+              <p className="flex justify-between text-[#6B7280]"><span>CGST</span><span className="tabular-nums">₹108.00</span></p>
+              <p className="flex justify-between text-[#6B7280]"><span>SGST</span><span className="tabular-nums">₹108.00</span></p>
+              <p className="mt-2 flex justify-between border-t-2 border-[#5B2A86] pt-2.5 font-serif text-lg font-bold text-[#5B2A86]">
+                <span>Total</span><span className="tabular-nums">₹1,416.00</span>
+              </p>
+            </div>
+            <p className="mt-5 flex items-center gap-2 text-[11px] font-semibold text-[#9CA3AF]">
+              <FileText size={13} /> Download, print A4 or A5, or send it on WhatsApp.
+            </p>
           </div>
         </div>
       </section>
 
-      <footer className="border-t border-[#173279]/8 px-5 py-8 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col justify-between gap-4 text-sm text-[#667386] sm:flex-row">
-          <p>© 2026 {brandName}</p>
-          <p className="flex items-center gap-2"><Check size={14} /> Made for India&apos;s beauty professionals</p>
+      {/* ---------------------------------------------------------------- scale */}
+      <section id="scale" className="px-5 pb-24 lg:px-8">
+        <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] bg-[#5B2A86] p-8 text-white lg:p-14">
+          <div className="grid gap-12 lg:grid-cols-[.9fr_1.1fr]">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#D9C7EC]">One chair to a hundred</p>
+              <h2 className="mt-3 font-serif text-4xl leading-tight">Complexity you have to earn.</h2>
+              <p className="mt-5 leading-7 text-white/70">
+                A single-salon owner never meets franchise models, legal entities, or a branch picker —
+                not because a simple mode is switched on, but because Operyx can see there is one
+                branch and says nothing about franchises. Open a second and the picker appears by
+                itself.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {[
+                [Store, "COCO", "You own it, you run it. The company bills."],
+                [Users, "FOCO", "They funded it, you run it. The company still bills."],
+                [ShieldCheck, "FOFO", "They own and run it, so they bill — under their own GSTIN."],
+              ].map(([Icon, title, body]) => {
+                const Glyph = Icon as typeof Store;
+                return (
+                  <div key={title as string} className="rounded-2xl bg-white/10 p-5">
+                    <Glyph size={20} className="text-[#D9C7EC]" />
+                    <h3 className="mt-6 font-bold">{title as string}</h3>
+                    <p className="mt-1.5 text-sm leading-6 text-white/65">{body as string}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <p className="mt-10 border-t border-white/15 pt-6 text-sm text-white/60">
+            Whoever operates a branch is the supplier — so a franchisee&apos;s sale bills under the
+            franchisee&apos;s GSTIN, and never lands in the company&apos;s revenue.
+          </p>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- CTA */}
+      <section className="border-t border-black/5 bg-[#FBF9FD] px-5 py-20 lg:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+          <div>
+            <h2 className="font-serif text-3xl tracking-tight sm:text-4xl">Set it up this afternoon.</h2>
+            <p className="mt-2 text-[#6B7280]">Add your services, open the counter, take a bill. No card needed.</p>
+          </div>
+          <Link href="/onboarding/register" className="inline-flex shrink-0 items-center gap-2 rounded-full bg-[#5B2A86] px-7 py-3.5 text-sm font-bold text-white transition hover:bg-[#472066]">
+            Start free <ArrowRight size={17} />
+          </Link>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- footer */}
+      <footer className="px-5 py-10 lg:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col justify-between gap-4 text-sm text-[#9CA3AF] sm:flex-row sm:items-center">
+          <BrandMark compact />
+          <p>© {new Date().getFullYear()} {brandName} · Built for India&apos;s salons</p>
         </div>
       </footer>
     </main>

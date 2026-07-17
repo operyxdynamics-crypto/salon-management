@@ -173,7 +173,7 @@ export function BookingFlow({ salon }: { salon: Salon }) {
     const lines = [
       "BEGIN:VCALENDAR",
       "VERSION:2.0",
-      "PRODID:-//Neel Bridal Studio//Booking//EN",
+      "PRODID:-//Operyx//Booking//EN",
       "BEGIN:VEVENT",
       `UID:${confirmation.id}@${salon.tenantSlug}`,
       `DTSTAMP:${start}`,
@@ -190,7 +190,7 @@ export function BookingFlow({ salon }: { salon: Salon }) {
 
   if (!salon.services.length) {
     return (
-      <main className="grid min-h-screen place-items-center bg-[#f8f5f0] p-6 text-center">
+      <main className="grid min-h-screen place-items-center bg-[#F7FAFC] p-6 text-center">
         <div>
           <h1 className="font-serif text-3xl">{salon.tenantName}</h1>
           <p className="mt-3 text-[#766e67]">This salon hasn&apos;t published a service menu yet.</p>
@@ -202,10 +202,10 @@ export function BookingFlow({ salon }: { salon: Salon }) {
   // ============== CONFIRMED ==============
   if (step === "confirmed" && confirmation && service) {
     return (
-      <main className="grid min-h-screen place-items-center bg-[#f8f5f0] p-5">
+      <main className="grid min-h-screen place-items-center bg-[#F7FAFC] p-5">
         <div className="w-full max-w-lg rounded-[2rem] bg-white p-7 text-center shadow-xl sm:p-10">
           <div className="mx-auto grid size-16 place-items-center rounded-full bg-[#e5f0eb] text-[#2f6a55]"><Check size={28} /></div>
-          <p className="mt-6 text-xs font-bold uppercase tracking-[.18em] text-[#9e5d55]">Booking confirmed</p>
+          <p className="mt-6 text-xs font-bold uppercase tracking-[.18em] text-[#1969A2]">Booking confirmed</p>
           <h1 className="mt-2 font-serif text-3xl">See you soon, {name.split(" ")[0]}.</h1>
           <p className="mt-4 text-sm text-[#756d66]">{service.name} at {salon.tenantName}</p>
           <div className="mt-7 rounded-2xl bg-[#f6f2ec] p-5 text-left text-sm">
@@ -217,7 +217,7 @@ export function BookingFlow({ salon }: { salon: Salon }) {
           </div>
           <div className="mt-6 grid gap-2 sm:grid-cols-2">
             <a href={icsHref()} download={`${service.name}.ics`} className="rounded-full border border-black/10 bg-white px-5 py-3 text-sm font-bold">Add to calendar</a>
-            {salon.branchPhone && <a href={`tel:${salon.branchPhone}`} className="rounded-full bg-[#203a36] px-5 py-3 text-sm font-bold text-white">Call salon</a>}
+            {salon.branchPhone && <a href={`tel:${salon.branchPhone}`} className="rounded-full bg-[#173279] px-5 py-3 text-sm font-bold text-white">Call salon</a>}
           </div>
           <p className="mt-5 text-xs text-[#827970]">Need to reschedule? Call the salon at {salon.branchPhone ?? "the number they shared with you"}.</p>
         </div>
@@ -227,7 +227,7 @@ export function BookingFlow({ salon }: { salon: Salon }) {
 
   // ============== HEADER ==============
   const header = (
-    <header className="bg-gradient-to-br from-[#203a36] to-[#3b5e58] text-white">
+    <header className="bg-gradient-to-br from-[#173279] to-[#1789AA] text-white">
       <div className="mx-auto max-w-3xl px-5 pb-10 pt-8 sm:pt-12">
         <p className="text-xs font-bold uppercase tracking-[.18em] text-[#e3c89c]">Book your appointment</p>
         <h1 className="mt-2 font-serif text-3xl font-semibold sm:text-4xl">{salon.tenantName}</h1>
@@ -242,13 +242,13 @@ export function BookingFlow({ salon }: { salon: Salon }) {
   // ============== STEP 1: SELECT ==============
   if (step === "select") {
     return (
-      <main className="min-h-screen bg-[#f8f5f0] text-[#201d1a]">
+      <main className="min-h-screen bg-[#F7FAFC] text-[#1F2937]">
         {header}
         <div className="mx-auto max-w-3xl space-y-8 px-5 py-8 pb-32">
           <Section icon={<Sparkles size={18} />} title="Choose a service">
             <div className="grid gap-2.5">
               {salon.services.map((item) => (
-                <button key={item.id} onClick={() => { setServiceId(item.id); setStaffId(""); setSlot(""); }} className={`flex items-center justify-between gap-3 rounded-2xl border-2 p-4 text-left transition ${serviceId === item.id ? "border-[#9e5d55] bg-white shadow-sm" : "border-black/8 bg-white/60 hover:bg-white"}`}>
+                <button key={item.id} onClick={() => { setServiceId(item.id); setStaffId(""); setSlot(""); }} className={`flex items-center justify-between gap-3 rounded-2xl border-2 p-4 text-left transition ${serviceId === item.id ? "border-[#1969A2] bg-white shadow-sm" : "border-black/8 bg-white/60 hover:bg-white"}`}>
                   <div>
                     <p className="font-bold">{item.name}</p>
                     <p className="mt-1 flex items-center gap-1 text-xs text-[#7c746c]"><Clock size={12} /> {item.durationMinutes} min · {item.category}</p>
@@ -261,9 +261,9 @@ export function BookingFlow({ salon }: { salon: Salon }) {
 
           <Section icon={<User size={18} />} title="Choose a professional (optional)">
             <div className="flex flex-wrap gap-2">
-              <button onClick={() => setStaffId("")} className={`rounded-full border-2 px-4 py-2 text-sm font-semibold ${!staffId ? "border-[#203a36] bg-[#203a36] text-white" : "border-black/10 bg-white"}`}>Any professional</button>
+              <button onClick={() => setStaffId("")} className={`rounded-full border-2 px-4 py-2 text-sm font-semibold ${!staffId ? "border-[#173279] bg-[#173279] text-white" : "border-black/10 bg-white"}`}>Any professional</button>
               {qualifiedStaff.map((member) => (
-                <button key={member.id} onClick={() => setStaffId(member.id)} className={`rounded-full border-2 px-4 py-2 text-sm font-semibold ${staffId === member.id ? "border-[#203a36] bg-[#203a36] text-white" : "border-black/10 bg-white"}`}>
+                <button key={member.id} onClick={() => setStaffId(member.id)} className={`rounded-full border-2 px-4 py-2 text-sm font-semibold ${staffId === member.id ? "border-[#173279] bg-[#173279] text-white" : "border-black/10 bg-white"}`}>
                   {member.name}
                 </button>
               ))}
@@ -274,7 +274,7 @@ export function BookingFlow({ salon }: { salon: Salon }) {
           <Section icon={<Calendar size={18} />} title="Pick a date">
             <div className="flex gap-2 overflow-x-auto pb-2">
               {dateChoices.map((value) => (
-                <button key={value} onClick={() => { setDate(value); setSlot(""); }} className={`flex shrink-0 flex-col items-center rounded-2xl border-2 px-4 py-3 ${date === value ? "border-[#203a36] bg-[#203a36] text-white" : "border-black/10 bg-white"}`}>
+                <button key={value} onClick={() => { setDate(value); setSlot(""); }} className={`flex shrink-0 flex-col items-center rounded-2xl border-2 px-4 py-3 ${date === value ? "border-[#173279] bg-[#173279] text-white" : "border-black/10 bg-white"}`}>
                   <span className="text-[10px] font-bold uppercase tracking-wider">{indiaFormatter.format(new Date(`${value}T12:00:00+05:30`)).split(",")[0]}</span>
                   <strong className="mt-0.5 text-lg">{new Date(`${value}T12:00:00+05:30`).getDate()}</strong>
                   <span className="text-[10px]">{indiaFormatter.format(new Date(`${value}T12:00:00+05:30`)).split(" ")[2]}</span>
@@ -291,13 +291,13 @@ export function BookingFlow({ salon }: { salon: Salon }) {
             ) : slots.length ? (
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                 {slots.map((value) => (
-                  <button key={value} onClick={() => setSlot(value)} className={`rounded-xl border-2 px-3 py-3 text-sm font-bold ${slot === value ? "border-[#9e5d55] bg-[#9e5d55] text-white" : "border-black/10 bg-white"}`}>
+                  <button key={value} onClick={() => setSlot(value)} className={`rounded-xl border-2 px-3 py-3 text-sm font-bold ${slot === value ? "border-[#1969A2] bg-[#1969A2] text-white" : "border-black/10 bg-white"}`}>
                     {indiaTime.format(new Date(value))}
                   </button>
                 ))}
               </div>
             ) : (
-              <p className="rounded-2xl border border-dashed border-[#d8c9a4] bg-[#fffaf0] p-4 text-sm text-[#8a827a]">No times open on this date. Try another day.</p>
+              <p className="rounded-2xl border border-dashed border-[#E5E7EB] bg-[#F7FAFC] p-4 text-sm text-[#737174]">No times open on this date. Try another day.</p>
             )}
           </Section>
         </div>
@@ -316,7 +316,7 @@ export function BookingFlow({ salon }: { salon: Salon }) {
   // ============== STEP 2: DETAILS ==============
   if (step === "details") {
     return (
-      <main className="min-h-screen bg-[#f8f5f0] text-[#201d1a]">
+      <main className="min-h-screen bg-[#F7FAFC] text-[#1F2937]">
         {header}
         <div className="mx-auto max-w-md space-y-6 px-5 py-8 pb-32">
           <Summary salon={salon} service={service} slot={slot} staffId={staffId} />
@@ -350,7 +350,7 @@ export function BookingFlow({ salon }: { salon: Salon }) {
   // ============== STEP 3: VERIFY ==============
   const remainingSeconds = otpExpiresAt ? Math.max(0, Math.ceil((otpExpiresAt - Date.now()) / 1000)) : 0;
   return (
-    <main className="min-h-screen bg-[#f8f5f0] text-[#201d1a]">
+    <main className="min-h-screen bg-[#F7FAFC] text-[#1F2937]">
       {header}
       <div className="mx-auto max-w-md space-y-6 px-5 py-8 pb-32">
         <Summary salon={salon} service={service} slot={slot} staffId={staffId} />
@@ -365,7 +365,7 @@ export function BookingFlow({ salon }: { salon: Salon }) {
             placeholder="••••••"
             autoFocus
           />
-          <button onClick={requestOtp} disabled={busy} className="mt-3 text-sm font-bold text-[#9e5d55] disabled:opacity-50">Resend code</button>
+          <button onClick={requestOtp} disabled={busy} className="mt-3 text-sm font-bold text-[#1969A2] disabled:opacity-50">Resend code</button>
         </Section>
         {error && <p className="rounded-2xl bg-[#fff0ec] p-3 text-sm font-semibold text-[#995849]">{error}</p>}
       </div>
@@ -383,7 +383,7 @@ export function BookingFlow({ salon }: { salon: Salon }) {
 function Section({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="mb-3 flex items-center gap-2 font-serif text-xl"><span className="grid size-7 place-items-center rounded-full bg-[#f0e6d8] text-[#9e5d55]">{icon}</span>{title}</h2>
+      <h2 className="mb-3 flex items-center gap-2 font-serif text-xl"><span className="grid size-7 place-items-center rounded-full bg-[#E8FBFB] text-[#1969A2]">{icon}</span>{title}</h2>
       {children}
     </section>
   );
@@ -402,11 +402,11 @@ function Summary({ salon, service, slot, staffId }: { salon: Salon; service: Ser
   const staffName = staffId ? salon.staff.find((member) => member.id === staffId)?.name ?? "Any professional" : "Any professional";
   return (
     <div className="rounded-2xl bg-white p-5 shadow-sm">
-      <p className="text-xs font-bold uppercase tracking-[.18em] text-[#9e5d55]">Your appointment</p>
+      <p className="text-xs font-bold uppercase tracking-[.18em] text-[#1969A2]">Your appointment</p>
       <p className="mt-2 font-serif text-lg">{service?.name ?? "Service"}</p>
       <div className="mt-3 grid grid-cols-2 gap-3 text-xs text-[#827970]">
-        <div><p className="font-bold text-[#201d1a]">{slot ? indiaTime.format(new Date(slot)) : "—"}</p><p>{slot ? indiaFullDate.format(new Date(slot)) : ""}</p></div>
-        <div><p className="font-bold text-[#201d1a]">{staffName}</p><p>{service ? `${service.durationMinutes} min` : ""}</p></div>
+        <div><p className="font-bold text-[#1F2937]">{slot ? indiaTime.format(new Date(slot)) : "—"}</p><p>{slot ? indiaFullDate.format(new Date(slot)) : ""}</p></div>
+        <div><p className="font-bold text-[#1F2937]">{staffName}</p><p>{service ? `${service.durationMinutes} min` : ""}</p></div>
       </div>
       <p className="mt-3 flex items-center justify-between text-sm"><span className="text-[#827970]">Pay at salon</span><strong>{service ? inr.format(service.price) : ""}</strong></p>
     </div>
@@ -421,7 +421,7 @@ function BottomBar({ summary, price, disabled, label, onClick }: { summary: stri
           <p className="truncate text-xs font-semibold text-[#827970]">{summary}</p>
           {price && <p className="text-lg font-bold">{price}</p>}
         </div>
-        <button onClick={onClick} disabled={disabled} className="flex shrink-0 items-center gap-1 rounded-full bg-[#203a36] px-6 py-3 text-sm font-bold text-white disabled:opacity-50">
+        <button onClick={onClick} disabled={disabled} className="flex shrink-0 items-center gap-1 rounded-full bg-[#173279] px-6 py-3 text-sm font-bold text-white disabled:opacity-50">
           {label} <ChevronRight size={16} />
         </button>
       </div>

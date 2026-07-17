@@ -16,7 +16,17 @@ export async function GET(request: Request, { params }: { params: Promise<{ invo
         lines: { include: { staff: { include: { user: true } } } },
         payments: true,
         parentInvoice: { select: { id: true, number: true } },
-        refundInvoices: { select: { id: true, number: true, total: true, createdAt: true } },
+        refundInvoices: {
+          select: {
+            id: true,
+            number: true,
+            status: true,
+            total: true,
+            voidReason: true,
+            createdAt: true,
+            lines: { select: { id: true, description: true, quantity: true, total: true, refundSourceLineId: true } },
+          },
+        },
       },
     });
     if (!invoice) throw new OperationsError("NOT_FOUND", "Invoice not found", 404);
@@ -33,7 +43,23 @@ export async function GET(request: Request, { params }: { params: Promise<{ invo
       data: {
         id: invoice.id,
         number: invoice.number,
-        branch: { id: invoice.branchId, name: invoice.branch.name, city: invoice.branch.city },
+        branch: {
+          id: invoice.branchId,
+          name: invoice.branch.name,
+          city: invoice.branch.city,
+          address: invoice.branch.address,
+          state: invoice.branch.state,
+          postalCode: invoice.branch.postalCode,
+        },
+        // The supplier as it was at the time of sale, read from the invoice's own snapshot rather
+        // than from the branch today. A FOFO franchise invoice was issued by the franchisee, and
+        // must keep saying so even if that branch later converts to company-operated.
+        seller: {
+          legalName: invoice.supplierName ?? context.tenant.legalName ?? context.tenant.name,
+          gstin: invoice.supplierGstin,
+          stateCode: invoice.supplierStateCode,
+        },
+        placeOfSupplyState: invoice.placeOfSupplyState,
         customer: { id: invoice.customerId, name: invoice.customer.name, phone: invoice.customer.phone, email: invoice.customer.email },
         appointment: invoice.appointment ? { id: invoice.appointment.id, startsAt: invoice.appointment.startsAt.toISOString(), status: invoice.appointment.status } : null,
         subtotal: Number(invoice.subtotal),
@@ -49,18 +75,35 @@ export async function GET(request: Request, { params }: { params: Promise<{ invo
         voidReason: invoice.voidReason,
         createdAt: invoice.createdAt.toISOString(),
         parentInvoice: invoice.parentInvoice,
-        refunds: invoice.refundInvoices.map((refund) => ({ id: refund.id, number: refund.number, total: Number(refund.total), createdAt: refund.createdAt.toISOString() })),
+        refunds: invoice.refundInvoices.map((refund) => ({
+          id: refund.id,
+          number: refund.number,
+          status: refund.status,
+          total: Number(refund.total),
+          reason: refund.voidReason,
+          createdAt: refund.createdAt.toISOString(),
+          lines: refund.lines.map((line) => ({
+            id: line.id,
+            description: line.description,
+            quantity: Number(line.quantity),
+            total: Number(line.total),
+            refundSourceLineId: line.refundSourceLineId,
+          })),
+        })),
         lines: invoice.lines.map((line) => ({
           id: line.id,
           type: line.type,
           description: line.description,
           serviceId: line.serviceId,
           inventoryItemId: line.inventoryItemId,
+          refundSourceLineId: line.refundSourceLineId,
           staff: line.staff?.user.name ?? null,
           quantity: Number(line.quantity),
           unitPrice: Number(line.unitPrice),
           discount: Number(line.discount),
           taxRate: Number(line.taxRate),
+          hsnCode: line.hsnCode,
+          priceTaxMode: line.priceTaxMode,
           tax: Number(line.tax),
           total: Number(line.total),
         })),

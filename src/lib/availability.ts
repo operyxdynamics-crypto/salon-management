@@ -1,4 +1,4 @@
-import { Prisma, type AppointmentSource } from "@prisma/client";
+import { Prisma, type AppointmentSource, type AppointmentStatus } from "@prisma/client";
 import { db } from "./db";
 import { OperationsError } from "./operations-auth";
 import { assertAppointmentCapacity } from "./plan-limits";
@@ -17,6 +17,7 @@ export async function resolveBranchService(branchId: string, serviceId: string) 
     price: override?.price ?? service.price,
     durationMinutes: override?.durationMinutes ?? service.durationMinutes,
     taxRate: override?.taxRate ?? service.taxRate,
+    priceTaxMode: override?.priceTaxMode ?? service.priceTaxMode,
   };
 }
 
@@ -35,6 +36,7 @@ export async function eligibleStaffIds(branchId: string, serviceId: string) {
 
 async function staffIsAvailable(
   tx: Prisma.TransactionClient | typeof db,
+  branchId: string,
   staffId: string,
   startsAt: Date,
   endsAt: Date,
@@ -43,7 +45,7 @@ async function staffIsAvailable(
   const indiaDate = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(startsAt);
   const dayStart = new Date(`${indiaDate}T00:00:00+05:30`);
   const dayEnd = new Date(dayStart.getTime() + 86_400_000);
-  const [conflict, leave, shiftCount, matchingShift] = await Promise.all([
+  const [conflict, blocked, leave, shiftCount, matchingShift] = await Promise.all([
     tx.appointment.findFirst({
       where: {
         id: excludeAppointmentId ? { not: excludeAppointmentId } : undefined,
@@ -54,11 +56,58 @@ async function staffIsAvailable(
         ],
       },
     }),
+    tx.blockedTime.findFirst({
+      where: {
+        branchId,
+        startsAt: { lt: endsAt },
+        endsAt: { gt: startsAt },
+        OR: [
+          { staffId },
+          { staffId: null, resourceId: null },
+        ],
+      },
+    }),
     tx.staffLeave.findFirst({ where: { staffId, status: "APPROVED", startsAt: { lt: endsAt }, endsAt: { gt: startsAt } } }),
     tx.shift.count({ where: { staffId, startsAt: { lt: dayEnd }, endsAt: { gt: dayStart } } }),
     tx.shift.findFirst({ where: { staffId, startsAt: { lte: startsAt }, endsAt: { gte: endsAt } } }),
   ]);
-  return !conflict && !leave && (shiftCount === 0 || Boolean(matchingShift));
+  return !conflict && !blocked && !leave && (shiftCount === 0 || Boolean(matchingShift));
+}
+
+export async function resourceIsAvailable(
+  tx: Prisma.TransactionClient | typeof db,
+  branchId: string,
+  resourceId: string | null | undefined,
+  startsAt: Date,
+  endsAt: Date,
+  excludeAppointmentId?: string,
+) {
+  if (!resourceId) return true;
+  const [resource, conflict, blocked] = await Promise.all([
+    tx.resource.findFirst({ where: { id: resourceId, branchId }, select: { id: true } }),
+    tx.appointment.findFirst({
+      where: {
+        id: excludeAppointmentId ? { not: excludeAppointmentId } : undefined,
+        branchId,
+        resourceId,
+        status: { in: [...blockingStatuses] },
+        startsAt: { lt: endsAt },
+        endsAt: { gt: startsAt },
+      },
+    }),
+    tx.blockedTime.findFirst({
+      where: {
+        branchId,
+        startsAt: { lt: endsAt },
+        endsAt: { gt: startsAt },
+        OR: [
+          { resourceId },
+          { staffId: null, resourceId: null },
+        ],
+      },
+    }),
+  ]);
+  return Boolean(resource) && !conflict && !blocked;
 }
 
 export async function findAvailableStaff(
@@ -81,7 +130,7 @@ export async function findAvailableStaff(
       },
       select: { id: true },
     });
-    if (belongs && await staffIsAvailable(tx, staffId, startsAt, endsAt, excludeAppointmentId)) return staffId;
+    if (belongs && await staffIsAvailable(tx, branchId, staffId, startsAt, endsAt, excludeAppointmentId)) return staffId;
   }
   return null;
 }
@@ -93,11 +142,14 @@ export async function createAppointment({
   serviceId,
   startsAt,
   source,
+  status = "CONFIRMED",
   idempotencyKey,
   staffId,
   notes,
   actorId,
   serviceLines,
+  resourceId,
+  seriesId,
 }: {
   tenantId: string;
   branchId: string;
@@ -105,15 +157,19 @@ export async function createAppointment({
   serviceId: string;
   startsAt: Date;
   source: AppointmentSource;
+  status?: Extract<AppointmentStatus, "CONFIRMED" | "WAITLISTED">;
   idempotencyKey: string;
   staffId?: string | null;
   notes?: string;
   actorId?: string;
   serviceLines?: Array<{ serviceId: string; staffId?: string | null }>;
+  resourceId?: string | null;
+  seriesId?: string | null;
 }) {
   const duplicate = await db.appointment.findUnique({ where: { idempotencyKey } });
   if (duplicate) return duplicate;
   await assertAppointmentCapacity(tenantId, startsAt);
+  const waitlisted = status === "WAITLISTED";
   const requestedLines = serviceLines?.length ? serviceLines : [{ serviceId, staffId }];
   const resolvedLines: Array<{
     service: NonNullable<Awaited<ReturnType<typeof resolveBranchService>>>;
@@ -134,6 +190,10 @@ export async function createAppointment({
   if (startsAt < opensAt || scheduledEnd > closesAt) throw new OperationsError("POLICY", "Appointment falls outside branch operating hours", 409);
   const customer = await db.customer.findFirst({ where: { id: customerId, tenantId } });
   if (!customer) throw new OperationsError("NOT_FOUND", "Customer was not found", 404);
+  if (resourceId) {
+    const resource = await db.resource.findFirst({ where: { id: resourceId, branchId } });
+    if (!resource) throw new OperationsError("NOT_FOUND", "Resource is not available at this branch", 404);
+  }
 
   try {
     return await db.$transaction(async (tx) => {
@@ -142,18 +202,27 @@ export async function createAppointment({
       for (const { service, requestedStaffId } of resolvedLines) {
         const lineStartsAt = cursor;
         const lineEndsAt = new Date(lineStartsAt.getTime() + service.durationMinutes * 60_000);
-        const occupiedStartsAt = new Date(lineStartsAt.getTime() - service.bufferBefore * 60_000);
-        const occupiedEndsAt = new Date(lineEndsAt.getTime() + service.bufferAfter * 60_000);
-        const candidates = requestedStaffId ? [requestedStaffId] : await eligibleStaffIds(branchId, service.id);
-        if (!candidates.length) throw new OperationsError("CONFLICT", `No qualified professional is configured for ${service.name}`, 409);
-        await tx.$queryRaw`SELECT "id" FROM "Staff" WHERE "id" IN (${Prisma.join(candidates)}) FOR UPDATE`;
-        const assignedStaffId = await findAvailableStaff(tx, branchId, service.id, occupiedStartsAt, occupiedEndsAt, requestedStaffId);
-        if (!assignedStaffId) throw new OperationsError("CONFLICT", `${service.name} is no longer available at this time`, 409);
+        let assignedStaffId = requestedStaffId ?? null;
+        if (!waitlisted) {
+          const occupiedStartsAt = new Date(lineStartsAt.getTime() - service.bufferBefore * 60_000);
+          const occupiedEndsAt = new Date(lineEndsAt.getTime() + service.bufferAfter * 60_000);
+          const candidates = requestedStaffId ? [requestedStaffId] : await eligibleStaffIds(branchId, service.id);
+          if (!candidates.length) throw new OperationsError("CONFLICT", `No qualified professional is configured for ${service.name}`, 409);
+          await tx.$queryRaw`SELECT "id" FROM "Staff" WHERE "id" IN (${Prisma.join(candidates)}) FOR UPDATE`;
+          assignedStaffId = await findAvailableStaff(tx, branchId, service.id, occupiedStartsAt, occupiedEndsAt, requestedStaffId);
+          if (!assignedStaffId) throw new OperationsError("CONFLICT", `${service.name} is no longer available at this time`, 409);
+        }
         scheduledLines.push({ service, staffId: assignedStaffId, startsAt: lineStartsAt, endsAt: lineEndsAt });
         cursor = lineEndsAt;
       }
       const primary = scheduledLines[0];
       const endsAt = scheduledLines.at(-1)!.endsAt;
+      if (!waitlisted && resourceId) {
+        await tx.$queryRaw`SELECT "id" FROM "Resource" WHERE "id" = ${resourceId} AND "branchId" = ${branchId} FOR UPDATE`;
+        if (!await resourceIsAvailable(tx, branchId, resourceId, startsAt, endsAt)) {
+          throw new OperationsError("CONFLICT", "Selected resource is unavailable at this time", 409);
+        }
+      }
       const created = await tx.appointment.create({
         data: {
           branchId,
@@ -164,8 +233,10 @@ export async function createAppointment({
           endsAt,
           source,
           notes,
+          resourceId: resourceId || null,
+          seriesId: seriesId || null,
           idempotencyKey,
-          status: "CONFIRMED",
+          status,
           serviceLines: {
             create: scheduledLines.map((line, sortOrder) => ({
               serviceId: line.service.id,
@@ -175,20 +246,21 @@ export async function createAppointment({
               durationMinutes: line.service.durationMinutes,
               price: line.service.price,
               taxRate: line.service.taxRate,
+              priceTaxMode: line.service.priceTaxMode,
               sortOrder,
             })),
           },
         },
       });
-      await tx.appointmentStatusHistory.create({ data: { appointmentId: created.id, status: "CONFIRMED" } });
+      await tx.appointmentStatusHistory.create({ data: { appointmentId: created.id, status } });
       await tx.auditLog.create({
         data: {
           userId: actorId,
           tenantId,
-          action: "APPOINTMENT_CREATED",
+          action: waitlisted ? "APPOINTMENT_WAITLISTED" : "APPOINTMENT_CREATED",
           entity: "Appointment",
           entityId: created.id,
-          metadata: { source, branchId, serviceCount: scheduledLines.length },
+          metadata: { source, branchId, serviceCount: scheduledLines.length, status },
         },
       });
       return created;
@@ -207,6 +279,7 @@ export async function availabilityForDate(
   date: string,
   staffId?: string,
   requestedLines?: Array<{ serviceId: string; staffId?: string | null }>,
+  resourceId?: string | null,
 ) {
   // Customer-facing access is gated at the page level (/book/[slug] filters for published branches),
   // so this internal helper only requires the tenant itself to be ACTIVE. That lets staff schedule
@@ -246,6 +319,9 @@ export async function availabilityForDate(
         break;
       }
       lineCursor = lineEndsAt;
+    }
+    if (available && resourceId && !await resourceIsAvailable(db, branchId, resourceId, cursor, new Date(cursor.getTime() + totalDuration * 60_000))) {
+      available = false;
     }
     if (available) slots.push(cursor.toISOString());
   }

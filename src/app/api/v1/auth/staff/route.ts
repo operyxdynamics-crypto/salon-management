@@ -50,7 +50,7 @@ export async function POST(request: Request) {
           ? "/admin"
           : user.role === "OWNER" && user.tenant?.status !== "ACTIVE"
             ? "/onboarding"
-            : "/dashboard",
+            : "/workspace/home",
       },
     });
     response.cookies.set(sessionCookie.name, token, sessionCookie.options);

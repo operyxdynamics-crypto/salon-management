@@ -89,7 +89,7 @@ export async function POST(request: Request) {
       name: result.owner.name,
     });
     (await cookies()).set(sessionCookie.name, token, sessionCookie.options);
-    return Response.json({ data: { tenantId: result.tenant.id, redirectTo: "/dashboard" } }, { status: 201 });
+    return Response.json({ data: { tenantId: result.tenant.id, redirectTo: "/workspace/home" } }, { status: 201 });
   } catch (error) {
     return platformErrorResponse(error);
   }

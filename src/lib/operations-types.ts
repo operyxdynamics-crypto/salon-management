@@ -5,15 +5,61 @@ export type WorkspaceData = {
     tenantName: string;
     tenantSlug: string;
     branchId: string | null;
+    selectedBranchIds: string[];
     branchName: string;
     branchCity: string;
-    scope: "branch" | "all";
+    scope: "branch" | "all" | "multi";
+    /**
+     * What this business actually is, derived from its data - never configured.
+     *
+     * Complexity must be earned. A single-branch salon should never meet COCO/FOCO/FOFO, a list of
+     * GST registrations, or a branch picker: not because a "simple mode" is switched on, but
+     * because the app can see they have one branch and one entity and therefore says nothing about
+     * franchises. Add a second branch and the picker appears by itself.
+     */
+    capabilities: {
+      hasMultipleBranches: boolean;
+      hasFranchises: boolean;
+      hasMultipleStates: boolean;
+      hasMultipleEntities: boolean;
+      sellsProducts: boolean;
+      hasStaffCommission: boolean;
+    };
+    subscription: null | {
+      planName: string;
+      planCode: string;
+      limits: {
+        branches: number;
+        staff: number;
+        services: number;
+        monthlyAppointments: number;
+        storageMb: number;
+      };
+      usage: {
+        branches: number;
+        staff: number;
+        services: number;
+        monthlyAppointments: number;
+        storageMb: number;
+      };
+    };
     branches: Array<{
       id: string;
       name: string;
       city: string;
+      state: string;
       publicationStatus: string;
       timezone: string;
+      /// Who owns and who runs this branch. Drives the COCO/FOCO/FOFO scope presets.
+      ownershipModel: "COCO" | "FOCO" | "FOFO";
+      /// The business that operates the branch, and therefore issues its invoices.
+      operatorName: string | null;
+      operatorEntityId: string | null;
+      /// The registration this branch bills under. Null means GST invoices are blocked here.
+      gstin: string | null;
+      gstState: string | null;
+      /// False when the branch has no usable registration in its own state.
+      gstReady: boolean;
       operatingHours: Array<{ dayOfWeek: number; opensAt: string; closesAt: string; isClosed: boolean }>;
     }>;
   };
@@ -25,6 +71,12 @@ export type WorkspaceData = {
     averageTicket: number;
     lowStockCount: number;
     monthRevenue: number;
+    /// Revenue supplied by the company itself. FOFO franchise sales are excluded - they belong to
+    /// the franchisee, and adding them to a company figure would be a wrong number, not a rounding.
+    companyMonthRevenue: number;
+    /// Revenue supplied by franchisees billing under their own GSTIN. Not the company's money.
+    franchiseMonthRevenue: number;
+    companyTodayRevenue: number;
     monthTax: number;
     monthExpenses: number;
     monthAppointments: number;
@@ -43,11 +95,14 @@ export type WorkspaceData = {
   };
   appointments: Array<{
     id: string;
+    bookingReference: string;
     branchId: string;
     branchName: string;
     customerId: string;
     customer: string;
     phone: string;
+    customerNotes: string | null;
+    customerAllergies: string | null;
     serviceId: string;
     service: string;
     staffId: string | null;
@@ -56,7 +111,19 @@ export type WorkspaceData = {
     endsAt: string;
     status: string;
     source: string;
+    notes: string | null;
+    cancellationReason: string | null;
+    resourceId: string | null;
+    resourceName: string | null;
     price: number;
+    invoice: null | {
+      id: string;
+      number: string;
+      status: string;
+      total: number;
+      paid: number;
+      outstanding: number;
+    };
     serviceLines: Array<{
       id: string;
       serviceId: string;
@@ -68,6 +135,7 @@ export type WorkspaceData = {
       durationMinutes: number;
       price: number;
       taxRate: number;
+      priceTaxMode: "EXCLUSIVE" | "INCLUSIVE";
     }>;
   }>;
   customers: Array<{
@@ -94,8 +162,10 @@ export type WorkspaceData = {
     durationMinutes: number;
     price: number;
     taxRate: number;
+    priceTaxMode: "EXCLUSIVE" | "INCLUSIVE";
     isActive: boolean;
     masterPrice: number;
+    masterPriceTaxMode: "EXCLUSIVE" | "INCLUSIVE";
     masterDurationMinutes: number;
     onlineBooking: boolean;
     bufferBefore: number;
@@ -110,6 +180,14 @@ export type WorkspaceData = {
     icon: string | null;
     sortOrder: number;
     isActive: boolean;
+  }>;
+  // Tax rates defined once in the Tax master; services and products link to one of these.
+  taxClasses: Array<{
+    id: string;
+    name: string;
+    code: string;
+    kind: "GOODS" | "SERVICE";
+    rate: number;
   }>;
   staff: Array<{
     id: string;
@@ -135,16 +213,35 @@ export type WorkspaceData = {
     };
     commissionEarned: number;
   }>;
+  resources: Array<{ id: string; branchId: string; name: string; type: string }>;
+  blockedTimes: Array<{
+    id: string;
+    branchId: string;
+    branchName: string;
+    staffId: string | null;
+    staffName: string | null;
+    resourceId: string | null;
+    resourceName: string | null;
+    title: string;
+    reason: string | null;
+    startsAt: string;
+    endsAt: string;
+    isAllDay: boolean;
+  }>;
   inventory: Array<{
     id: string;
     name: string;
     sku: string;
     category: string;
+    categoryId: string | null;
+    brandName: string | null;
     unit: string;
     quantity: number;
     reorderLevel: number;
     retailPrice: number;
     costPrice: number;
+    taxRate: number;
+    priceTaxMode: "EXCLUSIVE" | "INCLUSIVE";
     stockValue: number;
     isActive: boolean;
     vendorId: string | null;
@@ -152,7 +249,7 @@ export type WorkspaceData = {
   vendors: Array<{ id: string; name: string; phone: string | null; email: string | null; gstin: string | null; isActive: boolean }>;
   stockMovements: Array<{ id: string; product: string; type: string; quantity: number; reference: string | null; createdAt: string }>;
   purchaseEntries: Array<{ id: string; vendor: string | null; invoiceNumber: string | null; total: number; purchasedAt: string; lines: number }>;
-  registerSessions: Array<{ id: string; status: string; openingBalance: number; closingBalance: number | null; expectedBalance: number | null; variance: number | null; openedAt: string; closedAt: string | null }>;
+  registerSessions: Array<{ id: string; status: string; openingBalance: number; openingNote?: string | null; closingBalance: number | null; closingNote?: string | null; expectedBalance: number | null; variance: number | null; openedAt: string; closedAt: string | null }>;
   expenses: Array<{
     id: string;
     category: string;
@@ -200,6 +297,7 @@ export type AppointmentDetail = {
   endsAt: string;
   status: string;
   source: string;
+  resource: null | { id: string; name: string; type: string };
   notes: string | null;
   cancellationReason: string | null;
   bookingReference: string;
@@ -215,6 +313,7 @@ export type AppointmentDetail = {
     durationMinutes: number;
     price: number;
     taxRate: number;
+    priceTaxMode: "EXCLUSIVE" | "INCLUSIVE";
     bufferBefore: number;
     bufferAfter: number;
   }>;
@@ -310,6 +409,7 @@ export type ServiceProfile = {
     durationMinutes: number;
     price: number;
     taxRate: number;
+    priceTaxMode: "EXCLUSIVE" | "INCLUSIVE";
     isActive: boolean;
     onlineBooking: boolean;
     bufferBefore: number;
@@ -323,6 +423,7 @@ export type ServiceProfile = {
     price: number;
     durationMinutes: number;
     taxRate: number;
+    priceTaxMode: "EXCLUSIVE" | "INCLUSIVE";
   }>;
   qualifiedStaff: Array<{ id: string; name: string; role: string; branchNames: string[] }>;
   metrics: { bookings: number; completed: number; cancelled: number; noShows: number; averageSellingPrice: number; revenue: number };

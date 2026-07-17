@@ -22,8 +22,12 @@ ADD COLUMN     "rejectedAt" TIMESTAMP(3),
 ADD COLUMN     "submittedAt" TIMESTAMP(3),
 ADD COLUMN     "suspendedAt" TIMESTAMP(3);
 
--- AlterTable
-ALTER TABLE "Invoice" ALTER COLUMN "updatedAt" DROP DEFAULT;
+-- Repair: this migration used to contain
+--   ALTER TABLE "Invoice" ALTER COLUMN "updatedAt" DROP DEFAULT;
+-- but Invoice."updatedAt" is not created until the next migration (operations_pilot). The
+-- statement was generated against a database that had already drifted, so the history could
+-- never replay on a clean database. Removed; the DROP DEFAULT now lives in operations_pilot,
+-- immediately after the column is added.
 
 -- AlterTable
 ALTER TABLE "Tenant" ADD COLUMN     "onboardingStep" INTEGER NOT NULL DEFAULT 1,

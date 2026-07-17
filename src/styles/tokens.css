@@ -1,0 +1,237 @@
+/*
+ * Operyx design tokens.
+ *
+ * Every colour in the app is currently a literal hex (#173279, #F7FAFC...) repeated across ~20k
+ * lines. That is why the UI drifts: there is no single place that says what "a card" or "a danger
+ * state" looks like. These tokens are that place.
+ *
+ * Two layers, deliberately:
+ *
+ *   1. PALETTE  - raw values. Never referenced by a component.
+ *   2. SEMANTIC - what a thing IS (surface, border, danger). This is all components may use.
+ *
+ * Dark mode is then a matter of re-pointing layer 2 at different palette stops, not of editing
+ * components. The overrides are stubbed at the bottom and ship disabled.
+ */
+
+:root {
+  /* ---------------------------------------------------------------- 1. Palette */
+
+  /* Brand: the existing purple. */
+  --purple-50: #F6F2FB;
+  --purple-100: #EADFF6;
+  --purple-200: #D8BFEF;
+  --purple-300: #BC93E2;
+  --purple-400: #9B63D1;
+  --purple-500: #7C3AED;
+  --purple-600: #5B2A86;
+  --purple-700: #4A2270;
+  --purple-800: #341751;
+  --purple-900: #200E33;
+
+  /* Neutrals, warmed very slightly toward the brand so greys never look dirty next to purple. */
+  --gray-0: #FFFFFF;
+  --gray-25: #FBFBFD;
+  --gray-50: #F6F7FA;
+  --gray-100: #EEF0F4;
+  --gray-200: #E3E6EC;
+  --gray-300: #D2D6DF;
+  --gray-400: #A8AEBC;
+  --gray-500: #7C8494;
+  --gray-600: #5C6373;
+  --gray-700: #434959;
+  --gray-800: #2C3140;
+  --gray-900: #1A1D28;
+
+  --green-50: #E9F7F1;
+  --green-500: #12916C;
+  --green-700: #0B6B4F;
+
+  --amber-50: #FEF5E6;
+  --amber-500: #B57900;
+  --amber-700: #8A5C00;
+
+  --red-50: #FDECEC;
+  --red-500: #C4403E;
+  --red-700: #94302E;
+
+  --blue-50: #EAF1FC;
+  --blue-500: #2F6BD1;
+  --blue-700: #22509E;
+
+  /* ------------------------------------------------------------- 2. Semantic */
+
+  /* Surfaces. 0 is the page canvas; each step up is nearer the user. */
+  --surface-page: var(--gray-50);
+  --surface-card: var(--gray-0);
+  --surface-raised: var(--gray-0);
+  --surface-sunken: var(--gray-100);
+  --surface-overlay: rgb(26 29 40 / 0.45);
+
+  /* Text. Never use opacity on text - it multiplies against whatever is behind it. */
+  --text-primary: var(--gray-900);
+  --text-secondary: var(--gray-600);
+  --text-muted: var(--gray-500);
+  --text-disabled: var(--gray-400);
+  --text-on-accent: var(--gray-0);
+
+  /* Borders. Default is a hairline; strong is for hover and emphasis. */
+  --border: var(--gray-200);
+  --border-strong: var(--gray-300);
+  --border-focus: var(--purple-500);
+
+  /* Brand / accent. One accent per view - if everything is emphasised, nothing is. */
+  --accent: var(--purple-600);
+  --accent-hover: var(--purple-700);
+  --accent-soft: var(--purple-50);
+  --accent-soft-border: var(--purple-200);
+  --accent-text: var(--purple-600);
+
+  /* Status. Each has a soft fill for banners and a strong text colour that passes on it. */
+  --success-soft: var(--green-50);
+  --success: var(--green-500);
+  --success-text: var(--green-700);
+
+  --warning-soft: var(--amber-50);
+  --warning: var(--amber-500);
+  --warning-text: var(--amber-700);
+
+  --danger-soft: var(--red-50);
+  --danger: var(--red-500);
+  --danger-text: var(--red-700);
+
+  --info-soft: var(--blue-50);
+  --info: var(--blue-500);
+  --info-text: var(--blue-700);
+
+  /* ------------------------------------------------------------ Geometry */
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Control heights. Compact by default: a receptionist on a 14" laptop needs to see a whole
+     day of bookings, and generous padding is what stops them. Touch targets are enforced
+     separately in the mobile shell, where 44px is the floor. */
+  --control-h-sm: 32px;
+  --control-h: 38px;
+  --control-h-lg: 44px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* ------------------------------------------------------------ Elevation */
+
+  --shadow-sm: 0 1px 2px rgb(26 29 40 / 0.04), 0 1px 1px rgb(26 29 40 / 0.03);
+  --shadow-md: 0 4px 12px rgb(26 29 40 / 0.06), 0 1px 3px rgb(26 29 40 / 0.04);
+  --shadow-lg: 0 12px 32px rgb(26 29 40 / 0.10), 0 4px 8px rgb(26 29 40 / 0.04);
+  --shadow-focus: 0 0 0 3px rgb(124 58 237 / 0.18);
+
+  /* ------------------------------------------------------------ Motion
+   *
+   * Short and near-linear-out. UI motion exists to explain where a thing came from, not to be
+   * admired: anything over ~200ms in a POS reads as lag to someone doing it 80 times a day.
+   */
+  --dur-instant: 80ms;
+  --dur-fast: 130ms;
+  --dur-base: 180ms;
+  --dur-slow: 260ms;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+/*
+ * Dark mode. Only layer 2 is re-pointed - no component changes. Disabled until the migration is
+ * done, because a half-migrated screen in dark mode is unreadable rather than merely ugly.
+ */
+[data-theme="dark"] {
+  --surface-page: var(--gray-900);
+  --surface-card: var(--gray-800);
+  --surface-raised: var(--gray-700);
+  --surface-sunken: #14161F;
+  --surface-overlay: rgb(0 0 0 / 0.6);
+
+  --text-primary: var(--gray-50);
+  --text-secondary: var(--gray-400);
+  --text-muted: var(--gray-500);
+  --text-disabled: var(--gray-600);
+
+  --border: #363B4A;
+  --border-strong: #474D5E;
+
+  --accent: var(--purple-400);
+  --accent-hover: var(--purple-300);
+  --accent-soft: #2A1B3D;
+  --accent-soft-border: #45305F;
+  --accent-text: var(--purple-200);
+
+  --success-soft: #0E2A22;
+  --warning-soft: #33260C;
+  --danger-soft: #331B1B;
+  --info-soft: #16243D;
+}
+
+/* ---------------------------------------------------------------- Motion primitives
+ *
+ * Defined here rather than pulled from tailwindcss-animate, which this project does not have -
+ * so `animate-in` and friends would silently render as nothing.
+ *
+ * An overlay rises from where it came from. That is the whole job of the animation: to say
+ * "this came from the bottom, and it will go back there", not to be noticed.
+ */
+
+@keyframes op-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes op-sheet-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes op-dialog-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes op-shimmer {
+  from { opacity: 1; }
+  50% { opacity: 0.45; }
+  to { opacity: 1; }
+}
+
+.op-fade-in { animation: op-fade-in var(--dur-base) var(--ease-out) both; }
+.op-sheet-in { animation: op-sheet-in var(--dur-base) var(--ease-out) both; }
+.op-pulse { animation: op-shimmer 1.6s ease-in-out infinite; }
+
+@media (min-width: 640px) {
+  /* On desktop the overlay is centred, so rising from the bottom would be a lie about where it
+     came from. It scales up from the middle instead. */
+  .op-sheet-in { animation-name: op-dialog-in; }
+}
+
+/* Someone who has asked their OS to reduce motion means it. Honour it globally rather than
+   remembering to do so in each component. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-instant: 0ms;
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+  }
+
+  .op-fade-in,
+  .op-sheet-in,
+  .op-pulse {
+    animation: none;
+  }
+}

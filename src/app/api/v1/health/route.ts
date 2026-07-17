@@ -10,7 +10,7 @@ export async function GET() {
   }
   return Response.json({
     status: "ok",
-    service: "ruvyra-web",
+    service: "operyx-web",
     database,
     timestamp: new Date().toISOString(),
   });

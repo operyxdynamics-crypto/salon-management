@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { OperationsError, operationsErrorResponse, requireOperationsContext } from "@/lib/operations-auth";
-import { can } from "@/lib/rbac";
 
 const postSchema = z.discriminatedUnion("action", [
   z.object({
@@ -142,7 +141,7 @@ export async function POST(request: Request) {
     const selfStaffId = context.user.staff?.id;
     const staffId = parsed.data.staffId ?? selfStaffId;
     if (!staffId) throw new OperationsError("FORBIDDEN", "A staff profile is required", 403);
-    const canManage = can(context.user.role, "staff:write");
+    const canManage = context.permissions.has("staff:write");
     if (!canManage && staffId !== selfStaffId) throw new OperationsError("FORBIDDEN", "You can only manage your own attendance", 403);
     const staff = await findAuthorizedStaff(staffId, context.tenant.id, context.branch!.id);
     if (!staff) throw new OperationsError("NOT_FOUND", "Team member not found at this branch", 404);

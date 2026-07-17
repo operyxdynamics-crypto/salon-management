@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": ["bom1"],
+  "functions": {
+    "src/app/api/v1/operations/invoices/[invoiceId]/pdf/route.ts": {
+      "memory": 1769,
+      "maxDuration": 60
+    }
+  }
+}

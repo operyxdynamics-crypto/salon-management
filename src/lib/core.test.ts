@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateInvoice, paymentTotal } from "./billing";
+import { calculateInvoice, paymentTotal, resolveServiceSalePricing } from "./billing";
 import { can } from "./rbac";
 import { bookingSchema } from "./validation";
 
@@ -42,6 +42,21 @@ describe("booking input", () => {
 });
 
 describe("invoice calculations", () => {
+  it("uses branch service price and tax overrides at checkout", () => {
+    const pricing = resolveServiceSalePricing(
+      { price: 1800, taxRate: 18, priceTaxMode: "EXCLUSIVE", isActive: true },
+      { price: 2050, taxRate: 18, priceTaxMode: "EXCLUSIVE", isActive: true },
+    );
+    expect(pricing).toEqual({ price: 2050, taxRate: 18, priceTaxMode: "EXCLUSIVE", isActive: true });
+    expect(calculateInvoice([{ quantity: 1, unitPrice: pricing.price, taxRate: pricing.taxRate }])).toEqual({
+      subtotal: 2050,
+      discount: 0,
+      tax: 369,
+      tip: 0,
+      total: 2419,
+    });
+  });
+
   it("calculates discounts, GST, tips, and split payments", () => {
     const invoice = calculateInvoice([
       { quantity: 1, unitPrice: 1200, discount: 100, taxRate: 18 },
@@ -55,5 +70,30 @@ describe("invoice calculations", () => {
       total: 2578,
     });
     expect(paymentTotal([{ amount: 1000 }, { amount: 1578 }])).toBe(invoice.total);
+  });
+
+  it("keeps GST-inclusive prices fixed while extracting the tax component", () => {
+    expect(calculateInvoice([
+      { quantity: 1, unitPrice: 999, taxRate: 18, priceTaxMode: "INCLUSIVE" },
+      { quantity: 1, unitPrice: 550, taxRate: 18, priceTaxMode: "EXCLUSIVE" },
+    ])).toEqual({
+      subtotal: 1549,
+      discount: 0,
+      tax: 251.39,
+      tip: 0,
+      total: 1648,
+    });
+  });
+
+  it("does not add or extract GST on a non-GST invoice", () => {
+    expect(calculateInvoice([
+      { quantity: 1, unitPrice: 999, taxRate: 18, priceTaxMode: "INCLUSIVE" },
+    ], 0, "NON_GST")).toEqual({
+      subtotal: 999,
+      discount: 0,
+      tax: 0,
+      tip: 0,
+      total: 999,
+    });
   });
 });

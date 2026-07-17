@@ -1,20 +1,31 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { OperationsError, operationsErrorResponse, requireOperationsContext } from "@/lib/operations-auth";
-import { findAvailableStaff, resolveBranchService } from "@/lib/availability";
-import { can } from "@/lib/rbac";
+import { findAvailableStaff, resolveBranchService, resourceIsAvailable } from "@/lib/availability";
 
 const schema = z.object({
-  status: z.enum(["CONFIRMED", "CHECKED_IN", "IN_SERVICE", "COMPLETED", "CANCELLED", "NO_SHOW"]).optional(),
+  customerId: z.string().min(1).optional(),
+  status: z.enum(["WAITLISTED", "CONFIRMED", "CHECKED_IN", "IN_SERVICE", "COMPLETED", "CANCELLED", "NO_SHOW"]).optional(),
   startsAt: z.iso.datetime().optional(),
   staffId: z.string().nullable().optional(),
+  resourceId: z.string().nullable().optional(),
+  source: z.enum(["MARKETPLACE", "SALON_WEBSITE", "PHONE", "WALK_IN", "STAFF_CREATED"]).optional(),
+  serviceLines: z.array(z.object({
+    serviceId: z.string().min(1),
+    staffId: z.string().min(1).nullable().optional(),
+    durationMinutes: z.coerce.number().int().min(5).max(720).optional(),
+    price: z.coerce.number().min(0).max(999999).optional(),
+    taxRate: z.coerce.number().min(0).max(100).optional(),
+    priceTaxMode: z.enum(["EXCLUSIVE", "INCLUSIVE"]).optional(),
+  })).min(1).optional(),
   notes: z.string().max(500).optional(),
   cancellationReason: z.string().max(250).optional(),
   idempotencyKey: z.string().min(12).max(120),
 });
 
 const transitions: Record<string, string[]> = {
-  CONFIRMED: ["CHECKED_IN", "CANCELLED", "NO_SHOW"],
+  WAITLISTED: ["CONFIRMED", "CANCELLED"],
+  CONFIRMED: ["CHECKED_IN", "CANCELLED", "NO_SHOW", "WAITLISTED"],
   CHECKED_IN: ["IN_SERVICE", "CANCELLED"],
   IN_SERVICE: ["COMPLETED", "CANCELLED"],
   COMPLETED: [],
@@ -52,6 +63,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ app
         },
         service: true,
         staff: { include: { user: true } },
+        resource: true,
         serviceLines: {
           include: { service: true, staff: { include: { user: true } } },
           orderBy: { sortOrder: "asc" },
@@ -82,6 +94,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ app
         durationMinutes: Math.max(1, Math.round((appointment.endsAt.getTime() - appointment.startsAt.getTime()) / 60_000)),
         price: appointment.service.price,
         taxRate: appointment.service.taxRate,
+        priceTaxMode: appointment.service.priceTaxMode,
       }];
     const paid = appointment.invoice?.payments.reduce((sum, payment) => sum + Number(payment.amount), 0) ?? 0;
     return Response.json({
@@ -103,6 +116,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ app
         endsAt: appointment.endsAt.toISOString(),
         status: appointment.status,
         source: appointment.source,
+        resource: appointment.resource ? { id: appointment.resource.id, name: appointment.resource.name, type: appointment.resource.type } : null,
         notes: appointment.notes,
         cancellationReason: appointment.cancellationReason,
         bookingReference: appointment.id,
@@ -118,6 +132,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ app
           durationMinutes: line.durationMinutes,
           price: Number(line.price),
           taxRate: Number(line.taxRate),
+          priceTaxMode: line.priceTaxMode,
           bufferBefore: line.service.bufferBefore,
           bufferAfter: line.service.bufferAfter,
         })),
@@ -154,8 +169,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ app
           createdAt: entry.createdAt.toISOString(),
         })),
         permissions: {
-          canWrite: can(context.user.role, "appointment:write"),
-          canSell: can(context.user.role, "sale:write"),
+          canWrite: context.permissions.has("appointment:write"),
+          canSell: context.permissions.has("sale:write"),
         },
       },
     });
@@ -171,7 +186,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ ap
     const { appointmentId } = await params;
     const appointment = await db.appointment.findUnique({
       where: { id: appointmentId },
-      include: { serviceLines: { orderBy: { sortOrder: "asc" } } },
+      include: { invoice: true, serviceLines: { orderBy: { sortOrder: "asc" } } },
     });
     if (!appointment) throw new OperationsError("NOT_FOUND", "Appointment not found", 404);
     const context = await requireOperationsContext("appointment:write", { branchId: appointment.branchId, requireBranch: true });
@@ -179,13 +194,35 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ ap
       throw new OperationsError("CONFLICT", `Cannot move appointment from ${appointment.status} to ${parsed.data.status}`, 409);
     }
 
+    if (appointment.invoice && parsed.data.serviceLines) {
+      throw new OperationsError("CONFLICT", "Service lines cannot be changed after an invoice has been created", 409);
+    }
+    if (parsed.data.customerId) {
+      const customer = await db.customer.findFirst({ where: { id: parsed.data.customerId, tenantId: context.tenant.id } });
+      if (!customer) throw new OperationsError("NOT_FOUND", "Customer was not found", 404);
+    }
+
     const startsAt = parsed.data.startsAt ? new Date(parsed.data.startsAt) : appointment.startsAt;
+    const targetStatus = parsed.data.status ?? appointment.status;
+    const targetResourceId = parsed.data.resourceId !== undefined ? parsed.data.resourceId : appointment.resourceId;
     const existingLines = appointment.serviceLines.length
       ? appointment.serviceLines
-      : [{ id: "", serviceId: appointment.serviceId, staffId: appointment.staffId, durationMinutes: Math.max(1, Math.round((appointment.endsAt.getTime() - appointment.startsAt.getTime()) / 60_000)), sortOrder: 0 }];
+      : [{ id: "", serviceId: appointment.serviceId, staffId: appointment.staffId, durationMinutes: Math.max(1, Math.round((appointment.endsAt.getTime() - appointment.startsAt.getTime()) / 60_000)), price: 0, taxRate: 18, priceTaxMode: "EXCLUSIVE" as const, sortOrder: 0 }];
+    const requestedLines = parsed.data.serviceLines?.length
+      ? parsed.data.serviceLines
+      : existingLines.map((line, index) => ({
+        serviceId: line.serviceId,
+        staffId: index === 0 && parsed.data.staffId !== undefined ? parsed.data.staffId : line.staffId,
+        durationMinutes: line.durationMinutes,
+        price: Number(line.price),
+        taxRate: Number(line.taxRate),
+        priceTaxMode: line.priceTaxMode,
+      }));
     const scheduledLines: Array<{
-      id: string;
       serviceId: string;
+      price: number;
+      taxRate: number;
+      priceTaxMode: "EXCLUSIVE" | "INCLUSIVE";
       staffId: string | null;
       durationMinutes: number;
       sortOrder: number;
@@ -193,14 +230,20 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ ap
       endsAt: Date;
     }> = [];
     let cursor = startsAt;
-    for (let index = 0; index < existingLines.length; index += 1) {
-      const line = existingLines[index];
+    for (let index = 0; index < requestedLines.length; index += 1) {
+      const line = requestedLines[index];
       const service = await resolveBranchService(appointment.branchId, line.serviceId);
       if (!service) throw new OperationsError("NOT_FOUND", "A service is no longer available at this branch", 404);
+      const durationMinutes = line.durationMinutes ?? service.durationMinutes;
+      const price = line.price ?? Number(service.price);
+      const taxRate = line.taxRate ?? Number(service.taxRate);
+      const priceTaxMode = line.priceTaxMode ?? service.priceTaxMode;
       const lineStartsAt = cursor;
-      const lineEndsAt = new Date(lineStartsAt.getTime() + line.durationMinutes * 60_000);
-      const requestedStaffId = index === 0 && parsed.data.staffId !== undefined ? parsed.data.staffId : line.staffId;
-      if (requestedStaffId && (parsed.data.startsAt || parsed.data.staffId !== undefined)) {
+      const lineEndsAt = new Date(lineStartsAt.getTime() + durationMinutes * 60_000);
+      const requestedStaffId = line.staffId ?? null;
+      const requiresCapacity = ["CONFIRMED", "CHECKED_IN", "IN_SERVICE"].includes(targetStatus);
+      let assignedStaffId = requestedStaffId;
+      if (requiresCapacity) {
         const available = await findAvailableStaff(
           db,
           appointment.branchId,
@@ -211,33 +254,55 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ ap
           appointment.id,
         );
         if (!available) throw new OperationsError("CONFLICT", `${service.name} is unavailable at that time`, 409);
+        assignedStaffId = available;
       }
-      scheduledLines.push({ ...line, staffId: requestedStaffId, startsAt: lineStartsAt, endsAt: lineEndsAt });
+      scheduledLines.push({ serviceId: line.serviceId, staffId: assignedStaffId, durationMinutes, price, taxRate, priceTaxMode, sortOrder: index, startsAt: lineStartsAt, endsAt: lineEndsAt });
       cursor = lineEndsAt;
     }
     const endsAt = scheduledLines.at(-1)!.endsAt;
+    const indiaDate = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(startsAt);
+    const dayOfWeek = new Date(`${indiaDate}T12:00:00+05:30`).getUTCDay();
+    const branchHours = await db.operatingHour.findUnique({ where: { branchId_dayOfWeek: { branchId: appointment.branchId, dayOfWeek } } });
+    if (!branchHours || branchHours.isClosed) throw new OperationsError("POLICY", "The branch is closed on this day", 409);
+    const opensAt = new Date(`${indiaDate}T${branchHours.opensAt}:00+05:30`);
+    const closesAt = new Date(`${indiaDate}T${branchHours.closesAt}:00+05:30`);
+    if (startsAt < opensAt || endsAt > closesAt) throw new OperationsError("POLICY", "Appointment falls outside branch operating hours", 409);
+    if (["CONFIRMED", "CHECKED_IN", "IN_SERVICE"].includes(targetStatus) && targetResourceId && !await resourceIsAvailable(db, appointment.branchId, targetResourceId, startsAt, endsAt, appointment.id)) {
+      throw new OperationsError("CONFLICT", "Selected resource is unavailable at this time", 409);
+    }
     const staffId = scheduledLines[0].staffId;
 
     const updated = await db.$transaction(async (tx) => {
       const result = await tx.appointment.update({
         where: { id: appointment.id },
         data: {
+          customerId: parsed.data.customerId,
+          serviceId: scheduledLines[0].serviceId,
           startsAt,
           endsAt,
           staffId,
+          resourceId: targetResourceId || null,
           status: parsed.data.status,
+          source: parsed.data.source,
           notes: parsed.data.notes,
           cancellationReason: parsed.data.cancellationReason,
         },
       });
-      for (const line of scheduledLines) {
-        if (line.id) {
-          await tx.appointmentServiceLine.update({
-            where: { id: line.id },
-            data: { staffId: line.staffId, startsAt: line.startsAt, endsAt: line.endsAt },
-          });
-        }
-      }
+      await tx.appointmentServiceLine.deleteMany({ where: { appointmentId: appointment.id } });
+      await tx.appointmentServiceLine.createMany({
+        data: scheduledLines.map((line) => ({
+          appointmentId: appointment.id,
+          serviceId: line.serviceId,
+          staffId: line.staffId,
+          startsAt: line.startsAt,
+          endsAt: line.endsAt,
+          durationMinutes: line.durationMinutes,
+          price: line.price,
+          taxRate: line.taxRate,
+          priceTaxMode: line.priceTaxMode,
+          sortOrder: line.sortOrder,
+        })),
+      });
       if (parsed.data.status && parsed.data.status !== appointment.status) {
         await tx.appointmentStatusHistory.create({
           data: {

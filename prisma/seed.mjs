@@ -12,7 +12,7 @@ const db = new PrismaClient({
 });
 
 const plans = [
-  { code: "starter", name: "Starter", description: "For a single-location salon beginning on Ruvyra.", maxBranches: 1, maxStaff: 8, maxServices: 30, maxMonthlyAppointments: 500, maxStorageMb: 250, features: ["operations", "marketplace"] },
+  { code: "starter", name: "Starter", description: "For a single-location salon beginning on Operyx.", maxBranches: 1, maxStaff: 8, maxServices: 30, maxMonthlyAppointments: 500, maxStorageMb: 250, features: ["operations", "marketplace"] },
   { code: "growth", name: "Growth", description: "For established salons with larger teams and reporting.", maxBranches: 3, maxStaff: 30, maxServices: 100, maxMonthlyAppointments: 3000, maxStorageMb: 2048, features: ["operations", "marketplace", "advanced_reports", "inventory"] },
   { code: "scale", name: "Scale", description: "For multi-branch salon groups.", maxBranches: 15, maxStaff: 200, maxServices: 500, maxMonthlyAppointments: 20000, maxStorageMb: 10240, features: ["operations", "marketplace", "advanced_reports", "inventory", "priority_support"] },
 ];
@@ -75,6 +75,48 @@ const branch = await db.branch.upsert({
   },
 });
 
+const secondBranch = await db.branch.upsert({
+  where: { tenantId_slug: { tenantId: tenant.id, slug: "koramangala" } },
+  update: {
+    name: "Lumiere Studio - Koramangala",
+    phone: "+918041239188",
+    email: "hello@lumierestudio.in",
+    address: "80 Feet Road, Koramangala",
+    city: "Bengaluru",
+    state: "Karnataka",
+    postalCode: "560034",
+    timezone: "Asia/Kolkata",
+    isPublished: true,
+    publicationStatus: "APPROVED",
+    profileDescription: "Premium colour, bridal, and daily salon services for Koramangala clients.",
+    policies: { cancellationHours: 6 },
+    approvedAt: new Date("2026-07-01T06:30:00.000Z"),
+    rating: 4.8,
+    reviewCount: 96,
+  },
+  create: {
+    tenantId: tenant.id,
+    name: "Lumiere Studio - Koramangala",
+    slug: "koramangala",
+    phone: "+918041239188",
+    email: "hello@lumierestudio.in",
+    address: "80 Feet Road, Koramangala",
+    city: "Bengaluru",
+    state: "Karnataka",
+    postalCode: "560034",
+    latitude: 12.9352,
+    longitude: 77.6245,
+    timezone: "Asia/Kolkata",
+    isPublished: true,
+    publicationStatus: "APPROVED",
+    profileDescription: "Premium colour, bridal, and daily salon services for Koramangala clients.",
+    policies: { cancellationHours: 6 },
+    approvedAt: new Date("2026-07-01T06:30:00.000Z"),
+    rating: 4.8,
+    reviewCount: 96,
+  },
+});
+
 for (let day = 0; day < 7; day += 1) {
   await db.operatingHour.upsert({
     where: { branchId_dayOfWeek: { branchId: branch.id, dayOfWeek: day } },
@@ -84,6 +126,17 @@ for (let day = 0; day < 7; day += 1) {
       dayOfWeek: day,
       opensAt: day === 0 ? "10:00" : "09:00",
       closesAt: "20:00",
+      isClosed: false,
+    },
+  });
+  await db.operatingHour.upsert({
+    where: { branchId_dayOfWeek: { branchId: secondBranch.id, dayOfWeek: day } },
+    update: { opensAt: day === 0 ? "10:30" : "10:00", closesAt: "21:00", isClosed: false },
+    create: {
+      branchId: secondBranch.id,
+      dayOfWeek: day,
+      opensAt: day === 0 ? "10:30" : "10:00",
+      closesAt: "21:00",
       isClosed: false,
     },
   });
@@ -138,17 +191,46 @@ for (const [name, category, durationMinutes, price] of serviceData) {
     update: { isActive: true },
     create: { branchId: branch.id, serviceId: service.id, isActive: true },
   });
+  await db.branchService.upsert({
+    where: { branchId_serviceId: { branchId: secondBranch.id, serviceId: service.id } },
+    update: { isActive: true, price: Number(price) + 250 },
+    create: { branchId: secondBranch.id, serviceId: service.id, isActive: true, price: Number(price) + 250 },
+  });
 }
 
-const ownerPassword = await bcrypt.hash("Aero@1406", 12);
-const adminPassword = await bcrypt.hash("Aero@1406", 12);
-const existingAdmin = await db.user.findFirst({ where: { email: { in: ["admin@neel.demo", "admin@ruvyra.demo", "admin@velora.demo"] } } });
+/**
+ * Seed passwords come from the environment, never from this file.
+ *
+ * A password committed to the repo is a published password: anyone who can read the source knows
+ * how to sign in as PLATFORM_ADMIN. That is survivable for a throwaway demo database and not
+ * survivable for one holding real customers and real money - so in production the seed refuses to
+ * invent credentials, and demands they be supplied explicitly.
+ */
+function seedPassword(variable) {
+  const value = process.env[variable];
+  if (value) return value;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(`${variable} must be set to seed a production database. Refusing to use a default password.`);
+  }
+  return "Aero@1406";
+}
+
+const ownerPassword = await bcrypt.hash(seedPassword("SEED_OWNER_PASSWORD"), 12);
+const adminPassword = await bcrypt.hash(seedPassword("SEED_ADMIN_PASSWORD"), 12);
+const existingAdmin = await db.user.findFirst({
+  where: {
+    OR: [
+      { email: "admin@operyx.demo" },
+      { role: "PLATFORM_ADMIN", name: "Platform Administrator" },
+    ],
+  },
+});
 if (existingAdmin) {
-  await db.user.update({ where: { id: existingAdmin.id }, data: { email: "admin@neel.demo", passwordHash: adminPassword, role: "PLATFORM_ADMIN", tenantId: null } });
+  await db.user.update({ where: { id: existingAdmin.id }, data: { email: "admin@operyx.demo", passwordHash: adminPassword, role: "PLATFORM_ADMIN", tenantId: null } });
 } else {
   await db.user.create({
     data: {
-      email: "admin@neel.demo",
+      email: "admin@operyx.demo",
       phone: "+919900000001",
       passwordHash: adminPassword,
       name: "Platform Administrator",
@@ -156,16 +238,25 @@ if (existingAdmin) {
     },
   });
 }
-const admin = await db.user.findUnique({ where: { email: "admin@neel.demo" } });
+const admin = await db.user.findUnique({ where: { email: "admin@operyx.demo" } });
 
-const existingOwner = await db.user.findFirst({ where: { email: { in: ["owner@neel.demo", "owner@ruvyra.demo", "owner@velora.demo"] } } });
+const existingOwner = await db.user.findFirst({
+  where: {
+    tenantId: tenant.id,
+    OR: [
+      { email: "owner@operyx.demo" },
+      { phone: "+919900001406" },
+      { name: "Sanya Iyer" },
+    ],
+  },
+});
 const owner = existingOwner ? await db.user.update({
   where: { id: existingOwner.id },
-  data: { email: "owner@neel.demo", tenantId: tenant.id, passwordHash: ownerPassword, role: "OWNER" },
+  data: { email: "owner@operyx.demo", tenantId: tenant.id, passwordHash: ownerPassword, role: "OWNER" },
 }) : await db.user.create({
   data: {
     tenantId: tenant.id,
-    email: "owner@neel.demo",
+    email: "owner@operyx.demo",
     phone: "+919900001406",
     passwordHash: ownerPassword,
     name: "Sanya Iyer",
@@ -224,7 +315,7 @@ if (admin) {
   for (const type of ["GST_CERTIFICATE", "PAN_CARD", "ADDRESS_PROOF", "BANK_PROOF", "SALON_MEDIA"]) {
     const fileName = `${type.toLowerCase()}.pdf`;
     const storageKey = `tenants/${tenant.id}/${branch.id}/${fileName}`;
-    await writeFile(path.join(seedRoot, fileName), Buffer.from(`Ruvyra seed verification file: ${type}`));
+    await writeFile(path.join(seedRoot, fileName), Buffer.from(`Operyx seed verification file: ${type}`));
     await db.verificationDocument.upsert({
       where: { storageKey },
       update: { status: "APPROVED", reviewedById: admin.id, reviewedAt: new Date(), isPublic: type === "SALON_MEDIA" },
@@ -247,15 +338,15 @@ if (admin) {
 }
 
 const staffData = [
-  ["meera@neel.demo", "meera@ruvyra.demo", "Meera Iyer", "Senior stylist", 12],
-  ["kavya@neel.demo", "kavya@ruvyra.demo", "Kavya Singh", "Skin therapist", 10],
-  ["tara@neel.demo", "tara@ruvyra.demo", "Tara Jain", "Nail artist", 10],
-  ["arjun@neel.demo", "arjun@ruvyra.demo", "Arjun Nair", "Hair specialist", 10],
+  ["meera@operyx.demo", "Meera Iyer", "Senior stylist", 12],
+  ["kavya@operyx.demo", "Kavya Singh", "Skin therapist", 10],
+  ["tara@operyx.demo", "Tara Jain", "Nail artist", 10],
+  ["arjun@operyx.demo", "Arjun Nair", "Hair specialist", 10],
 ];
 
 const seededStaff = [];
-for (const [email, legacyEmail, name, jobTitle, commissionRate] of staffData) {
-  const existingUser = await db.user.findFirst({ where: { email: { in: [email, legacyEmail] } } });
+for (const [email, name, jobTitle, commissionRate] of staffData) {
+  const existingUser = await db.user.findFirst({ where: { tenantId: tenant.id, OR: [{ email }, { name }] } });
   const user = existingUser
     ? await db.user.update({ where: { id: existingUser.id }, data: { email, tenantId: tenant.id, passwordHash: ownerPassword } })
     : await db.user.create({ data: { tenantId: tenant.id, email, name, role: "STYLIST", passwordHash: ownerPassword } });
@@ -270,6 +361,11 @@ for (const [email, legacyEmail, name, jobTitle, commissionRate] of staffData) {
     update: { isPrimary: true },
     create: { staffId: staff.id, branchId: branch.id, isPrimary: true },
   });
+  await db.staffBranchAssignment.upsert({
+    where: { staffId_branchId: { staffId: staff.id, branchId: secondBranch.id } },
+    update: { isPrimary: false },
+    create: { staffId: staff.id, branchId: secondBranch.id, isPrimary: false },
+  });
   for (const service of seededServices) {
     await db.staffService.upsert({
       where: { staffId_serviceId: { staffId: staff.id, serviceId: service.id } },
@@ -281,6 +377,10 @@ for (const [email, legacyEmail, name, jobTitle, commissionRate] of staffData) {
   const shiftEnd = new Date("2026-06-12T14:30:00.000Z");
   const existingShift = await db.shift.findFirst({ where: { staffId: staff.id, startsAt: shiftStart, endsAt: shiftEnd } });
   if (!existingShift) await db.shift.create({ data: { staffId: staff.id, branchId: branch.id, startsAt: shiftStart, endsAt: shiftEnd } });
+  const secondShiftStart = new Date("2026-06-13T04:30:00.000Z");
+  const secondShiftEnd = new Date("2026-06-13T15:30:00.000Z");
+  const existingSecondShift = await db.shift.findFirst({ where: { staffId: staff.id, branchId: secondBranch.id, startsAt: secondShiftStart, endsAt: secondShiftEnd } });
+  if (!existingSecondShift) await db.shift.create({ data: { staffId: staff.id, branchId: secondBranch.id, startsAt: secondShiftStart, endsAt: secondShiftEnd } });
 }
 
 const customerData = [
@@ -385,6 +485,83 @@ for (let index = 0; index < appointmentTimes.length; index += 1) {
   }
 }
 
+const secondBranchAppointmentTimes = [
+  [new Date(`${indiaToday}T11:00:00+05:30`).toISOString(), 0, 1, "CONFIRMED"],
+  [new Date(`${indiaToday}T14:30:00+05:30`).toISOString(), 3, 2, "CHECKED_IN"],
+  [new Date(`${indiaToday}T17:00:00+05:30`).toISOString(), 4, 0, "CONFIRMED"],
+];
+
+for (let index = 0; index < secondBranchAppointmentTimes.length; index += 1) {
+  const [startsAt, customerIndex, serviceIndex, status] = secondBranchAppointmentTimes[index];
+  const start = new Date(startsAt);
+  const service = seededServices[serviceIndex];
+  const staff = seededStaff[(index + 1) % seededStaff.length];
+  const appointment = await db.appointment.upsert({
+    where: { idempotencyKey: `seed-koramangala-appointment-${index + 1}` },
+    update: {
+      branchId: secondBranch.id,
+      customerId: seededCustomers[customerIndex].id,
+      serviceId: service.id,
+      staffId: staff.id,
+      startsAt: start,
+      endsAt: new Date(start.getTime() + service.durationMinutes * 60_000),
+      status,
+      source: index === 1 ? "PHONE" : "STAFF_CREATED",
+    },
+    create: {
+      branchId: secondBranch.id,
+      customerId: seededCustomers[customerIndex].id,
+      serviceId: service.id,
+      staffId: staff.id,
+      startsAt: start,
+      endsAt: new Date(start.getTime() + service.durationMinutes * 60_000),
+      status,
+      source: index === 1 ? "PHONE" : "STAFF_CREATED",
+      idempotencyKey: `seed-koramangala-appointment-${index + 1}`,
+      statusHistory: { create: { status } },
+      serviceLines: {
+        create: {
+          serviceId: service.id,
+          staffId: staff.id,
+          startsAt: start,
+          endsAt: new Date(start.getTime() + service.durationMinutes * 60_000),
+          durationMinutes: service.durationMinutes,
+          price: service.price,
+          taxRate: service.taxRate,
+        },
+      },
+    },
+  });
+  const existingLine = await db.appointmentServiceLine.findFirst({ where: { appointmentId: appointment.id } });
+  if (!existingLine) {
+    await db.appointmentServiceLine.create({
+      data: {
+        appointmentId: appointment.id,
+        serviceId: service.id,
+        staffId: staff.id,
+        startsAt: start,
+        endsAt: new Date(start.getTime() + service.durationMinutes * 60_000),
+        durationMinutes: service.durationMinutes,
+        price: service.price,
+        taxRate: service.taxRate,
+      },
+    });
+  } else {
+    await db.appointmentServiceLine.update({
+      where: { id: existingLine.id },
+      data: {
+        serviceId: service.id,
+        staffId: staff.id,
+        startsAt: start,
+        endsAt: new Date(start.getTime() + service.durationMinutes * 60_000),
+        durationMinutes: service.durationMinutes,
+        price: service.price,
+        taxRate: service.taxRate,
+      },
+    });
+  }
+}
+
 const inventoryData = [
   ["L'Oréal Absolut Repair Shampoo", "LR-SH-500", "Hair care", 8, 10, 900, 1250],
   ["Olaplex No. 3", "OL-N3-100", "Treatment", 18, 8, 1800, 2800],
@@ -403,6 +580,11 @@ for (const [name, sku, category, quantity, reorderLevel, costPrice, retailPrice]
     update: { quantity },
     create: { branchId: branch.id, inventoryItemId: item.id, quantity },
   });
+  await db.branchStock.upsert({
+    where: { branchId_inventoryItemId: { branchId: secondBranch.id, inventoryItemId: item.id } },
+    update: { quantity: Math.max(3, Number(quantity) - 2) },
+    create: { branchId: secondBranch.id, inventoryItemId: item.id, quantity: Math.max(3, Number(quantity) - 2) },
+  });
 }
 
 const seededExpense = await db.expense.findFirst({ where: { branchId: branch.id, category: "Utilities", note: "Pilot seed expense" } });
@@ -412,12 +594,12 @@ if (!seededExpense) {
   });
 }
 
-const seededMembership = await db.membership.findFirst({ where: { tenantId: tenant.id, name: "Ruvyra Glow Club" } });
+const seededMembership = await db.membership.findFirst({ where: { tenantId: tenant.id, name: "Operyx Glow Club" } });
 if (!seededMembership) {
   await db.membership.create({
     data: {
       tenantId: tenant.id,
-      name: "Ruvyra Glow Club",
+      name: "Operyx Glow Club",
       price: 4999,
       durationDays: 365,
       benefits: { description: "10% off services and one complimentary consultation" },
@@ -495,11 +677,11 @@ await db.auditLog.create({
 
 console.log(JSON.stringify({
   tenant: tenant.name,
-  branch: branch.name,
+  branches: [branch.name, secondBranch.name],
   services: seededServices.length,
   staff: seededStaff.length,
   customers: seededCustomers.length,
-  appointments: appointmentTimes.length,
+  appointments: appointmentTimes.length + secondBranchAppointmentTimes.length,
 }, null, 2));
 
 await db.$disconnect();

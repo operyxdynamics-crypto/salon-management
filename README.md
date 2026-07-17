@@ -1,6 +1,6 @@
-# Neel Bridal Studio
+# Operyx
 
-Neel Bridal Studio is an India-first salon marketplace and multi-tenant operations portal built with Next.js, TypeScript, PostgreSQL, and Prisma.
+Operyx is an India-first salon marketplace and multi-tenant operations portal built with Next.js, TypeScript, PostgreSQL, and Prisma.
 
 ## Current capabilities
 
@@ -40,16 +40,16 @@ npm run dev
 ```
 
 - Marketplace: `http://localhost:3000`
-- Salon workspace: `http://localhost:3000/dashboard`
+- Salon workspace: `http://localhost:3000/workspace/home`
 - Salon registration: `http://localhost:3000/onboarding/register`
 - Salon onboarding: `http://localhost:3000/onboarding`
 - Super Admin: `http://localhost:3000/admin`
 
 Pilot credentials:
 
-- Salon owner: `owner@neel.demo` / `Aero@1406`
-- Seeded stylist: `meera@neel.demo` / `Aero@1406`
-- Super Admin: `admin@neel.demo` / `Aero@1406`
+- Salon owner: `owner@operyx.demo` / `Aero@1406`
+- Seeded stylist: `meera@operyx.demo` / `Aero@1406`
+- Super Admin: `admin@operyx.demo` / `Aero@1406`
 - Customer development OTP: `123456` (development only — disabled in production)
 
 ## Quality checks
@@ -63,8 +63,8 @@ npm run build
 
 ## Deployment notes
 
-- Payments are recorded offline; Neel Bridal Studio does not process money.
+- Payments are recorded offline; Operyx does not process money.
 - Local development uploads are stored under `.data/uploads`.
 - Set `STORAGE_PROVIDER=s3`, `S3_BUCKET`, `S3_REGION`, and optional `S3_ENDPOINT`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, and `S3_FORCE_PATH_STYLE=true` for S3-compatible production storage.
 - Customer OTP and messaging remain development-only until providers are configured.
-- `neel.com` and `neel.in` are provisional names only until domain purchase and trademark screening are completed.
+- Operyx domain and trademark checks should be completed before public launch.

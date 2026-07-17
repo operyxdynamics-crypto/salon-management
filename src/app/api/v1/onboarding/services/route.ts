@@ -9,6 +9,7 @@ const schema = z.object({
   durationMinutes: z.number().int().min(15).max(480),
   price: z.number().positive(),
   taxRate: z.number().min(0).max(100).default(18),
+  priceTaxMode: z.enum(["EXCLUSIVE", "INCLUSIVE"]).default("EXCLUSIVE"),
 });
 
 export async function POST(request: Request) {

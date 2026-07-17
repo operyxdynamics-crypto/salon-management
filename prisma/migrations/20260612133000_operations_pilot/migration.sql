@@ -10,6 +10,11 @@ ALTER TABLE "Invoice"
   DROP COLUMN "status",
   ADD COLUMN "status" "InvoiceStatus" NOT NULL DEFAULT 'PAID';
 
+-- The column is added with a default so existing rows can be backfilled, then the default is
+-- dropped to match `@updatedAt` in the schema, which Prisma sets on every write. This used to
+-- sit in the previous migration, before the column existed.
+ALTER TABLE "Invoice" ALTER COLUMN "updatedAt" DROP DEFAULT;
+
 CREATE TABLE "InvoiceLine" (
   "id" TEXT NOT NULL,
   "invoiceId" TEXT NOT NULL,

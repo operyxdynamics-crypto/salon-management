@@ -10,6 +10,9 @@ const schema = z.object({
   unit: z.string().min(1).max(30),
   retailPrice: z.number().nonnegative(),
   costPrice: z.number().nonnegative(),
+  taxClassId: z.string().optional(),
+  taxRate: z.number().min(0).max(100).default(18),
+  priceTaxMode: z.enum(["EXCLUSIVE", "INCLUSIVE"]).default("EXCLUSIVE"),
   reorderLevel: z.number().nonnegative(),
   openingQuantity: z.number().nonnegative().default(0),
   vendorId: z.string().optional(),
@@ -27,6 +30,15 @@ export async function POST(request: Request) {
       : null;
     if (parsed.data.vendorId && !vendor) throw new OperationsError("NOT_FOUND", "Vendor not found", 404);
 
+    // The Tax master is authoritative: a chosen class sets the rate, so a product cannot drift from
+    // the percentage defined once in the master.
+    let taxRate = parsed.data.taxRate;
+    if (parsed.data.taxClassId) {
+      const taxClass = await db.taxClass.findFirst({ where: { id: parsed.data.taxClassId, tenantId: context.tenant.id, isActive: true } });
+      if (!taxClass) throw new OperationsError("NOT_FOUND", "Tax class not found", 404);
+      taxRate = Number(taxClass.rate);
+    }
+
     const product = await db.$transaction(async (tx) => {
       const item = await tx.inventoryItem.create({
         data: {
@@ -37,6 +49,9 @@ export async function POST(request: Request) {
           unit: parsed.data.unit,
           retailPrice: parsed.data.retailPrice,
           costPrice: parsed.data.costPrice,
+          taxRate,
+          taxClassId: parsed.data.taxClassId || null,
+          priceTaxMode: parsed.data.priceTaxMode,
           reorderLevel: parsed.data.reorderLevel,
           vendorId: vendor?.id,
           branchStock: { create: { branchId: branch.id, quantity: parsed.data.openingQuantity } },

@@ -7,6 +7,7 @@ const schema = z.object({
   serviceId: z.string().min(1),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   staffId: z.string().min(1).optional(),
+  resourceId: z.string().min(1).optional(),
   serviceLines: z.string().optional(),
 });
 
@@ -23,7 +24,7 @@ export async function GET(request: Request) {
         throw new OperationsError("VALIDATION", "Invalid service lines", 400);
       }
     }
-    return Response.json({ data: await availabilityForDate(parsed.data.branchId, parsed.data.serviceId, parsed.data.date, parsed.data.staffId, serviceLines) });
+    return Response.json({ data: await availabilityForDate(parsed.data.branchId, parsed.data.serviceId, parsed.data.date, parsed.data.staffId, serviceLines, parsed.data.resourceId || null) });
   } catch (error) {
     return operationsErrorResponse(error);
   }

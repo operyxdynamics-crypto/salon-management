@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { branchChecklist, branchTransitions, checklistComplete } from "./onboarding";
 
 const tenant = {
-  legalName: "Ruvyra Test Salon Private Limited",
+  legalName: "Operyx Test Salon Private Limited",
   gstin: "29AABCV1234F1Z5",
   panNumber: "AABCV1234F",
 };

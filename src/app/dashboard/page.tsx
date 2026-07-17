@@ -1,46 +1,18 @@
 import { redirect } from "next/navigation";
-import { SalonWorkspace } from "@/components/salon-workspace";
-import { OperationsError, requireOperationsContext } from "@/lib/operations-auth";
-import { getWorkspaceData } from "@/lib/workspace-data";
 
 export const dynamic = "force-dynamic";
 
-export default async function DashboardPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  const data = await loadDashboard();
-  const query = await searchParams;
-  const single = (value: string | string[] | undefined) => typeof value === "string" ? value : null;
-  return <SalonWorkspace
-    initialData={data}
-    initialDetail={{
-      appointmentId: single(query.appointmentId),
-      customerId: single(query.customerId),
-      serviceId: single(query.serviceId),
-    }}
-  />;
+export default async function DashboardRedirectPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  redirect(`/workspace/home${await querySuffix(searchParams)}`);
 }
 
-async function loadDashboard() {
-  try {
-    const context = await requireOperationsContext("appointment:read");
-    return await getWorkspaceData({
-      tenantId: context.tenant.id,
-      selectedBranchId: context.user.role === "OWNER" ? null : context.branch?.id ?? null,
-      authorizedBranches: context.branches.map((branch) => ({
-        id: branch.id,
-        name: branch.name,
-        city: branch.city,
-        publicationStatus: branch.publicationStatus,
-      })),
-      userName: context.user.name,
-      role: context.user.role,
-      tenantName: context.tenant.name,
-      tenantSlug: context.tenant.slug,
-      currentStaffId: context.user.staff?.id,
-    });
-  } catch (error) {
-    if (error instanceof OperationsError && error.code === "UNAUTHENTICATED") {
-      redirect("/login");
-    }
-    throw error;
+async function querySuffix(searchParams: Promise<Record<string, string | string[] | undefined>>) {
+  const query = await searchParams;
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (typeof value === "string") params.set(key, value);
+    else if (Array.isArray(value)) value.forEach((item) => params.append(key, item));
   }
+  const text = params.toString();
+  return text ? `?${text}` : "";
 }

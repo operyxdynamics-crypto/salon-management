@@ -1,6 +1,11 @@
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
+import { calculateTaxLine, resolveServiceSalePricing } from "@/lib/billing";
+import { resolveCoupon } from "@/lib/coupon-service";
+import { allocateCouponDiscount, type CouponCartLine } from "@/lib/coupons";
 import { db } from "@/lib/db";
+import { supplierEntityIdForBranch, validateBranchRegistration } from "@/lib/gst";
+import { buildInvoiceNumber, financialYearCode } from "@/lib/invoice-number";
 import { OperationsError, operationsErrorResponse, requireOperationsContext } from "@/lib/operations-auth";
 
 const schema = z.object({
@@ -22,17 +27,15 @@ const schema = z.object({
     reference: z.string().max(100).optional(),
   })),
   tip: z.number().min(0).default(0),
+  couponCode: z.string().trim().min(1).max(40).optional(),
   idempotencyKey: z.string().min(12).max(120),
 });
 
-function financialYear(date = new Date()) {
-  const india = new Date(date.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
-  const year = india.getFullYear();
-  const start = india.getMonth() >= 3 ? year : year - 1;
-  return `${String(start).slice(-2)}-${String(start + 1).slice(-2)}`;
-}
-
 type PackageBalanceLine = { serviceId: string; quantity: number };
+
+function canCheckoutAppointmentStatus(status: string) {
+  return !["WAITLISTED", "CANCELLED", "NO_SHOW"].includes(status);
+}
 
 function packageBalanceLines(value: unknown): PackageBalanceLine[] {
   if (!Array.isArray(value)) return [];
@@ -53,15 +56,58 @@ export async function POST(request: Request) {
     if (!parsed.success) throw new OperationsError("VALIDATION", "Invalid checkout", 400, parsed.error.flatten());
     const context = await requireOperationsContext("sale:write", { branchId: parsed.data.branchId, requireBranch: true });
     const branch = context.branch!;
+
+    // Who is supplying this sale? The operator of the branch - which for a FOFO franchise is the
+    // franchisee, not the company. The supplier's identity and registration are snapshotted onto
+    // the invoice, because an invoice is a legal record of a specific supply on a specific day.
+    const branchProfile = await db.branch.findUnique({
+      where: { id: branch.id },
+      select: {
+        state: true,
+        invoiceCode: true,
+        ownerEntityId: true,
+        operatorEntityId: true,
+        operatorEntity: { select: { id: true, legalName: true } },
+        ownerEntity: { select: { id: true, legalName: true } },
+        gstRegistration: { select: { id: true, gstin: true, state: true, stateCode: true, legalEntityId: true, isActive: true } },
+      },
+    });
+    const supplierEntityId = supplierEntityIdForBranch(branchProfile ?? {});
+    const supplier = branchProfile?.operatorEntity ?? branchProfile?.ownerEntity ?? null;
+    const registration = branchProfile?.gstRegistration ?? null;
+
+    // Refuse rather than guess. Deriving a code here is what caused branches to collide on the same
+    // invoice number; an explicit code is the only thing that keeps each branch's series its own.
+    const invoiceCode = branchProfile?.invoiceCode;
+    if (!invoiceCode) {
+      throw new OperationsError("POLICY", "This branch has no invoice code yet. Add one in Settings → Branch before billing.", 409);
+    }
+
+    if (parsed.data.taxMode === "GST") {
+      const check = validateBranchRegistration({
+        branchState: branchProfile?.state ?? "",
+        registration,
+        operatorEntityId: supplierEntityId,
+      });
+      if (!check.ok) {
+        throw new OperationsError("POLICY", `${check.reason} Fix this in Settings before raising a GST invoice, or bill without GST.`, 409);
+      }
+    }
     const existing = await db.invoice.findUnique({ where: { idempotencyKey: parsed.data.idempotencyKey }, include: { lines: true, payments: true } });
     if (existing) return Response.json({ data: existing });
 
     const customer = await db.customer.findFirst({ where: { id: parsed.data.customerId, tenantId: context.tenant.id } });
     if (!customer) throw new OperationsError("NOT_FOUND", "Customer not found", 404);
     const appointment = parsed.data.appointmentId
-      ? await db.appointment.findFirst({ where: { id: parsed.data.appointmentId, branchId: branch.id, customerId: customer.id } })
+      ? await db.appointment.findFirst({ where: { id: parsed.data.appointmentId, branchId: branch.id, customerId: customer.id }, include: { invoice: { select: { id: true, number: true } } } })
       : null;
     if (parsed.data.appointmentId && !appointment) throw new OperationsError("NOT_FOUND", "Appointment not found", 404);
+    if (appointment?.invoice) {
+      throw new OperationsError("APPOINTMENT_ALREADY_INVOICED", "This appointment already has an invoice", 409, { invoiceId: appointment.invoice.id, invoiceNumber: appointment.invoice.number });
+    }
+    if (appointment && !canCheckoutAppointmentStatus(appointment.status)) {
+      throw new OperationsError("POLICY", `Checkout is unavailable for ${appointment.status.toLowerCase().replaceAll("_", " ")} appointments`, 409, { appointmentId: appointment.id, status: appointment.status });
+    }
 
     const serviceIds = parsed.data.lines.filter((line) => line.type === "SERVICE").map((line) => line.itemId);
     const productIds = parsed.data.lines.filter((line) => line.type === "PRODUCT").map((line) => line.itemId);
@@ -69,9 +115,16 @@ export async function POST(request: Request) {
     const [services, products, staff, packagePurchases, rewardRule] = await Promise.all([
       db.service.findMany({
         where: { id: { in: serviceIds }, tenantId: context.tenant.id, isActive: true },
-        include: { consumptionRecipes: { where: { isActive: true }, include: { inventoryItem: { include: { branchStock: { where: { branchId: branch.id } } } } } } },
+        include: {
+          branches: { where: { branchId: branch.id } },
+          taxClass: { select: { code: true } },
+          consumptionRecipes: { where: { isActive: true }, include: { inventoryItem: { include: { branchStock: { where: { branchId: branch.id } } } } } },
+        },
       }),
-      db.inventoryItem.findMany({ where: { id: { in: productIds }, tenantId: context.tenant.id }, include: { branchStock: { where: { branchId: branch.id } } } }),
+      db.inventoryItem.findMany({
+        where: { id: { in: productIds }, tenantId: context.tenant.id },
+        include: { branchStock: { where: { branchId: branch.id } }, taxClass: { select: { code: true } } },
+      }),
       db.staff.findMany({ where: { id: { in: parsed.data.lines.flatMap((line) => line.staffId ? [line.staffId] : []) }, branch: { tenantId: context.tenant.id }, OR: [{ branchId: branch.id }, { branchAssignments: { some: { branchId: branch.id } } }] } }),
       db.packagePurchase.findMany({ where: { id: { in: packagePurchaseIds }, customerId: customer.id, status: "ACTIVE", expiresAt: { gte: new Date() } }, include: { package: true } }),
       db.rewardRule.findFirst({ where: { tenantId: context.tenant.id, isActive: true }, orderBy: { createdAt: "desc" } }),
@@ -90,6 +143,21 @@ export async function POST(request: Request) {
     const calculated = parsed.data.lines.map((line) => {
       const service = line.type === "SERVICE" ? serviceMap.get(line.itemId) : undefined;
       const product = line.type === "PRODUCT" ? productMap.get(line.itemId) : undefined;
+      const branchService = service?.branches[0];
+      const servicePricing = service ? resolveServiceSalePricing({
+        price: Number(service.price),
+        taxRate: Number(service.taxRate),
+        priceTaxMode: service.priceTaxMode,
+        isActive: service.isActive,
+      }, branchService ? {
+        price: branchService.price === null ? null : Number(branchService.price),
+        taxRate: branchService.taxRate === null ? null : Number(branchService.taxRate),
+        priceTaxMode: branchService.priceTaxMode,
+        isActive: branchService.isActive,
+      } : null) : null;
+      if (servicePricing && !servicePricing.isActive) {
+        throw new OperationsError("POLICY", `${service?.name ?? "Selected service"} is inactive for this branch`, 409);
+      }
       if (line.packagePurchaseId && line.type !== "SERVICE") throw new OperationsError("VALIDATION", "Packages can only redeem service lines", 400);
       if (line.packagePurchaseId) {
         const purchase = packageMap.get(line.packagePurchaseId);
@@ -99,31 +167,116 @@ export async function POST(request: Request) {
           throw new OperationsError("VALIDATION", `${service?.name ?? "Selected service"} is not available in this package balance`, 400);
         }
       }
-      const unitPrice = Number(service?.price ?? product?.retailPrice ?? 0);
-      const taxRate = parsed.data.taxMode === "GST" ? Number(service?.taxRate ?? 18) : 0;
+      const unitPrice = servicePricing?.price ?? Number(product?.retailPrice ?? 0);
+      const taxRate = servicePricing?.taxRate ?? Number(product?.taxRate ?? 18);
+      const priceTaxMode = servicePricing?.priceTaxMode ?? product?.priceTaxMode ?? "EXCLUSIVE";
       const base = unitPrice * line.quantity;
       const effectiveDiscount = line.packagePurchaseId ? base : line.discount;
       if (effectiveDiscount > base) throw new OperationsError("VALIDATION", "Discount cannot exceed line value", 400);
-      const taxable = base - effectiveDiscount;
-      const tax = Number((taxable * taxRate / 100).toFixed(2));
+      const amounts = calculateTaxLine({
+        quantity: line.quantity,
+        unitPrice,
+        discount: effectiveDiscount,
+        taxRate,
+        priceTaxMode,
+        invoiceTaxMode: parsed.data.taxMode,
+      });
       return {
         ...line,
         discount: effectiveDiscount,
         description: service?.name ?? product?.name ?? "",
+        // Snapshotted, not referenced. A GST invoice is a legal record of what was billed on the
+        // day; re-pointing an item at a different tax class later must not rewrite it.
+        hsnCode: service?.taxClass?.code ?? product?.taxClass?.code ?? null,
         unitPrice,
         taxRate,
-        tax,
-        total: Number((taxable + tax).toFixed(2)),
+        priceTaxMode,
+        taxable: amounts.taxable,
+        tax: amounts.tax,
+        total: amounts.total,
       };
     });
-    const subtotal = calculated.reduce((sum, line) => sum + line.unitPrice * line.quantity, 0);
-    const discount = calculated.reduce((sum, line) => sum + line.discount, 0);
-    const tax = calculated.reduce((sum, line) => sum + line.tax, 0);
-    const total = Number((subtotal - discount + tax + parsed.data.tip).toFixed(2));
+    // A coupon discounts the bill, but GST is computed per line - so the bill-level discount has
+    // to be pushed down onto the lines before tax, or the tax comes out wrong. Resolve it here so
+    // the payment total can be validated against the discounted amount; it is resolved again
+    // inside the transaction, where the usage caps are actually enforced.
+    const couponCart: CouponCartLine[] = calculated.map((line) => ({
+      type: line.type,
+      itemId: line.itemId,
+      categoryId: line.type === "SERVICE"
+        ? serviceMap.get(line.itemId)?.categoryId ?? null
+        : productMap.get(line.itemId)?.categoryId ?? null,
+      netAmount: Number((line.unitPrice * line.quantity - line.discount).toFixed(2)),
+    }));
+
+    let couponDiscountTotal = 0;
+    let couponAllocations = new Map<string, number>();
+    let couponId: string | null = null;
+
+    if (parsed.data.couponCode) {
+      const { result, rules } = await resolveCoupon(db, {
+        tenantId: context.tenant.id,
+        branchId: branch.id,
+        code: parsed.data.couponCode,
+        customerId: customer.id,
+        cart: couponCart,
+      });
+      if (!result.ok) throw new OperationsError("COUPON_REJECTED", result.reason, 400, { code: parsed.data.couponCode });
+      couponDiscountTotal = result.discount;
+      couponId = result.couponId;
+      couponAllocations = allocateCouponDiscount(rules!, couponCart, result.discount);
+    }
+
+    // Re-price every line with its share of the coupon folded into the line discount.
+    const priced = calculated.map((line) => {
+      const couponShare = couponAllocations.get(`${line.type}-${line.itemId}`) ?? 0;
+      if (couponShare <= 0) return line;
+      const lineDiscount = Number((line.discount + couponShare).toFixed(2));
+      const amounts = calculateTaxLine({
+        quantity: line.quantity,
+        unitPrice: line.unitPrice,
+        discount: lineDiscount,
+        taxRate: line.taxRate,
+        priceTaxMode: line.priceTaxMode,
+        invoiceTaxMode: parsed.data.taxMode,
+      });
+      return { ...line, discount: lineDiscount, taxable: amounts.taxable, tax: amounts.tax, total: amounts.total };
+    });
+
+    const subtotal = priced.reduce((sum, line) => sum + line.unitPrice * line.quantity, 0);
+    const discount = priced.reduce((sum, line) => sum + line.discount, 0);
+    const tax = priced.reduce((sum, line) => sum + line.tax, 0);
+    const total = Number((priced.reduce((sum, line) => sum + line.total, 0) + parsed.data.tip).toFixed(2));
     const paid = Number(parsed.data.payments.reduce((sum, payment) => sum + payment.amount, 0).toFixed(2));
     if (Math.abs(paid - total) > 0.01) throw new OperationsError("VALIDATION", "Payment total must equal invoice total", 400, { total, paid });
 
     const invoice = await db.$transaction(async (tx) => {
+      // Re-resolve the coupon under the transaction's snapshot. Two receptionists can race for
+      // the last use of a capped coupon; the check above was only good enough to price the bill.
+      // If anything changed, the sale is rejected rather than silently charged a different total.
+      if (parsed.data.couponCode) {
+        const { result } = await resolveCoupon(tx, {
+          tenantId: context.tenant.id,
+          branchId: branch.id,
+          code: parsed.data.couponCode,
+          customerId: customer.id,
+          cart: couponCart,
+        });
+        if (!result.ok) throw new OperationsError("COUPON_REJECTED", result.reason, 409, { code: parsed.data.couponCode });
+        if (Math.abs(result.discount - couponDiscountTotal) > 0.01) {
+          throw new OperationsError("COUPON_CHANGED", "This coupon's discount changed. Re-apply it and take payment again.", 409, {
+            expected: couponDiscountTotal,
+            actual: result.discount,
+          });
+        }
+      }
+
+      if (appointment) {
+        const existingAppointmentInvoice = await tx.invoice.findUnique({ where: { appointmentId: appointment.id }, select: { id: true, number: true } });
+        if (existingAppointmentInvoice) {
+          throw new OperationsError("APPOINTMENT_ALREADY_INVOICED", "This appointment already has an invoice", 409, { invoiceId: existingAppointmentInvoice.id, invoiceNumber: existingAppointmentInvoice.number });
+        }
+      }
       for (const line of calculated.filter((item) => item.type === "PRODUCT")) {
         const stock = productMap.get(line.itemId)?.branchStock[0];
         if (!stock || Number(stock.quantity) < line.quantity) {
@@ -171,7 +324,7 @@ export async function POST(request: Request) {
         }
       }
 
-      const fy = financialYear();
+      const fy = financialYearCode();
       const rows = await tx.$queryRaw<Array<{ sequence: number }>>(Prisma.sql`
         INSERT INTO "InvoiceSequence" ("id", "branchId", "financialYear", "taxMode", "nextNumber")
         VALUES (${crypto.randomUUID()}, ${branch.id}, ${fy}, ${parsed.data.taxMode}::"InvoiceTaxMode", 2)
@@ -180,9 +333,10 @@ export async function POST(request: Request) {
         RETURNING "nextNumber" - 1 AS sequence
       `);
       const sequence = Number(rows[0].sequence);
-      const prefix = branch.slug.replace(/[^a-z0-9]/gi, "").slice(0, 4).toUpperCase() || "RUV";
-      const invoicePrefix = parsed.data.taxMode === "GST" ? "GST" : "NG";
-      const number = `${invoicePrefix}-${prefix}-${fy}-${String(sequence).padStart(5, "0")}`;
+      // The branch's own code, never derived from the slug at billing time: two branches whose
+      // slugs share their first four letters would otherwise issue the same number, and a globally
+      // unique invoice number then rejects the sale for good.
+      const number = buildInvoiceNumber({ code: invoiceCode, financialYear: fy, taxMode: parsed.data.taxMode, sequence });
       for (const [paymentIndex, payment] of parsed.data.payments.entries()) {
         if (payment.method === "WALLET") {
           const changed = await tx.customer.updateMany({
@@ -235,6 +389,12 @@ export async function POST(request: Request) {
           branchId: branch.id,
           customerId: customer.id,
           appointmentId: appointment?.id,
+          legalEntityId: supplierEntityId,
+          gstRegistrationId: registration?.id ?? null,
+          supplierName: supplier?.legalName ?? null,
+          supplierGstin: registration?.gstin ?? null,
+          supplierStateCode: registration?.stateCode ?? null,
+          placeOfSupplyState: branchProfile?.state ?? null,
           subtotal,
           discount,
           tax,
@@ -245,7 +405,7 @@ export async function POST(request: Request) {
           type: "SALE",
           idempotencyKey: parsed.data.idempotencyKey,
           lines: {
-            create: calculated.map((line) => ({
+            create: priced.map((line) => ({
               type: line.type,
               description: line.description,
               serviceId: line.type === "SERVICE" ? line.itemId : null,
@@ -255,6 +415,8 @@ export async function POST(request: Request) {
               unitPrice: line.unitPrice,
               discount: line.discount,
               taxRate: line.taxRate,
+              hsnCode: line.hsnCode,
+              priceTaxMode: line.priceTaxMode,
               tax: line.tax,
               total: line.total,
             })),
@@ -294,11 +456,24 @@ export async function POST(request: Request) {
         });
       }
 
-      for (const line of calculated.filter((item) => item.type === "SERVICE")) {
+      if (couponId) {
+        await tx.couponRedemption.create({
+          data: {
+            couponId,
+            invoiceId: created.id,
+            customerId: customer.id,
+            amount: couponDiscountTotal,
+          },
+        });
+      }
+
+      // Commission and loyalty are earned on the discounted line values, not the list price -
+      // `priced` already carries the coupon's share.
+      for (const line of priced.filter((item) => item.type === "SERVICE")) {
         const staffId = line.staffId && staffMap.has(line.staffId) ? line.staffId : appointment?.staffId;
         const member = staffId ? staffMap.get(staffId) ?? await tx.staff.findUnique({ where: { id: staffId } }) : null;
         if (member) {
-          const base = line.unitPrice * line.quantity - line.discount;
+          const base = line.taxable;
           await tx.commission.create({
             data: {
               staffId: member.id,
@@ -310,7 +485,9 @@ export async function POST(request: Request) {
           });
         }
       }
-      const earnableAmount = rewardRule?.earnOnTax ? total : subtotal - discount;
+      const earnableAmount = rewardRule?.earnOnTax
+        ? priced.reduce((sum, line) => sum + line.total, 0)
+        : priced.reduce((sum, line) => sum + line.taxable, 0);
       const loyaltyPoints = Math.floor(earnableAmount * Number(rewardRule?.pointsPerAmount ?? 0.01));
       if (loyaltyPoints > 0) {
         const expiresAt = rewardRule?.expiryDays ? new Date(Date.now() + rewardRule.expiryDays * 86_400_000) : null;

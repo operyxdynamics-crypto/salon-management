@@ -1,0 +1,1034 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Operyx - Full Software Phase Plan</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #111111;
+      --green: #173279;
+      --gold: #16B994;
+      --ivory: #F7FAFC;
+      --paper: #FFFFFF;
+      --muted: #737174;
+      --line: rgba(31, 41, 55, 0.12);
+      --done-bg: #e4f4eb;
+      --done: #1e654d;
+      --partial-bg: #fff1cf;
+      --partial: #7b5814;
+      --pending-bg: #f7e1dc;
+      --pending: #9a4036;
+      --future-bg: #e4edf7;
+      --future: #315d84;
+      --shadow: 0 18px 48px rgba(31, 41, 55, 0.10);
+    }
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(22,185,148,.22), transparent 30rem),
+        radial-gradient(circle at top right, rgba(24,63,53,.15), transparent 30rem),
+        linear-gradient(135deg, #F7FAFC, #efe7d9);
+      color: var(--black);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+    .app {
+      width: min(1320px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 18px 0 40px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border: 1px solid rgba(22,185,148,.35);
+      border-radius: 22px 22px 0 0;
+      background: linear-gradient(135deg, #12100d, var(--green));
+      color: white;
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .logo {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      border: 2px solid rgba(22,185,148,.85);
+      border-radius: 999px;
+      color: var(--gold);
+      background: #050505;
+      font-family: Georgia, serif;
+      font-size: 23px;
+      font-weight: 800;
+      flex: 0 0 auto;
+    }
+    .header h1 {
+      font-size: 18px;
+      line-height: 1.2;
+      letter-spacing: -.02em;
+    }
+    .header p {
+      margin-top: 3px;
+      color: rgba(255,255,255,.68);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .header-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(255,255,255,.09);
+      border: 1px solid rgba(255,255,255,.12);
+      color: rgba(255,255,255,.82);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .tabs {
+      display: flex;
+      overflow-x: auto;
+      gap: 0;
+      border: 1px solid var(--line);
+      border-top: 0;
+      background: rgba(255,253,248,.95);
+      padding: 0 12px;
+      box-shadow: var(--shadow);
+    }
+    .tab {
+      border: 0;
+      border-bottom: 3px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 13px 14px 11px;
+      white-space: nowrap;
+    }
+    .tab:hover { color: var(--green); }
+    .tab.active { color: var(--green); border-bottom-color: var(--gold); }
+    .content {
+      display: none;
+      border: 1px solid var(--line);
+      border-top: 0;
+      border-radius: 0 0 22px 22px;
+      background: rgba(255,253,248,.72);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .content.active { display: block; }
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--paper);
+      padding: 15px;
+      min-height: 96px;
+    }
+    .stat-num {
+      color: var(--green);
+      font-size: 28px;
+      font-weight: 950;
+      letter-spacing: -.05em;
+      line-height: 1;
+    }
+    .stat-label {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .money-num {
+      color: var(--green);
+      font-size: 24px;
+      font-weight: 950;
+      letter-spacing: -.04em;
+      line-height: 1.05;
+    }
+    .money-sub {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 750;
+    }
+    .highlight-card {
+      border-color: rgba(22,185,148,.45);
+      background: linear-gradient(135deg, #FFFFFF, #fbf1d6);
+    }
+    .danger-card {
+      border-color: rgba(154,64,54,.24);
+      background: linear-gradient(135deg, #FFFFFF, #f8e7e2);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 12px;
+    }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--paper);
+    }
+    .card-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(23,19,15,.08);
+      padding: 12px 14px;
+    }
+    .card-icon {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 11px;
+      background: var(--ivory);
+      color: var(--green);
+      font-weight: 950;
+      flex: 0 0 auto;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 900;
+      color: var(--black);
+    }
+    .card-sub {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 650;
+      margin-top: 1px;
+    }
+    .card-body { padding: 12px 14px 14px; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .ml-auto { margin-left: auto; }
+    .done { background: var(--done-bg); color: var(--done); }
+    .partial { background: var(--partial-bg); color: var(--partial); }
+    .pending { background: var(--pending-bg); color: var(--pending); }
+    .future { background: var(--future-bg); color: var(--future); }
+    .screen-list { list-style: none; }
+    .screen-list li {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      border-bottom: 1px solid rgba(23,19,15,.06);
+      padding: 7px 0;
+    }
+    .screen-list li:last-child { border-bottom: 0; }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--gold);
+      margin-top: 6px;
+      flex: 0 0 auto;
+    }
+    .screen-name { color: #322820; font-size: 12px; font-weight: 850; }
+    .screen-desc { color: var(--muted); font-size: 11px; margin-top: 1px; }
+    .section-label {
+      margin: 20px 0 9px;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .note {
+      border-left: 4px solid var(--gold);
+      border-radius: 14px;
+      background: rgba(22,185,148,.14);
+      padding: 12px 14px;
+      color: #5b4a26;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--paper);
+    }
+    table {
+      width: 100%;
+      min-width: 980px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border-bottom: 1px solid rgba(23,19,15,.08);
+      padding: 9px 11px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 12px;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #f7efe0;
+      color: #6f5a32;
+      font-size: 10px;
+      font-weight: 950;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    tr:last-child td { border-bottom: 0; }
+    tr:hover td { background: rgba(22,185,148,.07); }
+    .flow {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      padding: 6px 0 12px;
+    }
+    .flow-step {
+      min-width: 160px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: var(--paper);
+      padding: 12px;
+      text-align: center;
+      flex: 0 0 auto;
+    }
+    .flow-step strong {
+      display: block;
+      color: var(--green);
+      font-size: 12px;
+    }
+    .flow-step span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .flow-arrow {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      color: var(--muted);
+      font-weight: 950;
+      flex: 0 0 auto;
+    }
+    .palette { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+    .swatch {
+      min-height: 80px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,.08);
+      padding: 10px;
+      color: white;
+      font-size: 11px;
+      font-weight: 900;
+      display: flex;
+      align-items: end;
+    }
+    .check-list { display: grid; gap: 8px; list-style: none; }
+    .check-list li {
+      position: relative;
+      border: 1px solid rgba(23,19,15,.08);
+      border-radius: 13px;
+      background: rgba(255,255,255,.55);
+      padding: 9px 10px 9px 32px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .check-list li:before {
+      content: "";
+      position: absolute;
+      left: 10px;
+      top: 12px;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--gold);
+    }
+    .footer {
+      margin-top: 12px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    @media (max-width: 980px) {
+      .header { align-items: flex-start; flex-direction: column; }
+      .header-meta { justify-content: flex-start; }
+      .stat-row, .grid-2, .grid-3, .palette { grid-template-columns: 1fr; }
+    }
+    @media print {
+      body { background: white; }
+      .app { width: 100%; padding: 0; }
+      .tabs { display: none; }
+      .content { display: block !important; box-shadow: none; border-radius: 0; page-break-after: always; }
+      .header, .card, .table-wrap, .stat { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <h2 class="sr-only">Operyx full software feature plan with phase-wise delivery, database plan, API plan, business flow, investment plan, MVP pricing, and UI direction</h2>
+
+  <main class="app">
+    <header class="header">
+      <div class="brand">
+        <div class="logo">N</div>
+        <div>
+          <h1>Operyx - Full Software Phase Plan</h1>
+          <p>All software features, module scope, database/API surface, business flow, investment plan, MVP pricing, UI direction, and phase-wise delivery.</p>
+        </div>
+      </div>
+      <div class="header-meta">
+        <span class="pill">Updated: 07 Jul 2026</span>
+        <span class="pill">Next.js + PostgreSQL + Prisma</span>
+        <span class="pill">India-first salon SaaS</span>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Plan sections">
+      <button class="tab active" onclick="showPane('overview')">Overview</button>
+      <button class="tab" onclick="showPane('phases')">Phase Wise</button>
+      <button class="tab" onclick="showPane('modules')">All Modules</button>
+      <button class="tab" onclick="showPane('database')">Database + API</button>
+      <button class="tab" onclick="showPane('flow')">Business Flow</button>
+      <button class="tab" onclick="showPane('investment')">Investment + MVP</button>
+      <button class="tab" onclick="showPane('ui')">UI/UX Direction</button>
+      <button class="tab" onclick="showPane('testing')">Testing + Acceptance</button>
+    </nav>
+
+    <section class="content active" id="pane-overview">
+      <div class="stat-row">
+        <div class="stat"><div class="stat-num">31</div><div class="stat-label">Tracked modules</div></div>
+        <div class="stat"><div class="stat-num">63</div><div class="stat-label">Current Prisma models</div></div>
+        <div class="stat"><div class="stat-num">65</div><div class="stat-label">API route files</div></div>
+        <div class="stat"><div class="stat-num">15</div><div class="stat-label">Migration folders</div></div>
+        <div class="stat"><div class="stat-num">9</div><div class="stat-label">Delivery phases</div></div>
+      </div>
+
+      <div class="note">
+        Full software goal: a multi-tenant salon SaaS where a salon can onboard, get approved, manage branches, staff, customers, appointments, POS, invoices, inventory, benefits, attendance, payroll summaries, reports, and later publish its own salon website and marketplace profile.
+      </div>
+
+      <div class="grid-3">
+        <div class="card highlight-card"><div class="card-body"><div class="money-num">&#8377;49,000</div><div class="money-sub">Already invested in product planning, prototype, database-backed salon panel, admin, POS, invoices and operating modules.</div></div></div>
+        <div class="card danger-card"><div class="card-body"><div class="money-num">&#8377;50,000</div><div class="money-sub">Additional amount required to make the MVP live-ready with final QA, deployment, hardening and launch support.</div></div></div>
+        <div class="card highlight-card"><div class="card-body"><div class="money-num">&#8377;99,000</div><div class="money-sub">Total planned MVP investment before public pilot launch, excluding future paid ads, legal, trademark and large-scale support hiring.</div></div></div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="card-head"><div class="card-icon">1</div><div><div class="card-title">Multi-Tenant Platform</div><div class="card-sub">Tenant, branch, role, status and plan limits</div></div><span class="tag done ml-auto">Built</span></div>
+          <div class="card-body">
+            <ul class="screen-list">
+              <li><span class="dot"></span><div><div class="screen-name">Tenant isolation</div><div class="screen-desc">All operations are scoped to signed-in tenant and authorized branches.</div></div></li>
+              <li><span class="dot"></span><div><div class="screen-name">Role-based workspace</div><div class="screen-desc">Owner, manager, receptionist, stylist, accountant and platform admin roles.</div></div></li>
+              <li><span class="dot"></span><div><div class="screen-name">Subscription plan limits</div><div class="screen-desc">Manual plans for branches, staff, services, appointments, storage and features.</div></div></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><div class="card-icon">2</div><div><div class="card-title">Salon Operations</div><div class="card-sub">Daily reception, appointment, POS and inventory work</div></div><span class="tag partial ml-auto">Partial</span></div>
+          <div class="card-body">
+            <ul class="screen-list">
+              <li><span class="dot"></span><div><div class="screen-name">Appointments smart list and calendar</div><div class="screen-desc">List-first appointments, visual calendar, customer add/search, staff assignment, detail drawer, drag/drop move confirmation, waitlist and branch filters.</div></div></li>
+              <li><span class="dot"></span><div><div class="screen-name">Customer CRM</div><div class="screen-desc">Profiles, visits, invoices, loyalty, wallet, notes, allergies, tags and consent.</div></div></li>
+              <li><span class="dot"></span><div><div class="screen-name">POS checkout</div><div class="screen-desc">Appointment handoff, linked sale, service/product cart, GST/non-GST invoices, offline payments, invoice opening and benefits redemption foundation.</div></div></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><div class="card-icon">3</div><div><div class="card-title">Marketplace + Public Booking</div><div class="card-sub">Customer discovery and online booking</div></div><span class="tag partial ml-auto">Foundation</span></div>
+          <div class="card-body">
+            <ul class="screen-list">
+              <li><span class="dot"></span><div><div class="screen-name">Approved branch listing</div><div class="screen-desc">Only active tenants and approved branches appear publicly.</div></div></li>
+              <li><span class="dot"></span><div><div class="screen-name">Availability booking</div><div class="screen-desc">Public booking uses service, branch and available slot data.</div></div></li>
+              <li><span class="dot"></span><div><div class="screen-name">Future customer portal</div><div class="screen-desc">Upcoming and past bookings, cancellation, reschedule and review workflows remain future work.</div></div></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><div class="card-icon">4</div><div><div class="card-title">Finance Loop</div><div class="card-sub">Invoice, payment, benefits, closing and reports</div></div><span class="tag partial ml-auto">Partial</span></div>
+          <div class="card-body">
+            <ul class="screen-list">
+              <li><span class="dot"></span><div><div class="screen-name">Invoices</div><div class="screen-desc">GST/non-GST invoice center, detail view, print and browser save-as-PDF.</div></div></li>
+              <li><span class="dot"></span><div><div class="screen-name">Offline payments</div><div class="screen-desc">Cash, card, UPI, split payments, wallet, loyalty, gift cards and packages.</div></div></li>
+              <li><span class="dot"></span><div><div class="screen-name">Day closing</div><div class="screen-desc">Register open/close UI, expected cash, variance, reconciliation and CSV export are implemented.</div></div></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content" id="pane-investment">
+      <div class="note">
+        Purpose: show how much has already been invested, how much more is required to make the platform live, what monthly running cost should be expected, what MVP subscription plans can be introduced, and how the investment can be recovered. These are planning estimates and should be reviewed before final pricing or investor discussion.
+      </div>
+
+      <p class="section-label">Investment summary</p>
+      <div class="grid-3">
+        <div class="card highlight-card">
+          <div class="card-head"><div class="card-icon">A</div><div><div class="card-title">Already Invested</div><div class="card-sub">Current project spend</div></div></div>
+          <div class="card-body">
+            <div class="money-num">&#8377;49,000</div>
+            <div class="money-sub">Covers current software development progress: planning, branding direction, database schema, salon workspace, Super Admin, onboarding, booking, POS, invoice, inventory, benefits, staff and register foundations.</div>
+          </div>
+        </div>
+        <div class="card danger-card">
+          <div class="card-head"><div class="card-icon">B</div><div><div class="card-title">More Required</div><div class="card-sub">To make MVP live-ready</div></div></div>
+          <div class="card-body">
+            <div class="money-num">&#8377;50,000</div>
+            <div class="money-sub">Needed for remaining production polish, QA, browser journeys, deployment setup, monitoring, backups, documentation, demo data, and launch preparation.</div>
+          </div>
+        </div>
+        <div class="card highlight-card">
+          <div class="card-head"><div class="card-icon">C</div><div><div class="card-title">Total MVP Cost</div><div class="card-sub">Before live pilot launch</div></div></div>
+          <div class="card-body">
+            <div class="money-num">&#8377;99,000</div>
+            <div class="money-sub">This is the target amount to recover from subscriptions, onboarding fees and pilot salon sales before expanding marketplace and website builder work.</div>
+          </div>
+        </div>
+      </div>
+
+      <p class="section-label">Recommended use of additional &#8377;50,000</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Budget head</th><th>Estimated amount</th><th>Purpose</th><th>Expected output</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Final development polish</strong></td><td>&#8377;25,000</td><td>Calendar edit flow, POS reversal polish, customer CRM fixes, reports/settings gaps and UI cleanup.</td><td>Salon panel becomes usable for daily live operations.</td></tr>
+            <tr><td><strong>QA and browser testing</strong></td><td>&#8377;7,000</td><td>Owner, receptionist, accountant, stylist and Super Admin journeys across desktop, tablet and mobile.</td><td>Fewer launch bugs and clearer acceptance sign-off.</td></tr>
+            <tr><td><strong>Deployment and infrastructure setup</strong></td><td>&#8377;8,000</td><td>Production hosting setup, managed PostgreSQL, environment variables, backups, SSL/domain configuration and smoke tests.</td><td>App can run live with safer deployment process.</td></tr>
+            <tr><td><strong>Monitoring, backup and security hardening</strong></td><td>&#8377;5,000</td><td>Error logging, uptime checks, backup restore checks, document access review and basic launch hardening.</td><td>Operational visibility after salons start using the portal.</td></tr>
+            <tr><td><strong>Demo, training and launch collateral</strong></td><td>&#8377;5,000</td><td>Demo salon data, sales deck, onboarding checklist, user guide and initial support scripts.</td><td>Sales-ready MVP that can be shown to salons professionally.</td></tr>
+            <tr><td><strong>Total</strong></td><td><strong>&#8377;50,000</strong></td><td>Required live-readiness budget.</td><td><strong>Public pilot MVP</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-label">Monthly server and operating cost estimate</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Cost item</th><th>MVP estimate / month</th><th>Notes</th><th>When cost increases</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Application hosting</strong></td><td>&#8377;1,500 - &#8377;4,000</td><td>Vercel, Render, Railway, Fly.io or similar managed hosting.</td><td>More traffic, background workers, image processing or higher uptime needs.</td></tr>
+            <tr><td><strong>Managed PostgreSQL</strong></td><td>&#8377;2,000 - &#8377;6,000</td><td>Supabase/managed Postgres with backups. Database is the core business asset.</td><td>More salons, appointments, invoices, reports and storage requirements.</td></tr>
+            <tr><td><strong>Object storage and media</strong></td><td>&#8377;300 - &#8377;1,500</td><td>Salon media, verification documents and future invoice PDFs.</td><td>More website media, before/after photos and document uploads.</td></tr>
+            <tr><td><strong>Domain, DNS and SSL</strong></td><td>&#8377;200 - &#8377;500</td><td>Monthly equivalent of yearly domain/DNS cost. SSL is usually included with hosting.</td><td>Custom domains, premium DNS, additional brands or subdomain automation.</td></tr>
+            <tr><td><strong>Monitoring, logs and backups</strong></td><td>&#8377;500 - &#8377;2,000</td><td>Error monitoring, uptime checks, structured logs and backup verification.</td><td>Higher retention, compliance needs or multiple environments.</td></tr>
+            <tr><td><strong>SMS, WhatsApp and email</strong></td><td>&#8377;1,000 - &#8377;5,000 variable</td><td>Only after providers are configured. Cost depends on OTP, reminders, receipts and campaigns.</td><td>Customer reminders, campaigns, OTP volume and WhatsApp template usage.</td></tr>
+            <tr><td><strong>Estimated MVP monthly total</strong></td><td><strong>&#8377;5,000 - &#8377;15,000</strong></td><td>Good planning range for early live MVP.</td><td>Can move toward &#8377;15,000 - &#8377;30,000/month as salon count and message volume grow.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-label">Pricing basis for infrastructure estimate</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Provider type</th><th>Public pricing reference</th><th>Planning note</th></tr></thead>
+          <tbody>
+            <tr><td><strong>App hosting</strong></td><td><a href="https://vercel.com/pricing">Vercel pricing</a></td><td>Vercel Pro is listed at $20/month before usage overages. This maps to the lower end of the app-hosting estimate for one small production project.</td></tr>
+            <tr><td><strong>Database</strong></td><td><a href="https://supabase.com/pricing">Supabase pricing</a></td><td>Supabase Pro is listed at $25/month and includes compute credits. Managed PostgreSQL cost can rise with storage, backups, traffic and larger compute.</td></tr>
+            <tr><td><strong>Alternative hosting</strong></td><td><a href="https://render.com/pricing">Render pricing</a> and <a href="https://render.com/docs/free">Render free plan note</a></td><td>Free compute is useful for testing, but provider docs state free instances are not for production applications.</td></tr>
+            <tr><td><strong>SMS / WhatsApp</strong></td><td><a href="https://www.twilio.com/en-us/sms/pricing/in">Twilio India SMS pricing</a> and <a href="https://www.twilio.com/en-us/pricing">Twilio platform pricing</a></td><td>Messaging should be treated as variable. For India MVP, cap OTP/reminder usage or evaluate an India-focused provider before launch.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-label">MVP subscription plans to introduce initially</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Plan</th><th>Suggested monthly price</th><th>Best for</th><th>Included limits</th><th>Key features</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Starter</strong></td><td>&#8377;1,499/month</td><td>Single-location small salon.</td><td>1 branch, 5 staff, 50 services, 500 appointments/month, basic storage.</td><td>Calendar, customers, POS, GST/non-GST invoices, basic inventory, basic reports.</td></tr>
+            <tr><td><strong>Growth</strong></td><td>&#8377;2,999/month</td><td>Busy salon or small chain.</td><td>3 branches, 15 staff, 150 services, 2,000 appointments/month, higher storage.</td><td>Everything in Starter plus benefits, packages, gift cards, payroll summary, advanced inventory and register closing.</td></tr>
+            <tr><td><strong>Premium</strong></td><td>&#8377;5,999/month</td><td>Premium salon, bridal studio or multi-branch operator.</td><td>8 branches, 40 staff, 400 services, 8,000 appointments/month, priority storage.</td><td>Everything in Growth plus branch comparison, priority support, advanced reports, website-builder access when released.</td></tr>
+            <tr><td><strong>Launch setup fee</strong></td><td>&#8377;2,999 - &#8377;9,999 one-time</td><td>Initial onboarding and training.</td><td>Depends on plan and number of branches.</td><td>Service import, staff setup, branch configuration, invoice settings, owner training and go-live support.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-label">Introductory MVP offer</p>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><div class="card-icon">L</div><div><div class="card-title">Founding Salon Offer</div><div class="card-sub">First 10-20 salons</div></div></div>
+          <div class="card-body">
+            <ul class="check-list">
+              <li>Offer first month free only after setup fee is collected, so the launch does not become cash-negative.</li>
+              <li>Give discounted annual plan: pay for 10 months and get 12 months access.</li>
+              <li>Keep pricing simple: no online payment processing in MVP, only offline payment recording.</li>
+              <li>Collect feedback weekly from pilot salons and convert useful requests into paid roadmap items.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-icon">S</div><div><div class="card-title">Sales Focus</div><div class="card-sub">Fastest path to revenue</div></div></div>
+          <div class="card-body">
+            <ul class="check-list">
+              <li>Start with premium salons, bridal studios and salons already struggling with billing, appointments and staff tracking.</li>
+              <li>Sell the complete daily flow: appointment, POS, invoice, stock, rewards, register close and reports.</li>
+              <li>Use Operyx as the live demo brand and keep one clean demo workspace ready.</li>
+              <li>Avoid custom development for the first clients unless it is paid separately.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <p class="section-label">Investment recovery calculation</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Scenario</th><th>Salon count and plan mix</th><th>Monthly revenue</th><th>Estimated monthly cost</th><th>Approx. contribution</th><th>Time to recover &#8377;99,000</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Conservative</strong></td><td>15 salons on Starter at &#8377;1,499/month.</td><td>&#8377;22,485</td><td>&#8377;7,000</td><td>&#8377;15,485/month</td><td>About 6.4 months.</td></tr>
+            <tr><td><strong>Balanced MVP</strong></td><td>10 Starter, 8 Growth and 2 Premium salons.</td><td>&#8377;50,980</td><td>&#8377;12,000</td><td>&#8377;38,980/month</td><td>About 2.5 months.</td></tr>
+            <tr><td><strong>Growth</strong></td><td>25 salons with average billing around &#8377;2,500/month.</td><td>&#8377;62,500</td><td>&#8377;15,000</td><td>&#8377;47,500/month</td><td>About 2.1 months.</td></tr>
+            <tr><td><strong>Setup-fee assisted</strong></td><td>20 salons paying average &#8377;3,500 setup fee plus average &#8377;2,500/month subscription.</td><td>&#8377;70,000 one-time + &#8377;50,000/month</td><td>&#8377;12,000 - &#8377;15,000</td><td>First month contribution can cross &#8377;1,05,000 if collections happen together.</td><td>Possible in first 1-2 months if sales close quickly.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-label">Revenue recovery strategy</p>
+      <div class="grid">
+        <div class="card"><div class="card-head"><div class="card-icon">1</div><div><div class="card-title">Recover from setup fees first</div><div class="card-sub">Immediate cash flow</div></div></div><div class="card-body"><p class="screen-desc">Do not make every pilot free. Charge a small setup/training fee so implementation effort is covered and salons take onboarding seriously.</p></div></div>
+        <div class="card"><div class="card-head"><div class="card-icon">2</div><div><div class="card-title">Push annual plans</div><div class="card-sub">Cash upfront</div></div></div><div class="card-body"><p class="screen-desc">Offer 2 months free on annual billing. Ten Growth salons paying annually can create strong upfront cash flow.</p></div></div>
+        <div class="card"><div class="card-head"><div class="card-icon">3</div><div><div class="card-title">Keep MVP scope controlled</div><div class="card-sub">Protect margin</div></div></div><div class="card-body"><p class="screen-desc">Marketplace enhancements, website builder, custom domains and online payments should come after salon operations are stable and subscription revenue starts.</p></div></div>
+        <div class="card"><div class="card-head"><div class="card-icon">4</div><div><div class="card-title">Measure payback monthly</div><div class="card-sub">Business discipline</div></div></div><div class="card-body"><p class="screen-desc">Track MRR, setup revenue, server cost, support cost, churn and feature requests every month. The target is to recover &#8377;99,000 before major future-module spending.</p></div></div>
+      </div>
+
+      <p class="section-label">Important exclusions from this estimate</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Item</th><th>Status</th><th>Why excluded</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Paid advertising</strong></td><td>Not included</td><td>Marketing spend can vary heavily. Start with direct salon outreach and demos first.</td></tr>
+            <tr><td><strong>Legal, trademark and company compliance</strong></td><td>Not included</td><td>Brand/trademark, agreements, privacy policy and legal review should be budgeted separately.</td></tr>
+            <tr><td><strong>Online payment processing</strong></td><td>Deferred</td><td>MVP records offline cash/card/UPI only. Payment gateway fees are future costs.</td></tr>
+            <tr><td><strong>Large-scale WhatsApp/SMS campaigns</strong></td><td>Variable</td><td>Provider charges depend on OTP, reminders, receipts and campaign volume.</td></tr>
+            <tr><td><strong>Dedicated support team</strong></td><td>Not included</td><td>Founder-led support is assumed during MVP. Team cost starts after paid salon base grows.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content" id="pane-phases">
+      <div class="note">
+        Phase order is designed to make the salon panel useful for real daily work before expanding marketplace and website builder features.
+      </div>
+
+      <p class="section-label">Phase 0 - Product, branding and technical foundation</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Area</th><th>Features</th><th>Current status</th><th>Remaining work</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Brand and product setup</strong></td><td>Operyx final branding and project identity, India-first salon SaaS positioning.</td><td><span class="tag partial">Partial</span></td><td>Finalize domain, trademark screening, final brand decision and production assets.</td></tr>
+            <tr><td><strong>Tech stack</strong></td><td>Next.js App Router, TypeScript, PostgreSQL, Prisma, Tailwind/CSS, PWA shell.</td><td><span class="tag done">Built</span></td><td>CI/CD, monitoring, backup policy, production deployment checklist.</td></tr>
+            <tr><td><strong>Database foundation</strong></td><td>Tenants, branches, users, staff, customers, services, appointments, invoices, inventory, benefits, admin and website models.</td><td><span class="tag done">Built</span></td><td>More migration tests, data archival strategy and production indexes review.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-label">Phase 1 - Authentication, tenant and branch foundation</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Module</th><th>Screens / UX</th><th>APIs / backend</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Staff login</strong></td><td>Login page, logout, protected dashboard, role navigation.</td><td>Staff auth, session, tenant status validation.</td><td><span class="tag done">Mostly built</span></td></tr>
+            <tr><td><strong>Customer OTP</strong></td><td>Development customer OTP flow for public booking.</td><td>OTP request and verify endpoints.</td><td><span class="tag partial">Dev only</span></td></tr>
+            <tr><td><strong>Branch authorization</strong></td><td>Owner all-branch scope, staff assigned branches, branch selector.</td><td>Operations context and branch permission checks.</td><td><span class="tag done">Mostly built</span></td></tr>
+            <tr><td><strong>RBAC</strong></td><td>Navigation and action visibility based on role.</td><td>Permission checks across operations APIs.</td><td><span class="tag partial">Needs custom permissions</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-label">Phase 2 - Onboarding and Platform Admin</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Module</th><th>Features</th><th>Status</th><th>Remaining work</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Salon self-registration</strong></td><td>Business profile, owner account, GST/PAN, branches, operating hours, policies, documents.</td><td><span class="tag done">Mostly built</span></td><td>More polished correction flow and upload progress UI.</td></tr>
+            <tr><td><strong>Admin-created salons</strong></td><td>Super Admin creates tenant, sends owner invitation and tracks onboarding.</td><td><span class="tag done">Built</span></td><td>Bulk invite and richer onboarding progress dashboard.</td></tr>
+            <tr><td><strong>Document verification</strong></td><td>GST certificate, PAN, address proof, bank proof, salon media, private signed URLs.</td><td><span class="tag done">Built</span></td><td>Production S3 credentials and document access audit polish.</td></tr>
+            <tr><td><strong>Branch publication</strong></td><td>Draft, pending review, approved, rejected, suspended and archived branch states.</td><td><span class="tag done">Built</span></td><td>Checklist configurability UI.</td></tr>
+            <tr><td><strong>Subscription plans</strong></td><td>Plan limits for branches, staff, services, appointments, storage and features.</td><td><span class="tag done">Built</span></td><td>Usage dashboard and upgrade/downgrade history UI.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-label">Phase 3 - Salon daily operations foundation</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Module</th><th>Features</th><th>Status</th><th>Remaining work</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Overview dashboard</strong></td><td>Revenue, appointments, customers, average ticket, low stock, outstanding amount, staff attendance, quick actions and recent invoice visibility.</td><td><span class="tag partial">Partial</span></td><td>Drilldowns, charts, branch comparisons, target tracking, saved widget preferences.</td></tr>
+            <tr><td><strong>Appointments workspace</strong></td><td>Smart list default, calendar secondary, appointment creation, availability, filters, status transitions, detail drawer, appointment-to-POS handoff, drag/drop confirmation and waitlist flow.</td><td><span class="tag partial">Strong foundation</span></td><td>Full edit flow, recurring appointments, rooms/resources, advanced blocked-time UX, drag resize and deeper mobile QA.</td></tr>
+            <tr><td><strong>Customer CRM</strong></td><td>Search/add customer, profile, visit history, invoices, benefits, loyalty, wallet, notes, consent.</td><td><span class="tag partial">Partial</span></td><td>Duplicate merge, before/after photos, import/export and communication history.</td></tr>
+            <tr><td><strong>Service master</strong></td><td>Service categories, services, branch overrides, staff qualification, booking/POS use.</td><td><span class="tag partial">Partial</span></td><td>Variants, add-ons, images, drag ordering, resource requirements.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-label">Phase 4 - POS, invoices, inventory and benefits</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Module</th><th>Features</th><th>Status</th><th>Remaining work</th></tr></thead>
+          <tbody>
+            <tr><td><strong>POS checkout</strong></td><td>Service/product sale, appointment checkout handoff, linked appointment card, customer add/search, split payments, benefits, stock deduction, mobile current-sale layout and invoice auto-open.</td><td><span class="tag partial">Strong foundation</span></td><td>Held sales polish, coupons, barcode polish, stronger validation preview and full browser QA.</td></tr>
+            <tr><td><strong>Invoice center</strong></td><td>GST/non-GST invoice numbering, clickable invoice list, filters, detail view, premium print view and browser Save as PDF.</td><td><span class="tag partial">Strong foundation</span></td><td>Server PDF generation, sharing providers, credit-note polish.</td></tr>
+            <tr><td><strong>Refunds and voids</strong></td><td>Refund endpoint, partial refund and line-level return foundation, UI action, audit and reversal foundation.</td><td><span class="tag partial">Partial</span></td><td>Full void flow, richer reversal preview for stock, commission, wallet, gift card, package and loyalty ledgers.</td></tr>
+            <tr><td><strong>Inventory</strong></td><td>Products, vendors, purchases, transfers, stocktakes, recipes, low stock and movement history.</td><td><span class="tag partial">Partial</span></td><td>Batch/expiry, purchase returns, damaged stock, valuation reports.</td></tr>
+            <tr><td><strong>Benefits</strong></td><td>Memberships, packages, gift cards, wallet, rewards, redemption foundation and balance history.</td><td><span class="tag partial">Partial</span></td><td>Freeze/transfer/renewal, expiry jobs, gift-card cancellation and archive safeguards.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-label">Phase 5 - Team, attendance, payroll summaries and permissions</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Module</th><th>Features</th><th>Status</th><th>Remaining work</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Staff profiles</strong></td><td>Staff creation, branch assignment, roles, commission rate, leave and shifts.</td><td><span class="tag partial">Partial</span></td><td>Profile detail, documents, activation controls, temporary password reset.</td></tr>
+            <tr><td><strong>Attendance</strong></td><td>Clock-in/out, corrections, approvals, attendance summary and branch-scoped history.</td><td><span class="tag partial">Partial</span></td><td>Shift variance polish, missed punch alerts, attendance export detail.</td></tr>
+            <tr><td><strong>Payroll summary</strong></td><td>Worked hours, commissions, tips, appointment counts, CSV export foundation.</td><td><span class="tag partial">Partial</span></td><td>Deeper filters, role permission controls and payroll approval workflow.</td></tr>
+            <tr><td><strong>Custom permissions</strong></td><td>Role-aware screens and action checks.</td><td><span class="tag partial">Partial</span></td><td>Permission templates, manager grants, audit UI for permission changes.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-label">Phase 6 - Register, day closing, reports and settings</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Module</th><th>Features</th><th>Status</th><th>Priority</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Register / Day Closing</strong></td><td>Open register, close register, opening cash, counted cash, expected cash, variance, sales, refunds, expenses, tips, GST, stock movements and CSV export.</td><td><span class="tag done">Mostly built</span></td><td>Browser hardening</td></tr>
+            <tr><td><strong>Reports</strong></td><td>Sales, GST, payments, refunds, register closing, stock movement, low stock, expenses, commissions, branch comparison.</td><td><span class="tag partial">Partial</span></td><td>High</td></tr>
+            <tr><td><strong>Settings</strong></td><td>Business, branches, hours, holidays, booking policies, taxes, invoice settings, roles, integrations, audit logs, imports and exports.</td><td><span class="tag partial">Partial</span></td><td>High</td></tr>
+            <tr><td><strong>Mobile PWA workspace</strong></td><td>Installed-app style mobile shell, bottom tabs, More sheet, safe-area spacing, mobile appointments queue, mobile POS sheets and responsive overflow fixes.</td><td><span class="tag partial">Recently improved</span></td><td>Device QA on Android/iOS, offline messaging polish and per-module mobile card refinements.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-label">Phase 7 - Marketplace, customer portal and salon websites</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Module</th><th>Features</th><th>Status</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Marketplace enhancement</strong></td><td>Search filters, ranking, branch pages, public reviews, authenticated customer booking management.</td><td><span class="tag future">Future</span></td><td>After salon operations stabilize.</td></tr>
+            <tr><td><strong>Salon website builder</strong></td><td>Subdomain, block editor, pages, themes, SEO, gallery, services, team, branches, booking block.</td><td><span class="tag future">Future</span></td><td>Schema exists, editor and public rendering are pending.</td></tr>
+            <tr><td><strong>Messaging providers</strong></td><td>WhatsApp, SMS, email templates, receipts, reminders, campaign delivery logs and retries.</td><td><span class="tag future">Future</span></td><td>Provider credentials and adapters needed.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-label">Phase 8 - Production hardening and scale</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Area</th><th>Features</th><th>Status</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Deployment</strong></td><td>Managed PostgreSQL, object storage, app hosting, worker process, environment separation.</td><td><span class="tag pending">Pending</span></td><td>Needed before live salon use.</td></tr>
+            <tr><td><strong>Monitoring</strong></td><td>Error monitoring, uptime checks, structured logs, slow query visibility.</td><td><span class="tag pending">Pending</span></td><td>Production readiness requirement.</td></tr>
+            <tr><td><strong>Security</strong></td><td>Credential encryption, audit retention, rate limits, backup restore testing, document access controls.</td><td><span class="tag partial">Partial</span></td><td>Strengthen before public launch.</td></tr>
+            <tr><td><strong>Quality gates</strong></td><td>CI/CD, lint, typecheck, tests, build, migration validation, browser journeys.</td><td><span class="tag pending">Pending</span></td><td>Should run on every deployment.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content" id="pane-modules">
+      <div class="note">
+        This is the full module inventory. "Built" means the core feature exists. "Partial" means the foundation exists but needs final behavior, polish or reporting. "Future" means planned after core salon operations.
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Module</th>
+              <th>Main screens / workflows</th>
+              <th>API / data surface</th>
+              <th>Phase</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td><strong>Authentication</strong></td><td>Login, logout, session guard, role navigation, customer OTP dev flow.</td><td>/auth/staff, /auth/logout, /auth/otp</td><td>1</td><td><span class="tag done">Mostly built</span></td></tr>
+            <tr><td>2</td><td><strong>Tenant and branch access</strong></td><td>Tenant status, branch selector, owner all-branch, assigned staff branch access.</td><td>operations context, RBAC, staff branch assignments</td><td>1</td><td><span class="tag done">Mostly built</span></td></tr>
+            <tr><td>3</td><td><strong>Super Admin</strong></td><td>Tenant list, tenant detail, approvals, plan assignment, suspension, notes, audits.</td><td>/admin/tenants, /admin/reporting, /admin/audit</td><td>2</td><td><span class="tag done">Mostly built</span></td></tr>
+            <tr><td>4</td><td><strong>Subscription plans</strong></td><td>Plan assignment, feature limits, branch/staff/service/appointment/storage limits.</td><td>SubscriptionPlan, TenantSubscription, plan limit checks</td><td>2</td><td><span class="tag done">Built</span></td></tr>
+            <tr><td>5</td><td><strong>Salon onboarding</strong></td><td>Registration, owner invitation, profile, branches, hours, services, policies, documents.</td><td>/onboarding, /onboarding/branches, /onboarding/documents</td><td>2</td><td><span class="tag done">Mostly built</span></td></tr>
+            <tr><td>6</td><td><strong>Document verification</strong></td><td>Private document access, document review, approve/reject, document history.</td><td>VerificationDocument, storage adapter, signed URLs</td><td>2</td><td><span class="tag done">Built</span></td></tr>
+            <tr><td>7</td><td><strong>Marketplace</strong></td><td>Public salon discovery, approved branch visibility, branch booking entry.</td><td>/marketplace/salons, Branch publication status</td><td>7</td><td><span class="tag partial">Foundation</span></td></tr>
+            <tr><td>8</td><td><strong>Public booking</strong></td><td>Service selection, date/time, staff optional, OTP, booking confirmation.</td><td>/availability, /bookings, Appointment source</td><td>7</td><td><span class="tag partial">Foundation</span></td></tr>
+            <tr><td>9</td><td><strong>Overview dashboard</strong></td><td>KPI cards, quick actions, alerts, recent invoices, attendance basics.</td><td>/operations/bootstrap metrics</td><td>3</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td>10</td><td><strong>Appointments smart list and calendar</strong></td><td>List-first workspace, day/week calendar, filters, appointments, status actions, appointment drawer, drag/drop confirmation, appointment checkout handoff and waitlist.</td><td>/operations/appointments, /booking-options</td><td>3</td><td><span class="tag partial">Strong foundation</span></td></tr>
+            <tr><td>11</td><td><strong>Appointment detail</strong></td><td>Drawer, customer summary, service lines, invoice, payment, history and actions.</td><td>/operations/appointments/:id</td><td>3</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td>12</td><td><strong>Customer CRM</strong></td><td>Search, add, profile, visits, invoices, loyalty, wallet, benefits, notes, tags.</td><td>/operations/customers, /operations/customers/:id</td><td>3</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td>13</td><td><strong>Service categories</strong></td><td>Platform templates, salon categories, archive/restore, category selection.</td><td>/service-categories, /admin/service-category-templates</td><td>3</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td>14</td><td><strong>Service master</strong></td><td>Services, branch overrides, price, duration, GST, online booking, profile.</td><td>/operations/services, /operations/services/:id</td><td>3</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td>15</td><td><strong>POS checkout</strong></td><td>New sale, appointment checkout handoff, linked appointment card, customer selection, cart, redemptions, payment, mobile checkout UX and invoice auto-open.</td><td>/operations/checkout</td><td>4</td><td><span class="tag partial">Strong foundation</span></td></tr>
+            <tr><td>16</td><td><strong>Invoice center</strong></td><td>Invoice list, filters, detail preview, print/save as PDF, refund action.</td><td>/operations/invoices, /operations/invoices/:id</td><td>4</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td>17</td><td><strong>Refunds and voids</strong></td><td>Refund action, partial refund and line-level return foundation, reversal warnings, audit trail foundation.</td><td>/operations/invoices/:id/refund</td><td>4</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td>18</td><td><strong>Inventory</strong></td><td>Products, vendors, purchases, transfers, stocktakes, recipes, movement history.</td><td>/operations/inventory/*</td><td>4</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td>19</td><td><strong>Expenses</strong></td><td>Add expense, branch scoped expense list and reporting foundation.</td><td>/operations/expenses</td><td>4</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td>20</td><td><strong>Memberships and packages</strong></td><td>Create masters, assign to customer, package redemption foundation.</td><td>/operations/benefits</td><td>4</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td>21</td><td><strong>Gift cards, wallet and rewards</strong></td><td>Gift card issue, wallet adjustment, reward rules, customer balance history.</td><td>GiftCard, LoyaltyLedger, BenefitTransaction</td><td>4</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td>22</td><td><strong>Team management</strong></td><td>Staff create, branch assignment, role, commission, leave and shifts.</td><td>/operations/staff, /staff/leave, /staff/shifts</td><td>5</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td>23</td><td><strong>Attendance</strong></td><td>Clock-in/out, corrections, approval/rejection, attendance history.</td><td>/operations/staff/attendance</td><td>5</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td>24</td><td><strong>Payroll summaries</strong></td><td>Worked hours, commissions, tips, appointment counts, CSV export foundation.</td><td>/operations/staff/payroll</td><td>5</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td>25</td><td><strong>Register / Day Closing</strong></td><td>Open/close register, expected cash, counted cash, variance, reconciliation, invoice links and CSV export.</td><td>/operations/register</td><td>6</td><td><span class="tag done">Mostly built</span></td></tr>
+            <tr><td>26</td><td><strong>Reports</strong></td><td>Sales, tax, payments, inventory, expenses, commissions, payroll and branch comparison.</td><td>Bootstrap/report queries, future exports</td><td>6</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td>27</td><td><strong>Settings</strong></td><td>Business, branches, hours, tax, invoice, booking policies, integrations, audit.</td><td>Tenant, Branch, OperatingHour, AuditLog</td><td>6</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td>28</td><td><strong>Marketing and reviews</strong></td><td>Campaign queues, templates foundation, review inbox and replies.</td><td>/operations/campaigns, /operations/reviews</td><td>7</td><td><span class="tag partial">Foundation</span></td></tr>
+            <tr><td>29</td><td><strong>Salon website builder</strong></td><td>Subdomains, pages, revisions, block editor, publishing, SEO, media.</td><td>SalonWebsite, WebsitePage, WebsiteRevision</td><td>7</td><td><span class="tag future">Future</span></td></tr>
+            <tr><td>30</td><td><strong>Mobile PWA workspace</strong></td><td>Mobile top app bar, bottom tabs, More sheet, safe-area spacing, mobile appointment queue, mobile POS sheets and overflow stabilization.</td><td>Manifest, service worker, workspace shell CSS</td><td>6</td><td><span class="tag partial">Recently improved</span></td></tr>
+            <tr><td>31</td><td><strong>Sale drafts and held sales</strong></td><td>Sale draft API and model foundation for held-counter-sale workflow.</td><td>/operations/sale-drafts, SaleDraft</td><td>4</td><td><span class="tag partial">Foundation</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content" id="pane-database">
+      <div class="stat-row">
+        <div class="stat"><div class="stat-num">63</div><div class="stat-label">Current models</div></div>
+        <div class="stat"><div class="stat-num">65</div><div class="stat-label">API route files</div></div>
+        <div class="stat"><div class="stat-num">15</div><div class="stat-label">Migration folders</div></div>
+        <div class="stat"><div class="stat-num">v1</div><div class="stat-label">Versioned APIs</div></div>
+        <div class="stat"><div class="stat-num">UTC</div><div class="stat-label">Stored timestamps</div></div>
+      </div>
+
+      <p class="section-label">Current database model groups</p>
+      <div class="grid">
+        <div class="card"><div class="card-head"><div class="card-icon">A</div><div><div class="card-title">Tenant and access</div><div class="card-sub">SaaS isolation and permissions</div></div></div><div class="card-body"><ul class="screen-list"><li><span class="dot"></span><div><div class="screen-name">Tenant, Branch, User, Staff</div><div class="screen-desc">Core salon organization and staff accounts.</div></div></li><li><span class="dot"></span><div><div class="screen-name">StaffBranchAssignment</div><div class="screen-desc">Explicit staff access to branches.</div></div></li><li><span class="dot"></span><div><div class="screen-name">SubscriptionPlan, TenantSubscription</div><div class="screen-desc">Manual SaaS plan and feature limits.</div></div></li></ul></div></div>
+        <div class="card"><div class="card-head"><div class="card-icon">B</div><div><div class="card-title">Onboarding and admin</div><div class="card-sub">Approval and verification</div></div></div><div class="card-body"><ul class="screen-list"><li><span class="dot"></span><div><div class="screen-name">VerificationDocument</div><div class="screen-desc">GST, PAN, address, bank proof and media metadata.</div></div></li><li><span class="dot"></span><div><div class="screen-name">BranchReview, BranchPublicationHistory</div><div class="screen-desc">Branch-level approval and publication history.</div></div></li><li><span class="dot"></span><div><div class="screen-name">AdminNote, OwnerInvitation, AuditLog</div><div class="screen-desc">Admin operations, support notes and immutable audit trail.</div></div></li></ul></div></div>
+        <div class="card"><div class="card-head"><div class="card-icon">C</div><div><div class="card-title">Appointments</div><div class="card-sub">Booking and calendar</div></div></div><div class="card-body"><ul class="screen-list"><li><span class="dot"></span><div><div class="screen-name">Appointment, AppointmentServiceLine</div><div class="screen-desc">Multi-service bookings with per-line timing and staff.</div></div></li><li><span class="dot"></span><div><div class="screen-name">AppointmentSeries, StatusHistory</div><div class="screen-desc">Recurring foundation and status tracking.</div></div></li><li><span class="dot"></span><div><div class="screen-name">Resource</div><div class="screen-desc">Future rooms/resources support.</div></div></li></ul></div></div>
+        <div class="card"><div class="card-head"><div class="card-icon">D</div><div><div class="card-title">Customers and benefits</div><div class="card-sub">CRM, loyalty and balances</div></div></div><div class="card-body"><ul class="screen-list"><li><span class="dot"></span><div><div class="screen-name">Customer, LoyaltyLedger</div><div class="screen-desc">Customer profile, preferences, consent and rewards.</div></div></li><li><span class="dot"></span><div><div class="screen-name">Membership, Package, GiftCard</div><div class="screen-desc">Benefit masters and balances.</div></div></li><li><span class="dot"></span><div><div class="screen-name">BenefitTransaction, RewardRule</div><div class="screen-desc">Wallet, loyalty, package and gift-card history.</div></div></li></ul></div></div>
+        <div class="card"><div class="card-head"><div class="card-icon">E</div><div><div class="card-title">Billing and POS</div><div class="card-sub">Sales and payments</div></div></div><div class="card-body"><ul class="screen-list"><li><span class="dot"></span><div><div class="screen-name">Invoice, InvoiceLine, InvoiceSequence</div><div class="screen-desc">GST/non-GST invoice lifecycle and numbering.</div></div></li><li><span class="dot"></span><div><div class="screen-name">PaymentRecord</div><div class="screen-desc">Offline cash, card, UPI, wallet, loyalty and gift card records.</div></div></li><li><span class="dot"></span><div><div class="screen-name">RegisterSession, Expense</div><div class="screen-desc">Counter closing and branch expenses foundation.</div></div></li></ul></div></div>
+        <div class="card"><div class="card-head"><div class="card-icon">F</div><div><div class="card-title">Inventory</div><div class="card-sub">Products and stock</div></div></div><div class="card-body"><ul class="screen-list"><li><span class="dot"></span><div><div class="screen-name">InventoryItem, Vendor, BranchStock</div><div class="screen-desc">Product master, vendor and branch stock.</div></div></li><li><span class="dot"></span><div><div class="screen-name">PurchaseEntry, PurchaseLine</div><div class="screen-desc">Purchase recording and stock increase.</div></div></li><li><span class="dot"></span><div><div class="screen-name">StockMovement, Transfer, Stocktake, Recipe</div><div class="screen-desc">Adjustments, transfers, stocktakes and service consumption.</div></div></li></ul></div></div>
+        <div class="card"><div class="card-head"><div class="card-icon">G</div><div><div class="card-title">Staff operations</div><div class="card-sub">Team and payroll summary</div></div></div><div class="card-body"><ul class="screen-list"><li><span class="dot"></span><div><div class="screen-name">Shift, StaffLeave, Attendance</div><div class="screen-desc">Rota, leave, clock-in/out and corrections.</div></div></li><li><span class="dot"></span><div><div class="screen-name">Commission</div><div class="screen-desc">Service/product commission entries.</div></div></li><li><span class="dot"></span><div><div class="screen-name">DashboardPreference</div><div class="screen-desc">Future dashboard customization.</div></div></li></ul></div></div>
+        <div class="card"><div class="card-head"><div class="card-icon">H</div><div><div class="card-title">Marketing and web</div><div class="card-sub">Campaigns, reviews and websites</div></div></div><div class="card-body"><ul class="screen-list"><li><span class="dot"></span><div><div class="screen-name">Campaign, MessageTemplate, MessageLog</div><div class="screen-desc">Messaging foundation, delivery logs and templates.</div></div></li><li><span class="dot"></span><div><div class="screen-name">Review</div><div class="screen-desc">Verified review and reply foundation.</div></div></li><li><span class="dot"></span><div><div class="screen-name">SalonWebsite, WebsitePage, WebsiteRevision</div><div class="screen-desc">Future subdomain and page-builder foundation.</div></div></li></ul></div></div>
+      </div>
+
+      <p class="section-label">API surface by domain</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Domain</th><th>Current routes</th><th>Purpose</th><th>Future API work</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Auth</strong></td><td>/api/v1/auth/staff, /logout, /otp/request, /otp/verify</td><td>Staff sign-in, logout and customer development OTP.</td><td>Production OTP provider, password reset, session/device management.</td></tr>
+            <tr><td><strong>Admin</strong></td><td>/api/v1/admin/tenants, documents, branches/review, plan, reporting, audit, category templates</td><td>Super Admin tenant and branch control.</td><td>Bulk actions, admin roles, advanced reporting exports.</td></tr>
+            <tr><td><strong>Onboarding</strong></td><td>/api/v1/onboarding, branches, submit, documents, invitation, register, services</td><td>Salon registration and onboarding completion.</td><td>Correction requests, upload progress and guided checklist configuration.</td></tr>
+            <tr><td><strong>Marketplace</strong></td><td>/api/v1/marketplace/salons, /availability, /bookings</td><td>Public branch listing and booking creation.</td><td>Customer account, cancellation, rescheduling, public reviews and ranking.</td></tr>
+            <tr><td><strong>Operations</strong></td><td>/api/v1/operations/bootstrap, appointments, customers, services, service-categories, booking-options</td><td>Salon workspace daily operation data including waitlist and drag/drop appointment updates.</td><td>Recurring appointments, blocked time, resources and drag resize.</td></tr>
+            <tr><td><strong>POS and finance</strong></td><td>/api/v1/operations/checkout, invoices, invoices/refund, expenses, register</td><td>Checkout, invoice listing/detail, refund, expenses, register summary and day closing foundation.</td><td>Void, credit notes, deeper exports and payment reconciliation polish.</td></tr>
+            <tr><td><strong>Inventory</strong></td><td>/api/v1/operations/inventory, products, vendors, purchases, transfers, stocktakes, recipes</td><td>Product and stock operations.</td><td>Batch/expiry, returns, damaged stock and valuation APIs.</td></tr>
+            <tr><td><strong>Staff</strong></td><td>/api/v1/operations/staff, attendance, payroll, shifts, leave</td><td>Team management, attendance and payroll summaries.</td><td>Permission editor, staff profile detail and shift publish workflow.</td></tr>
+            <tr><td><strong>Engagement</strong></td><td>/api/v1/operations/benefits, campaigns, reviews</td><td>Benefits, reward rules, campaign foundation and review inbox.</td><td>Messaging provider adapters, retries, segmentation and communication history.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content" id="pane-flow">
+      <p class="section-label">Full platform business flow</p>
+      <div class="flow">
+        <div class="flow-step"><strong>1. Salon applies</strong><span>Self-register or admin-created tenant</span></div>
+        <div class="flow-arrow">></div>
+        <div class="flow-step"><strong>2. Onboarding</strong><span>Business, GST/PAN, branch, hours, services, documents</span></div>
+        <div class="flow-arrow">></div>
+        <div class="flow-step"><strong>3. Admin review</strong><span>Documents, branch checklist, approval, plan</span></div>
+        <div class="flow-arrow">></div>
+        <div class="flow-step"><strong>4. Publish branch</strong><span>Marketplace visibility and booking enabled</span></div>
+        <div class="flow-arrow">></div>
+        <div class="flow-step"><strong>5. Daily setup</strong><span>Staff, services, products, stock, benefits</span></div>
+        <div class="flow-arrow">></div>
+        <div class="flow-step"><strong>6. Booking</strong><span>Marketplace, website, phone, walk-in or staff-created</span></div>
+        <div class="flow-arrow">></div>
+        <div class="flow-step"><strong>7. Appointment</strong><span>Check-in, serve, complete or no-show</span></div>
+        <div class="flow-arrow">></div>
+        <div class="flow-step"><strong>8. POS</strong><span>Invoice, payment, stock, commission, loyalty</span></div>
+        <div class="flow-arrow">></div>
+        <div class="flow-step"><strong>9. Day close</strong><span>Register, cash variance, GST, expenses</span></div>
+        <div class="flow-arrow">></div>
+        <div class="flow-step"><strong>10. Reports</strong><span>Owner reviews business performance</span></div>
+      </div>
+
+      <p class="section-label">Counter flow for salon staff</p>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><div class="card-icon">R</div><div><div class="card-title">Reception appointment flow</div><div class="card-sub">Fast booking for existing and new customers</div></div></div>
+          <div class="card-body">
+            <ul class="check-list">
+              <li>Select branch if owner is viewing all branches.</li>
+              <li>Search customer by name or mobile number.</li>
+              <li>Add new customer if no match, then return to saved booking draft.</li>
+              <li>Select one or more services from category-grouped service master.</li>
+              <li>Select date, available slot and qualified staff.</li>
+              <li>Create appointment with conflict checks and idempotency key.</li>
+              <li>Appointment appears in smart list, calendar and dashboard immediately.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-icon">P</div><div><div class="card-title">POS and invoice flow</div><div class="card-sub">Money and benefits loop</div></div></div>
+          <div class="card-body">
+            <ul class="check-list">
+              <li>Select customer or use Create sale from an appointment, which preloads branch, customer, appointment, services and staff attribution.</li>
+              <li>Add services and products with staff attribution.</li>
+              <li>Preview wallet, loyalty, package and gift card balances.</li>
+              <li>Apply discounts, redemptions, tips and payment split.</li>
+              <li>Generate GST or non-GST invoice with correct sequence.</li>
+              <li>Deduct stock, calculate commissions and update benefits atomically.</li>
+              <li>Open invoice detail for print or browser save-as-PDF.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <p class="section-label">Owner control flow</p>
+      <div class="grid-3">
+        <div class="card"><div class="card-head"><div class="card-icon">D</div><div><div class="card-title">Daily dashboard</div><div class="card-sub">Morning and live view</div></div></div><div class="card-body"><ul class="screen-list"><li><span class="dot"></span><div><div class="screen-name">Today revenue, appointments, staff attendance</div><div class="screen-desc">Clickable metrics should open filtered reports.</div></div></li><li><span class="dot"></span><div><div class="screen-name">Low stock and pending payments</div><div class="screen-desc">Operational alerts that need action.</div></div></li></ul></div></div>
+        <div class="card"><div class="card-head"><div class="card-icon">C</div><div><div class="card-title">Closing</div><div class="card-sub">End-of-day verification</div></div></div><div class="card-body"><ul class="screen-list"><li><span class="dot"></span><div><div class="screen-name">Register close</div><div class="screen-desc">Opening cash, cash sales, refunds, expected cash, counted cash and variance.</div></div></li><li><span class="dot"></span><div><div class="screen-name">Reconciliation</div><div class="screen-desc">Sales, GST, payments, expenses, stock movement and commissions.</div></div></li></ul></div></div>
+        <div class="card"><div class="card-head"><div class="card-icon">G</div><div><div class="card-title">Growth</div><div class="card-sub">After operations are stable</div></div></div><div class="card-body"><ul class="screen-list"><li><span class="dot"></span><div><div class="screen-name">Marketing and reviews</div><div class="screen-desc">Campaigns, reminders, review inbox and customer reactivation.</div></div></li><li><span class="dot"></span><div><div class="screen-name">Website and marketplace</div><div class="screen-desc">Public salon pages, offers, SEO and improved discovery.</div></div></li></ul></div></div>
+      </div>
+    </section>
+
+    <section class="content" id="pane-ui">
+      <div class="note">
+        UI direction should stay premium but operational. The salon team needs speed, clear labels, strong status colors and minimal confusion during busy counter work.
+      </div>
+
+      <p class="section-label">Brand palette</p>
+      <div class="palette">
+        <div class="swatch" style="background:#111111">Black<br>#111111</div>
+        <div class="swatch" style="background:#173279">Deep Blue<br>#173279</div>
+        <div class="swatch" style="background:#13B4B2;color:#111111">Tech Teal<br>#13B4B2</div>
+        <div class="swatch" style="background:#F7FAFC;color:#111111">Off White<br>#F7FAFC</div>
+        <div class="swatch" style="background:#1789AA;color:#111111">Flow Cyan<br>#1789AA</div>
+        <div class="swatch" style="background:#16B994;color:#111111">Growth Green<br>#16B994</div>
+        <div class="swatch" style="background:#9a4036">Danger<br>#9a4036</div>
+      </div>
+
+      <p class="section-label">Screen design requirements</p>
+      <div class="grid">
+        <div class="card"><div class="card-head"><div class="card-icon">1</div><div><div class="card-title">Workspace shell</div><div class="card-sub">Navigation and account area</div></div></div><div class="card-body"><ul class="check-list"><li>Clear active menu state and no overlapping user/logout card.</li><li>Fixed branch selector and quick actions.</li><li>Desktop sidebar for large screens; mobile app shell with bottom tabs and More sheet.</li><li>Role-aware hidden or disabled navigation items.</li></ul></div></div>
+        <div class="card"><div class="card-head"><div class="card-icon">2</div><div><div class="card-title">Dashboard</div><div class="card-sub">Daily command center</div></div></div><div class="card-body"><ul class="check-list"><li>Top quick actions: New appointment, New sale, Add customer, Add expense, Stock entry.</li><li>KPI row: revenue, appointments, customers, average ticket, outstanding, staff present.</li><li>Middle widgets: calendar preview, source mix, payment split, low stock, recent invoices.</li><li>Every metric clickable to filtered report.</li></ul></div></div>
+        <div class="card"><div class="card-head"><div class="card-icon">3</div><div><div class="card-title">Appointments</div><div class="card-sub">List-first scheduling</div></div></div><div class="card-body"><ul class="check-list"><li>Mobile default is the appointment queue/list: who is coming now, what is next, and what action is needed.</li><li>Calendar remains available as a secondary visual view for desktop/tablet scheduling.</li><li>Click appointment to open detail drawer or full-screen mobile sheet.</li><li>Drag-and-drop and resize remain desktop/tablet actions with confirmation and conflict recheck.</li></ul></div></div>
+        <div class="card"><div class="card-head"><div class="card-icon">4</div><div><div class="card-title">POS</div><div class="card-sub">Counter sale speed</div></div></div><div class="card-body"><ul class="check-list"><li>Mobile POS opens directly to current sale with customer, cart total and payment CTA visible.</li><li>Sections: customer, linked appointment, cart, redemptions, payment, summary.</li><li>Customer balance preview for wallet, rewards, gift cards and packages.</li><li>Open created invoice automatically after checkout.</li></ul></div></div>
+        <div class="card"><div class="card-head"><div class="card-icon">5</div><div><div class="card-title">Tables and lists</div><div class="card-sub">Readable operational data</div></div></div><div class="card-body"><ul class="check-list"><li>Sticky headers, status chips, row hover and quick filters on desktop.</li><li>Mobile card layout for appointment, invoice, customer, inventory and staff rows.</li><li>Open action visible on clickable records.</li><li>CSV export where business users need reconciliation.</li></ul></div></div>
+        <div class="card"><div class="card-head"><div class="card-icon">6</div><div><div class="card-title">Forms and drawers</div><div class="card-sub">Clear input and validation</div></div></div><div class="card-body"><ul class="check-list"><li>Every input needs a visible label and useful placeholder.</li><li>Required fields and validation errors should be explicit.</li><li>Primary and secondary actions should be visually distinct.</li><li>Drawers for appointment, invoice, customer, service, staff and product details.</li></ul></div></div>
+      </div>
+
+      <p class="section-label">Status and highlight rules</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Data type</th><th>Highlight rule</th><th>Color direction</th><th>Where used</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Paid / completed / active</strong></td><td>Use calm success styling.</td><td>Green</td><td>Invoices, appointments, staff, services, branches.</td></tr>
+            <tr><td><strong>Pending / draft / review</strong></td><td>Use attention without danger.</td><td>Growth green or amber</td><td>Onboarding, approvals, register variance, pending payment.</td></tr>
+            <tr><td><strong>Rejected / cancelled / failed</strong></td><td>Use danger styling and clear reason text.</td><td>Red</td><td>Documents, appointments, refunds, messaging failures.</td></tr>
+            <tr><td><strong>Money values</strong></td><td>Large values should be bold and aligned consistently.</td><td>Black + green/teal accent</td><td>Dashboard, POS, invoices, reports, closing.</td></tr>
+            <tr><td><strong>Warnings</strong></td><td>Use visible chips and drawer callouts.</td><td>Amber/red</td><td>Customer allergies, low stock, overdue payment, attendance issue.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content" id="pane-testing">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><div class="card-icon">Q</div><div><div class="card-title">Quality commands</div><div class="card-sub">Run before milestone completion</div></div></div>
+          <div class="card-body">
+            <ul class="check-list">
+              <li>npm run lint</li>
+              <li>npm run typecheck</li>
+              <li>npm test</li>
+              <li>npm run build</li>
+              <li>Prisma migration validation before database changes.</li>
+              <li>Desktop, tablet and mobile browser checks.</li>
+              <li>Latest successful validation: typecheck, test suite, Prisma validate and production build passed on 07 Jul 2026 after mobile UI stabilization.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-icon">A</div><div><div class="card-title">Pilot acceptance</div><div class="card-sub">Minimum usable salon flow</div></div></div>
+          <div class="card-body">
+            <ul class="check-list">
+              <li>Owner logs in and sees only authorized branches.</li>
+              <li>Super Admin approves salon and branch publication.</li>
+              <li>Reception creates customer and appointment from dashboard/calendar.</li>
+              <li>Appointment appears in smart list and calendar, then opens detail drawer or mobile sheet.</li>
+              <li>Create sale from appointment opens POS with branch, customer, appointment and service lines prefilled.</li>
+              <li>POS creates GST/non-GST invoice and records offline payment.</li>
+              <li>Inventory, commission, loyalty, wallet/package/gift-card updates are correct.</li>
+              <li>Invoice opens, prints and saves as PDF.</li>
+              <li>Register opens and closes with variance tracking.</li>
+              <li>Reports reconcile with invoices, payments, inventory and expenses.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <p class="section-label">Critical test journeys</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Journey</th><th>Roles</th><th>Must verify</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Salon onboarding to publication</strong></td><td>Owner, Super Admin</td><td>Documents, checklist, branch approval, active tenant, marketplace visibility.</td><td><span class="tag done">Mostly built</span></td></tr>
+            <tr><td><strong>Appointment to checkout</strong></td><td>Owner, receptionist, stylist</td><td>Customer search/add, slot availability, staff assignment, appointment list/calendar visibility, POS handoff, completion, invoice, payment.</td><td><span class="tag partial">Strong foundation</span></td></tr>
+            <tr><td><strong>Benefits redemption</strong></td><td>Owner, receptionist, accountant</td><td>Wallet, loyalty, package, gift card success/failure, balance history and refund reversal.</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td><strong>Inventory lifecycle</strong></td><td>Owner, manager, accountant</td><td>Product create, purchase, transfer, stocktake, adjustment, service consumption and low stock.</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td><strong>Attendance and payroll</strong></td><td>Owner, manager, stylist, accountant</td><td>Clock-in/out, corrections, approval, worked hours, commissions, tips, CSV export.</td><td><span class="tag partial">Partial</span></td></tr>
+            <tr><td><strong>Day closing</strong></td><td>Owner, manager, receptionist, accountant</td><td>Open register, sale, refund, expense, close register, variance, CSV export.</td><td><span class="tag done">API smoke-tested; browser hardening next</span></td></tr>
+            <tr><td><strong>Mobile installed-app workflow</strong></td><td>Owner, receptionist, stylist, accountant</td><td>Bottom tabs, More sheet, appointment queue, POS current sale, bottom sheets, safe-area spacing and no horizontal scrolling on 360px-430px widths.</td><td><span class="tag partial">Recently improved</span></td></tr>
+            <tr><td><strong>Marketplace and website</strong></td><td>Customer, owner</td><td>Discovery, booking, customer booking management, website editor, published branch page.</td><td><span class="tag future">Future</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <p class="footer">This HTML file is a planning and showcase document. It does not change application behavior.</p>
+  </main>
+
+  <script>
+    function showPane(name) {
+      document.querySelectorAll(".tab").forEach(function (tab) { tab.classList.remove("active"); });
+      document.querySelectorAll(".content").forEach(function (pane) { pane.classList.remove("active"); });
+      var pane = document.getElementById("pane-" + name);
+      var button = Array.from(document.querySelectorAll(".tab")).find(function (tab) {
+        return tab.getAttribute("onclick") === "showPane('" + name + "')";
+      });
+      if (pane) pane.classList.add("active");
+      if (button) button.classList.add("active");
+    }
+  </script>
+</body>
+</html>

@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { OperationsError, operationsErrorResponse, requireOperationsContext } from "@/lib/operations-auth";
-import { can } from "@/lib/rbac";
 
 const schema = z.object({
   branchId: z.string().min(1),
@@ -10,6 +9,7 @@ const schema = z.object({
   price: z.number().positive(),
   durationMinutes: z.number().int().min(15).max(480),
   taxRate: z.number().min(0).max(100),
+  priceTaxMode: z.enum(["EXCLUSIVE", "INCLUSIVE"]),
   isActive: z.boolean(),
   onlineBooking: z.boolean().optional(),
   bufferBefore: z.number().int().min(0).max(180).optional(),
@@ -77,6 +77,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ serv
           durationMinutes: service.durationMinutes,
           price: Number(service.price),
           taxRate: Number(service.taxRate),
+          priceTaxMode: service.priceTaxMode,
           isActive: service.isActive,
           onlineBooking: service.onlineBooking,
           bufferBefore: service.bufferBefore,
@@ -90,6 +91,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ serv
           price: Number(override.price ?? service.price),
           durationMinutes: override.durationMinutes ?? service.durationMinutes,
           taxRate: Number(override.taxRate ?? service.taxRate),
+          priceTaxMode: override.priceTaxMode ?? service.priceTaxMode,
         })),
         qualifiedStaff: service.staff
           .filter(({ staff }) => {
@@ -129,7 +131,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ serv
             status: appointment.status,
             price: Number(service.price),
           })),
-        permissions: { canEdit: can(context.user.role, "branch:manage") },
+        permissions: { canEdit: context.permissions.has("master:write") },
       },
     });
   } catch (error) {
@@ -147,6 +149,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ se
       price: parsed.data.price,
       durationMinutes: parsed.data.durationMinutes,
       taxRate: parsed.data.taxRate,
+      priceTaxMode: parsed.data.priceTaxMode,
       isActive: parsed.data.isActive,
     };
     const service = await db.service.findFirst({ where: { id: serviceId, tenantId: context.tenant.id } });

@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     const parsed = schema.safeParse(Object.fromEntries(new URL(request.url).searchParams));
     if (!parsed.success) throw new OperationsError("VALIDATION", "Invalid branch", 400, parsed.error.flatten());
     const context = await requireOperationsContext("appointment:read", { branchId: parsed.data.branchId, requireBranch: true });
-    const [branch, services, categories, staff] = await Promise.all([
+    const [branch, services, categories, staff, resources] = await Promise.all([
       db.branch.findUnique({
         where: { id: context.branch!.id },
         include: { operatingHours: { orderBy: { dayOfWeek: "asc" } } },
@@ -30,6 +30,10 @@ export async function GET(request: Request) {
         },
         include: { user: true, services: true },
         orderBy: { user: { name: "asc" } },
+      }),
+      db.resource.findMany({
+        where: { branchId: context.branch!.id },
+        orderBy: [{ type: "asc" }, { name: "asc" }],
       }),
     ]);
     if (!branch) throw new OperationsError("NOT_FOUND", "Branch not found", 404);
@@ -59,6 +63,7 @@ export async function GET(request: Request) {
             durationMinutes: override?.durationMinutes ?? service.durationMinutes,
             price: Number(override?.price ?? service.price),
             taxRate: Number(override?.taxRate ?? service.taxRate),
+            priceTaxMode: override?.priceTaxMode ?? service.priceTaxMode,
             isActive: true,
           }];
         }),
@@ -67,6 +72,11 @@ export async function GET(request: Request) {
           name: member.user.name,
           role: member.jobTitle,
           serviceIds: member.services.map((service) => service.serviceId),
+        })),
+        resources: resources.map((resource) => ({
+          id: resource.id,
+          name: resource.name,
+          type: resource.type,
         })),
       },
     });

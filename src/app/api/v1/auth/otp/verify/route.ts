@@ -27,7 +27,7 @@ export async function POST(request: Request) {
   const user = await db.user.upsert({
     where: { phone: parsed.data.phone },
     update: { isActive: true },
-    create: { phone: parsed.data.phone, name: "Neel customer", role: "CUSTOMER" },
+    create: { phone: parsed.data.phone, name: "Operyx customer", role: "CUSTOMER" },
   });
   if (user.role !== "CUSTOMER" || !user.isActive) return Response.json({ error: "This phone number cannot use customer sign-in" }, { status: 403 });
   const token = await createSessionToken({ userId: user.id, tenantId: null, role: "CUSTOMER", name: user.name });

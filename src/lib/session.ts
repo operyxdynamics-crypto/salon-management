@@ -46,7 +46,7 @@ export async function readSession(): Promise<SessionPayload | null> {
 }
 
 export const sessionCookie = {
-  name: "ruvyra_session",
+  name: "operyx_session",
   options: {
     httpOnly: true,
     sameSite: "lax" as const,

@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { OperationsError, operationsErrorResponse, requireOperationsContext } from "@/lib/operations-auth";
-import { can } from "@/lib/rbac";
 
 const updateSchema = z.object({
   branchId: z.string().min(1),
@@ -220,7 +219,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ cust
           expiresAt: card.expiresAt?.toISOString() ?? null,
         })),
         pagination: { page, pageSize, appointmentsTotal, invoicesTotal },
-        permissions: { canWrite: can(context.user.role, "customer:write") },
+        // Read the resolved permission set, not the legacy role map: a receptionist may have been
+        // granted this individually, and a custom role may not map to any legacy role at all.
+        permissions: { canWrite: context.permissions.has("customer:write") },
       },
     });
   } catch (error) {

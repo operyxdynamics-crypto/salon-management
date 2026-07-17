@@ -7,6 +7,6 @@ export const dynamic = "force-dynamic";
 export default async function OnboardingPage() {
   const session = await readSession();
   if (!session) redirect("/onboarding/register");
-  if (session.role !== "OWNER") redirect(session.role === "PLATFORM_ADMIN" ? "/admin" : "/dashboard");
+  if (session.role !== "OWNER") redirect(session.role === "PLATFORM_ADMIN" ? "/admin" : "/workspace/home");
   return <OnboardingWorkspace />;
 }

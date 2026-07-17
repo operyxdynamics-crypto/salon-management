@@ -31,6 +31,7 @@ function indiaMonthBounds(date = new Date()) {
 export async function getWorkspaceData({
   tenantId,
   selectedBranchId,
+  selectedBranchIds,
   authorizedBranches,
   userName,
   role,
@@ -40,6 +41,7 @@ export async function getWorkspaceData({
 }: {
   tenantId: string;
   selectedBranchId: string | null;
+  selectedBranchIds?: string[] | null;
   authorizedBranches: Array<{ id: string; name: string; city: string; publicationStatus: string }>;
   userName: string;
   role: string;
@@ -49,15 +51,35 @@ export async function getWorkspaceData({
 }): Promise<WorkspaceData> {
   const day = indiaDayBounds();
   const month = indiaMonthBounds();
-  const branchIds = selectedBranchId ? [selectedBranchId] : authorizedBranches.map((branch) => branch.id);
-  const selectedBranch = selectedBranchId ? authorizedBranches.find((branch) => branch.id === selectedBranchId) : null;
+  const branchIds = selectedBranchIds?.length
+    ? selectedBranchIds
+    : selectedBranchId
+      ? [selectedBranchId]
+      : authorizedBranches.map((branch) => branch.id);
+  const selectedBranch = branchIds.length === 1 ? authorizedBranches.find((branch) => branch.id === branchIds[0]) : null;
+  const allBranchIds = authorizedBranches.map((branch) => branch.id);
+  const isAllBranchScope = branchIds.length === allBranchIds.length && allBranchIds.every((id) => branchIds.includes(id));
+  const scope = selectedBranch ? "branch" : isAllBranchScope ? "all" : "multi";
   const branchFilter = { in: branchIds };
 
-  const [branchProfiles, appointments, monthAppointments, customers, services, serviceCategories, team, stock, stockMovements, purchaseEntries, vendors, registerSessions, expenses, invoices, customerCount, monthExpenses, memberships, packages, giftCards, rewardRules, campaigns, reviews, auditLogs] = await Promise.all([
+  const [branchProfiles, branchScopeInfo, appointments, monthAppointments, customers, services, serviceCategories, team, resources, blockedTimes, stock, stockMovements, purchaseEntries, vendors, registerSessions, expenses, invoices, customerCount, monthExpenses, memberships, packages, giftCards, rewardRules, campaigns, reviews, auditLogs, subscriptionRecord, tenantUsage, taxClasses] = await Promise.all([
     db.branch.findMany({
       where: { id: { in: branchIds } },
       include: { operatingHours: { orderBy: { dayOfWeek: "asc" } } },
       orderBy: { name: "asc" },
+    }),
+    // Every branch the user may see, not just the ones currently in scope - the branch picker has
+    // to offer them all, grouped by the business that operates them.
+    db.branch.findMany({
+      where: { id: { in: allBranchIds } },
+      select: {
+        id: true,
+        state: true,
+        ownershipModel: true,
+        operatorEntityId: true,
+        operatorEntity: { select: { id: true, name: true } },
+        gstRegistration: { select: { gstin: true, state: true, isActive: true } },
+      },
     }),
     db.appointment.findMany({
       where: {
@@ -70,6 +92,8 @@ export async function getWorkspaceData({
         customer: true,
         service: true,
         staff: { include: { user: true } },
+        resource: true,
+        invoice: { include: { payments: true } },
         serviceLines: { include: { service: true, staff: { include: { user: true } } }, orderBy: { sortOrder: "asc" } },
       },
       orderBy: { startsAt: "asc" },
@@ -111,9 +135,19 @@ export async function getWorkspaceData({
       },
       orderBy: { user: { name: "asc" } },
     }),
+    db.resource.findMany({
+      where: { branchId: branchFilter },
+      orderBy: [{ type: "asc" }, { name: "asc" }],
+    }),
+    db.blockedTime.findMany({
+      where: { branchId: branchFilter, startsAt: { lt: day.end }, endsAt: { gt: day.start } },
+      include: { branch: true, staff: { include: { user: true } }, resource: true },
+      orderBy: { startsAt: "asc" },
+    }),
     db.branchStock.findMany({
       where: { branchId: branchFilter },
-      include: { inventoryItem: true },
+      // Brand is needed on the POS tile ("L'Oreal - 200ml") and for coupon restrictions.
+      include: { inventoryItem: { include: { brand: { select: { name: true } } } } },
       orderBy: { inventoryItem: { name: "asc" } },
     }),
     db.stockMovement.findMany({
@@ -169,13 +203,72 @@ export async function getWorkspaceData({
       orderBy: { createdAt: "desc" },
       take: 50,
     }),
+    db.tenantSubscription.findUnique({
+      where: { tenantId },
+      include: { plan: true },
+    }),
+    Promise.all([
+      db.branch.count({ where: { tenantId, publicationStatus: { not: "ARCHIVED" } } }),
+      db.user.count({ where: { tenantId, role: { in: ["OWNER", "MANAGER", "RECEPTIONIST", "STYLIST", "ACCOUNTANT"] }, isActive: true } }),
+      db.service.count({ where: { tenantId, isActive: true } }),
+      db.appointment.count({ where: { branch: { tenantId }, createdAt: { gte: month.start, lt: month.end } } }),
+      db.verificationDocument.aggregate({ where: { tenantId }, _sum: { sizeBytes: true } }),
+    ]),
+    // The tax rates a service or product can be linked to, defined once in the Tax master.
+    db.taxClass.findMany({ where: { tenantId, isActive: true }, orderBy: [{ kind: "asc" }, { rate: "asc" }, { name: "asc" }] }),
   ]);
 
   const netInvoiceTotal = (invoice: (typeof invoices)[number]) => Number(invoice.total) * (invoice.type === "REFUND" ? -1 : 1);
-  const todayInvoices = invoices.filter((invoice) => invoice.createdAt >= day.start && invoice.createdAt < day.end && ["PAID", "PARTIALLY_PAID"].includes(invoice.status));
+
+  /**
+   * Which invoices count toward revenue.
+   *
+   * A refund reverses a sale exactly once. It used to be counted twice: the original sale flipped
+   * to REFUNDED and was dropped from revenue entirely, *and* the credit note was subtracted - so a
+   * fully refunded 2,000 sale showed as MINUS 2,000 instead of zero, and a month with a few test
+   * refunds went negative.
+   *
+   * So a SALE counts whenever it was actually billed, including after it has been refunded, and the
+   * credit note carries the reversal. VOID and DRAFT never happened and never count.
+   */
+  const countsTowardRevenue = (invoice: (typeof invoices)[number]) => {
+    if (invoice.status === "VOID" || invoice.status === "DRAFT") return false;
+    return invoice.type === "REFUND" ? invoice.status === "PAID" : true;
+  };
+
+  /**
+   * Whose money is this?
+   *
+   * A FOFO franchisee bills under its own GSTIN and its own legal entity. Its sales are its
+   * revenue, not the company's - so summing every invoice in scope and calling it "revenue" would
+   * hand the owner a number they might act on that is simply not theirs.
+   *
+   * Invoices raised before legal entities existed carry no entity and are the company's by
+   * definition, since there was no one else at the time.
+   */
+  const legalEntities = await db.legalEntity.findMany({
+    where: { tenantId },
+    select: { id: true, name: true, type: true, isPrimary: true },
+  });
+  const primaryEntity = legalEntities.find((entity) => entity.isPrimary) ?? null;
+  const isCompanyInvoice = (invoice: (typeof invoices)[number]) =>
+    !invoice.legalEntityId || invoice.legalEntityId === primaryEntity?.id;
+
+  const todayInvoices = invoices.filter((invoice) => invoice.createdAt >= day.start && invoice.createdAt < day.end && countsTowardRevenue(invoice));
   const todayRevenue = todayInvoices.reduce((sum, invoice) => sum + netInvoiceTotal(invoice), 0);
+
+  const monthRevenueInvoices = invoices.filter(countsTowardRevenue);
+  const companyMonthRevenue = monthRevenueInvoices
+    .filter(isCompanyInvoice)
+    .reduce((sum, invoice) => sum + netInvoiceTotal(invoice), 0);
+  const franchiseMonthRevenue = monthRevenueInvoices
+    .filter((invoice) => !isCompanyInvoice(invoice))
+    .reduce((sum, invoice) => sum + netInvoiceTotal(invoice), 0);
+  const companyTodayRevenue = todayInvoices
+    .filter(isCompanyInvoice)
+    .reduce((sum, invoice) => sum + netInvoiceTotal(invoice), 0);
   const revenueByDay = new Map<string, number>();
-  for (const invoice of invoices.filter((item) => ["PAID", "PARTIALLY_PAID"].includes(item.status))) {
+  for (const invoice of invoices.filter(countsTowardRevenue)) {
     const label = new Intl.DateTimeFormat("en-IN", { day: "2-digit", month: "short", timeZone: "Asia/Kolkata" }).format(invoice.createdAt);
     revenueByDay.set(label, (revenueByDay.get(label) ?? 0) + netInvoiceTotal(invoice));
   }
@@ -219,14 +312,61 @@ export async function getWorkspaceData({
       role,
       tenantName,
       tenantSlug,
-      branchId: selectedBranchId,
-      branchName: selectedBranch?.name ?? "All branches",
-      branchCity: selectedBranch?.city ?? "India",
-      scope: selectedBranchId ? "branch" : "all",
+      branchId: selectedBranch?.id ?? null,
+      selectedBranchIds: branchIds,
+      branchName: selectedBranch?.name ?? (scope === "multi" ? `${branchIds.length} branches` : "All branches"),
+      branchCity: selectedBranch?.city ?? (scope === "multi" ? "Selected branches" : "India"),
+      scope,
+      subscription: subscriptionRecord ? {
+        planName: subscriptionRecord.plan.name,
+        planCode: subscriptionRecord.plan.code,
+        limits: {
+          branches: subscriptionRecord.plan.maxBranches,
+          staff: subscriptionRecord.plan.maxStaff,
+          services: subscriptionRecord.plan.maxServices,
+          monthlyAppointments: subscriptionRecord.plan.maxMonthlyAppointments,
+          storageMb: subscriptionRecord.plan.maxStorageMb,
+        },
+        usage: {
+          branches: tenantUsage[0],
+          staff: tenantUsage[1],
+          services: tenantUsage[2],
+          monthlyAppointments: tenantUsage[3],
+          storageMb: Math.ceil(Number(tenantUsage[4]._sum.sizeBytes ?? 0) / 1024 / 1024),
+        },
+      } : null,
+      // Derived, never configured. Each flag unlocks UI that would otherwise be noise.
+      capabilities: {
+        hasMultipleBranches: authorizedBranches.length > 1,
+        hasFranchises: legalEntities.some((entity) => entity.type === "FRANCHISEE"),
+        hasMultipleStates: new Set(branchScopeInfo.map((branch) => branch.state).filter(Boolean)).size > 1,
+        hasMultipleEntities: legalEntities.length > 1,
+        sellsProducts: stockByItem.size > 0,
+        hasStaffCommission: team.some((member) => Number(member.commissionRate) > 0),
+      },
       branches: authorizedBranches.map((branch) => {
         const profile = branchProfiles.find((item) => item.id === branch.id);
+        const scopeInfo = branchScopeInfo.find((item) => item.id === branch.id);
+        const registration = scopeInfo?.gstRegistration ?? null;
+        // A branch can bill GST only if its registration is active and in its own state. This is
+        // the same rule checkout enforces; surfacing it here means the picker can warn before a
+        // receptionist is stopped mid-sale.
+        const gstReady = Boolean(
+          registration?.isActive
+          && registration.gstin
+          && !registration.gstin.startsWith("UNREGISTERED")
+          && registration.state.trim().toLowerCase() === (scopeInfo?.state ?? "").trim().toLowerCase(),
+        );
+
         return {
           ...branch,
+          state: scopeInfo?.state ?? "",
+          ownershipModel: scopeInfo?.ownershipModel ?? "COCO",
+          operatorName: scopeInfo?.operatorEntity?.name ?? null,
+          operatorEntityId: scopeInfo?.operatorEntityId ?? null,
+          gstin: gstReady ? registration?.gstin ?? null : null,
+          gstState: registration?.state ?? null,
+          gstReady,
           timezone: profile?.timezone ?? "Asia/Kolkata",
           operatingHours: profile?.operatingHours.map((hours) => ({
             dayOfWeek: hours.dayOfWeek,
@@ -244,8 +384,13 @@ export async function getWorkspaceData({
       customerCount,
       averageTicket: todayInvoices.filter((invoice) => invoice.type === "SALE").length ? todayRevenue / todayInvoices.filter((invoice) => invoice.type === "SALE").length : 0,
       lowStockCount: [...stockByItem.values()].filter((item) => item.totalQuantity <= Number(item.inventoryItem.reorderLevel)).length,
-      monthRevenue: invoices.reduce((sum, invoice) => ["PAID", "PARTIALLY_PAID"].includes(invoice.status) ? sum + netInvoiceTotal(invoice) : sum, 0),
-      monthTax: invoices.reduce((sum, invoice) => ["PAID", "PARTIALLY_PAID"].includes(invoice.status) ? sum + Number(invoice.tax) * (invoice.type === "REFUND" ? -1 : 1) : sum, 0),
+      monthRevenue: companyMonthRevenue + franchiseMonthRevenue,
+      // Split out, because the two are not interchangeable. Franchise revenue passed through this
+      // salon's tills but belongs to the franchisee.
+      companyMonthRevenue,
+      franchiseMonthRevenue,
+      companyTodayRevenue,
+      monthTax: invoices.reduce((sum, invoice) => countsTowardRevenue(invoice) ? sum + Number(invoice.tax) * (invoice.type === "REFUND" ? -1 : 1) : sum, 0),
       monthExpenses: Number(monthExpenses._sum.amount ?? 0),
       monthAppointments: monthAppointments.length,
       monthNewCustomers: customers.filter((customer) => customer.createdAt >= month.start && customer.createdAt < month.end).length,
@@ -263,11 +408,14 @@ export async function getWorkspaceData({
     },
     appointments: appointments.map((appointment) => ({
       id: appointment.id,
+      bookingReference: appointment.id,
       branchId: appointment.branchId,
       branchName: appointment.branch.name,
       customerId: appointment.customerId,
       customer: appointment.customer.name,
       phone: appointment.customer.phone,
+      customerNotes: appointment.customer.notes,
+      customerAllergies: appointment.customer.allergies,
       serviceId: appointment.serviceId,
       service: appointment.service.name,
       staffId: appointment.staffId,
@@ -276,7 +424,19 @@ export async function getWorkspaceData({
       endsAt: appointment.endsAt.toISOString(),
       status: appointment.status,
       source: appointment.source,
+      notes: appointment.notes,
+      cancellationReason: appointment.cancellationReason,
+      resourceId: appointment.resourceId,
+      resourceName: appointment.resource?.name ?? null,
       price: Number(appointment.service.price),
+      invoice: appointment.invoice ? {
+        id: appointment.invoice.id,
+        number: appointment.invoice.number,
+        status: appointment.invoice.status,
+        total: Number(appointment.invoice.total),
+        paid: appointment.invoice.payments.reduce((sum, payment) => sum + Number(payment.amount), 0),
+        outstanding: Math.max(0, Number(appointment.invoice.total) - appointment.invoice.payments.reduce((sum, payment) => sum + Number(payment.amount), 0)),
+      } : null,
       serviceLines: appointment.serviceLines.map((line) => ({
         id: line.id,
         serviceId: line.serviceId,
@@ -288,6 +448,7 @@ export async function getWorkspaceData({
         durationMinutes: line.durationMinutes,
         price: Number(line.price),
         taxRate: Number(line.taxRate),
+        priceTaxMode: line.priceTaxMode,
       })),
     })),
     customers: customers.map((customer) => ({
@@ -316,8 +477,10 @@ export async function getWorkspaceData({
         durationMinutes: override?.durationMinutes ?? service.durationMinutes,
         price: Number(override?.price ?? service.price),
         taxRate: Number(override?.taxRate ?? service.taxRate),
+        priceTaxMode: override?.priceTaxMode ?? service.priceTaxMode,
         isActive: override ? override.isActive : service.isActive,
         masterPrice: Number(service.price),
+        masterPriceTaxMode: service.priceTaxMode,
         masterDurationMinutes: service.durationMinutes,
         onlineBooking: service.onlineBooking,
         bufferBefore: service.bufferBefore,
@@ -325,6 +488,13 @@ export async function getWorkspaceData({
         sortOrder: service.sortOrder,
       };
     }),
+    taxClasses: taxClasses.map((taxClass) => ({
+      id: taxClass.id,
+      name: taxClass.name,
+      code: taxClass.code,
+      kind: taxClass.kind,
+      rate: Number(taxClass.rate),
+    })),
     serviceCategories: serviceCategories.map((category) => ({
       id: category.id,
       name: category.name,
@@ -349,16 +519,40 @@ export async function getWorkspaceData({
       attendanceToday: attendanceState(member),
       commissionEarned: member.commissions.reduce((sum, commission) => sum + Number(commission.amount), 0),
     })),
+    resources: resources.map((resource) => ({
+      id: resource.id,
+      branchId: resource.branchId,
+      name: resource.name,
+      type: resource.type,
+    })),
+    blockedTimes: blockedTimes.map((block) => ({
+      id: block.id,
+      branchId: block.branchId,
+      branchName: block.branch.name,
+      staffId: block.staffId,
+      staffName: block.staff?.user.name ?? null,
+      resourceId: block.resourceId,
+      resourceName: block.resource?.name ?? null,
+      title: block.title,
+      reason: block.reason,
+      startsAt: block.startsAt.toISOString(),
+      endsAt: block.endsAt.toISOString(),
+      isAllDay: block.isAllDay,
+    })),
     inventory: [...stockByItem.values()].map((item) => ({
       id: item.inventoryItem.id,
       name: item.inventoryItem.name,
       sku: item.inventoryItem.sku,
       category: item.inventoryItem.category,
+      categoryId: item.inventoryItem.categoryId,
+      brandName: item.inventoryItem.brand?.name ?? null,
       unit: item.inventoryItem.unit,
       quantity: item.totalQuantity,
       reorderLevel: Number(item.inventoryItem.reorderLevel),
       retailPrice: Number(item.inventoryItem.retailPrice),
       costPrice: Number(item.inventoryItem.costPrice),
+      taxRate: Number(item.inventoryItem.taxRate),
+      priceTaxMode: item.inventoryItem.priceTaxMode,
       stockValue: item.totalQuantity * Number(item.inventoryItem.costPrice),
       isActive: item.inventoryItem.isActive,
       vendorId: item.inventoryItem.vendorId,

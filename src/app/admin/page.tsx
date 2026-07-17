@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminPage() {
   const session = await readSession();
   if (!session) redirect("/login");
-  if (session.role !== "PLATFORM_ADMIN") redirect("/dashboard");
+  if (session.role !== "PLATFORM_ADMIN") redirect("/workspace/home");
 
   const [tenants, plans, categoryTemplates, auditLogs, appointmentCount, paidTotals] = await Promise.all([
     db.tenant.findMany({

@@ -1,7 +1,9 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 import { inr } from "@/lib/format";
+import { useToast } from "./toast";
 
 type Plan = {
   id: string; code: string; name: string; description: string | null;
@@ -13,9 +15,10 @@ type Plan = {
 const cap = (value: number, noun: string) => value <= 0 ? `Unlimited ${noun}` : `${value} ${noun}`;
 
 export function PlansEditor({ plans }: { plans: Plan[] }) {
+  const router = useRouter();
+  const toast = useToast();
   const [editing, setEditing] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
   async function save(event: FormEvent<HTMLFormElement>, plan: Plan) {
@@ -26,7 +29,7 @@ export function PlansEditor({ plans }: { plans: Plan[] }) {
       return raw === null || raw === "" ? fallback : Number(raw);
     };
 
-    setBusy(true); setError(""); setMessage("");
+    setBusy(true); setError("");
     const response = await fetch("/api/v1/admin/plans", {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -41,7 +44,7 @@ export function PlansEditor({ plans }: { plans: Plan[] }) {
         maxBranches: number("maxBranches", plan.maxBranches),
         maxStaff: number("maxStaff", plan.maxStaff),
         maxServices: number("maxServices", plan.maxServices),
-        maxMonthlyAppointments: plan.maxMonthlyAppointments,
+        maxMonthlyAppointments: number("maxMonthlyAppointments", plan.maxMonthlyAppointments),
         maxStorageMb: plan.maxStorageMb,
         features: plan.features,
         isPublic: form.get("isPublic") === "on",
@@ -52,8 +55,10 @@ export function PlansEditor({ plans }: { plans: Plan[] }) {
     const result = await response.json();
     setBusy(false);
     if (!response.ok) return setError(result.error?.message ?? "Unable to save plan");
-    setMessage(`${plan.name} saved.`);
-    window.setTimeout(() => window.location.reload(), 600);
+    // Refresh re-renders the server data in place - no white flash, scroll stays where it was.
+    setEditing(null);
+    toast(`${plan.name} saved.`);
+    router.refresh();
   }
 
   return <div className="mt-6 space-y-4">
@@ -61,7 +66,7 @@ export function PlansEditor({ plans }: { plans: Plan[] }) {
       A price change here applies to new sales only. Existing customers keep what they agreed until their subscription is changed — silently re-pricing live salons would be indefensible. Set any limit to 0 for unlimited.
     </p>
 
-    {(message || error) && <div className={`rounded-2xl p-4 text-sm font-bold ${error ? "bg-[#FDECEC] text-[#94302E]" : "bg-[#E9F7F1] text-[#0B6B4F]"}`}>{error || message}</div>}
+    {error && <div className="rounded-2xl bg-[#FDECEC] p-4 text-sm font-bold text-[#94302E]">{error}</div>}
 
     {plans.map((plan) => <section key={plan.id} className="rounded-2xl border border-[#EFEAF3] bg-white p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -92,6 +97,8 @@ export function PlansEditor({ plans }: { plans: Plan[] }) {
           <Field name="maxBranches" label="Branches (0 = ∞)" type="number" defaultValue={plan.maxBranches} />
           <Field name="maxStaff" label="Staff (0 = ∞)" type="number" defaultValue={plan.maxStaff} />
           <Field name="maxServices" label="Services (0 = ∞)" type="number" defaultValue={plan.maxServices} />
+          {/* Editable now that it is a real ceiling, and the one an add-on pack most often lifts. */}
+          <Field name="maxMonthlyAppointments" label="Bookings/mo (0 = ∞)" type="number" defaultValue={plan.maxMonthlyAppointments} />
           <label className="text-sm font-bold lg:col-span-3">Description<input name="description" defaultValue={plan.description ?? ""} className="field mt-2" /></label>
           <label className="mt-7 flex items-center gap-2 text-sm font-bold"><input name="isPublic" type="checkbox" defaultChecked={plan.isPublic} /> Show publicly</label>
         </div>

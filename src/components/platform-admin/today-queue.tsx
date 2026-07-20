@@ -15,9 +15,13 @@ const TONE: Record<string, { wrap: string; chip: string; bar: string }> = {
   PAST_DUE: { wrap: "border-[#F0C4C2] bg-[#FDECEC]", chip: "bg-white/70 text-[#94302E]", bar: "bg-[#C4403E]" },
   TRIAL_EXPIRED: { wrap: "border-[#F0C4C2] bg-[#FDECEC]", chip: "bg-white/70 text-[#94302E]", bar: "bg-[#C4403E]" },
   BRANCH_APPROVAL: { wrap: "border-[#ECD7A7] bg-[#FFF7DF]", chip: "bg-white/70 text-[#865C12]", bar: "bg-[#B57900]" },
+  // A customer who cannot take a booking is blocked by us, so it reads as red, not as a sales tip.
+  AT_LIMIT: { wrap: "border-[#F0C4C2] bg-[#FDECEC]", chip: "bg-white/70 text-[#94302E]", bar: "bg-[#C4403E]" },
   TRIAL_ENDING: { wrap: "border-[#ECD7A7] bg-[#FFF7DF]", chip: "bg-white/70 text-[#865C12]", bar: "bg-[#B57900]" },
   RENEWAL_DUE: { wrap: "border-[#E3D9EE] bg-white", chip: "bg-[#F3E8FF] text-[#5B2A86]", bar: "bg-[#5B2A86]" },
   NEVER_ACTIVATED: { wrap: "border-[#E3D9EE] bg-white", chip: "bg-[#F3E8FF] text-[#5B2A86]", bar: "bg-[#5B2A86]" },
+  // Nothing is wrong yet - this one is an opportunity, and looks like one.
+  NEAR_LIMIT: { wrap: "border-[#D9C7EA] bg-[#FAF7FD]", chip: "bg-white/70 text-[#5B2A86]", bar: "bg-[#8B5FBF]" },
   LEAD_FOLLOW_UP: { wrap: "border-[#E5E7EB] bg-white", chip: "bg-[#F7F6F9] text-[#6B7280]", bar: "bg-[#9CA3AF]" },
 };
 
@@ -58,7 +62,7 @@ export function TodayQueue({ items, metrics }: {
           return (
             <button
               key={`${item.kind}-${item.id}`}
-              onClick={() => router.push(isLead ? "/platformadmin/enquiries" : `/platformadmin/clients?salon=${item.id}`)}
+              onClick={() => router.push(isLead ? "/platformadmin/pipeline" : `/platformadmin/customers/${item.id}`)}
               className={`flex w-full items-stretch overflow-hidden rounded-xl border text-left transition hover:shadow-[0_2px_12px_rgba(91,42,134,0.08)] ${style.wrap}`}
             >
               <span className={`w-1 shrink-0 ${style.bar}`} />

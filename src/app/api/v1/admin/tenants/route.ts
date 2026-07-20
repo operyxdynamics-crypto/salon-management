@@ -30,7 +30,9 @@ export async function POST(request: Request) {
     const tokenHash = createHash("sha256").update(token).digest("hex");
     const defaultPlan = parsed.data.planId
       ? await db.subscriptionPlan.findFirst({ where: { id: parsed.data.planId, isActive: true } })
-      : await db.subscriptionPlan.findFirst({ where: { code: "starter", isActive: true } });
+      // No plan chosen: fall back to the cheapest public one rather than a hardcoded code, so
+      // renaming or repricing the range never breaks onboarding.
+      : await db.subscriptionPlan.findFirst({ where: { isActive: true, isPublic: true }, orderBy: { sortOrder: "asc" } });
     if (!defaultPlan) throw new PlatformError("NOT_FOUND", "Subscription plan not found", 404);
     const result = await db.$transaction(async (tx) => {
       const tenant = await tx.tenant.create({

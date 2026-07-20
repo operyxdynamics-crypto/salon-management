@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { requireTenantPlan } from "@/lib/plan-limits";
+import { assertBranchCapacity } from "@/lib/plan-limits";
 import { platformErrorResponse, PlatformError, requireOnboardingOwner } from "@/lib/platform-auth";
 
 const schema = z.object({ name: z.string().trim().min(2).max(120), city: z.string().trim().min(2).max(80) });
@@ -11,8 +11,9 @@ export async function POST(request: Request) {
     const context = await requireOnboardingOwner();
     const parsed = schema.safeParse(await request.json());
     if (!parsed.success) throw new PlatformError("VALIDATION", "Invalid branch", 400, parsed.error.flatten());
-    const [plan, used] = await Promise.all([requireTenantPlan(context.tenant.id), db.branch.count({ where: { tenantId: context.tenant.id, publicationStatus: { not: "ARCHIVED" } } })]);
-    if (used >= plan.maxBranches) throw new PlatformError("LIMIT_EXCEEDED", "Branch limit reached for the assigned plan", 409, { used, limit: plan.maxBranches });
+    // Was an inline `used >= plan.maxBranches`, which had a real bug: an unlimited plan stores 0,
+    // and 0 >= 0 blocked every branch on the tier that is meant to have no ceiling at all.
+    await assertBranchCapacity(context.tenant.id);
     const baseSlug = slugify(parsed.data.city) || "branch";
     const exists = await db.branch.findUnique({ where: { tenantId_slug: { tenantId: context.tenant.id, slug: baseSlug } } });
     const branch = await db.branch.create({

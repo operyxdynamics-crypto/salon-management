@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       data: {
         role: user.role,
         redirectTo: user.role === "PLATFORM_ADMIN"
-          ? "/admin"
+          ? "/platformadmin/dashboard"
           : user.role === "OWNER" && user.tenant?.status !== "ACTIVE"
             ? "/onboarding"
             : "/workspace/home",

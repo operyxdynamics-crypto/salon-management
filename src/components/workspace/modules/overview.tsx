@@ -51,7 +51,8 @@ import { BrandMark, brandName } from "@/components/brand-mark";
 import { inr, initials } from "@/lib/format";
 import type { AppointmentDetail, CustomerProfile, ServiceProfile, WorkspaceData } from "@/lib/operations-types";
 
-import { AppointmentItem, NavItem } from "@/components/workspace/contracts";
+import { AppointmentItem, NavItem, SubmitFn } from "@/components/workspace/contracts";
+import { AttendanceClock } from "@/components/workspace/modules/attendance-clock";
 import { Avatar, Card, Empty, Source, Status, appointmentPriorityLabel, appointmentQueuePriorityStyle, appointmentQueueRank, canOpen, formatDateTime, formatTime, isAppointmentTerminal, title } from "@/components/workspace/shared-ui";
 
 export type DashboardTone = "green" | "blue" | "cyan" | "amber" | "rose" | "violet" | "slate";
@@ -85,7 +86,7 @@ export type DashboardAlertItem = {
   onClick?: () => void;
 };
 
-export function Overview({ data, navigate, openInvoice }: { data: WorkspaceData; navigate: (item: NavItem) => void; openInvoice: (invoiceId?: string) => void }) {
+export function Overview({ data, navigate, openInvoice, submit }: { data: WorkspaceData; navigate: (item: NavItem) => void; openInvoice: (invoiceId?: string) => void; submit: SubmitFn }) {
   const role = data.identity.role;
   const config = roleDashboardConfig(role);
   const lowStockItems = data.inventory.filter((item) => item.quantity <= item.reorderLevel);
@@ -99,6 +100,12 @@ export function Overview({ data, navigate, openInvoice }: { data: WorkspaceData;
   const alerts = dashboardAlerts(data, lowStockItems, outstandingInvoices, issueAppointments, navigate, openInvoice);
 
   return <div className="dashboard-shell space-y-5 pb-2 font-sans">
+    {/* Every staff member lands here, whatever their role - so this is where checking in belongs.
+        A stylist has no access to the Team screen, and asking them to hunt for a punch clock is how
+        attendance quietly stops being used. The card returns null for anyone who is not on the
+        roster (an owner with no staff profile). */}
+    <AttendanceClock data={data} submit={submit} />
+
     <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6" aria-label="Dashboard metrics">
       {visibleKpis.map((metric, index) => <DashboardKpiCard key={metric.label} metric={metric} delay={index * 70} onClick={() => navigate(metric.target)} />)}
     </section>

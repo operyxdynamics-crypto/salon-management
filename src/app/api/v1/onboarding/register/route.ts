@@ -27,8 +27,10 @@ export async function POST(request: Request) {
     const baseSlug = slugify(parsed.data.businessName) || "salon";
     const slugExists = await db.tenant.findUnique({ where: { slug: baseSlug } });
     const slug = slugExists ? `${baseSlug}-${crypto.randomUUID().slice(0, 6)}` : baseSlug;
-    const starterPlan = await db.subscriptionPlan.findFirst({ where: { code: "starter", isActive: true } });
-    if (!starterPlan) throw new PlatformError("NOT_FOUND", "Starter subscription plan is not configured", 503);
+    // The entry plan is whichever public plan sorts first, not a hardcoded code - so repricing or
+    // renaming the range never silently breaks signup.
+    const starterPlan = await db.subscriptionPlan.findFirst({ where: { isActive: true, isPublic: true }, orderBy: { sortOrder: "asc" } });
+    if (!starterPlan) throw new PlatformError("NOT_FOUND", "No subscription plan is configured", 503);
     const passwordHash = await bcrypt.hash(parsed.data.password, 12);
     const result = await db.$transaction(async (tx) => {
       // SaaS-first: the tenant is ACTIVE immediately so the owner can use the workspace

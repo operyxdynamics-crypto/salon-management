@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { OperationsError, operationsErrorResponse, requireOperationsContext } from "@/lib/operations-auth";
-import { requireTenantPlan } from "@/lib/plan-limits";
+import { assertStaffCapacity } from "@/lib/plan-limits";
 
 const createSchema = z.object({
   branchId: z.string().min(1),
@@ -40,12 +40,13 @@ export async function POST(request: Request) {
     if (!branchIds.includes(parsed.data.primaryBranchId)) throw new OperationsError("VALIDATION", "Primary branch must be assigned", 400);
     const authorized = context.branches.filter((branch) => branchIds.includes(branch.id));
     if (authorized.length !== branchIds.length) throw new OperationsError("FORBIDDEN", "One or more branches are not authorized", 403);
-    const [plan, used, existing] = await Promise.all([
-      requireTenantPlan(context.tenant.id),
-      db.staff.count({ where: { user: { tenantId: context.tenant.id, isActive: true } } }),
+    // Was an inline `used >= plan.maxStaff`, which blocked every hire on an unlimited plan (stored
+    // as 0) and said only "Staff limit reached" on the others. The shared check handles unlimited
+    // and names the plan and the upgrade.
+    const [, existing] = await Promise.all([
+      assertStaffCapacity(context.tenant.id),
       db.user.findUnique({ where: { email: parsed.data.email } }),
     ]);
-    if (used >= plan.maxStaff) throw new OperationsError("CONFLICT", "Staff limit reached for the assigned plan", 409, { used, limit: plan.maxStaff });
     if (existing) throw new OperationsError("CONFLICT", "This email address is already in use", 409);
     const passwordHash = await bcrypt.hash(parsed.data.password, 12);
     const staff = await db.$transaction(async (tx) => {

@@ -16,6 +16,8 @@ export type WorkItemKind =
   | "TRIAL_EXPIRED"
   | "RENEWAL_DUE"
   | "BRANCH_APPROVAL"
+  | "AT_LIMIT"
+  | "NEAR_LIMIT"
   | "LEAD_FOLLOW_UP"
   | "NEVER_ACTIVATED";
 
@@ -41,14 +43,20 @@ const daysUntil = (date: Date, now: Date) => Math.ceil((date.getTime() - now.get
  * an expiring trial is revenue about to be lost; a lead is revenue that was never there. A branch
  * waiting on approval sits high because the salon is blocked and cannot use what they bought -
  * that is our fault, not theirs, and it churns customers faster than any pricing mistake.
+ *
+ * The two limit kinds sit at opposite ends for the same reason. A customer *at* their ceiling
+ * cannot take a booking right now, which is worse than a trial ending today; a customer *near* it
+ * is not hurt yet and is simply an easy sale, so it waits behind everything that is actually wrong.
  */
 const BASE_URGENCY: Record<WorkItemKind, number> = {
   PAST_DUE: 0,
   TRIAL_EXPIRED: 100,
   BRANCH_APPROVAL: 200,
+  AT_LIMIT: 250,
   TRIAL_ENDING: 300,
   RENEWAL_DUE: 400,
   NEVER_ACTIVATED: 500,
+  NEAR_LIMIT: 550,
   LEAD_FOLLOW_UP: 600,
 };
 
@@ -68,6 +76,19 @@ export type SubscriptionRow = {
 export type PendingBranch = { tenantId: string; tenantName: string; branchName: string; submittedAt: Date | null };
 export type LeadRow = { id: string; salonName: string; contactName: string; followUpAt: Date | null; status: string };
 
+/** A paying salon pressing against one of its ceilings. Computed by `nearingLimits` in packages.ts. */
+export type LimitRow = {
+  tenantId: string;
+  tenantName: string;
+  /** Plain English: "bookings used". */
+  label: string;
+  used: number;
+  limit: number;
+  percent: number;
+  /** The add-on that fixes it, so the alert carries its own solution. */
+  remedy: string | null;
+};
+
 /** Trials and renewals inside this window are "coming up" rather than "someday". */
 export const HORIZON_DAYS = 7;
 
@@ -75,6 +96,7 @@ export function buildWorklist(input: {
   subscriptions: SubscriptionRow[];
   pendingBranches: PendingBranch[];
   leads: LeadRow[];
+  limits?: LimitRow[];
   now?: Date;
 }): WorkItem[] {
   const now = input.now ?? new Date();
@@ -138,6 +160,30 @@ export function buildWorklist(input: {
       kind: "BRANCH_APPROVAL", id: branch.tenantId, title: branch.tenantName,
       detail: `${branch.branchName} waiting ${waiting} day${waiting === 1 ? "" : "s"} for approval`,
       urgency: BASE_URGENCY.BRANCH_APPROVAL - waiting, days: -waiting,
+    });
+  }
+
+  /**
+   * Limits, turned into a phone call.
+   *
+   * The old behaviour was an error message at the wall: "Group includes 5 branches and you're using
+   * 5." Dead end, and the salon reads it as the software being mean. The same fact surfaced here
+   * two weeks earlier is an offer with a price on it. Same limit, opposite outcome - one produces a
+   * complaint, the other produces revenue.
+   */
+  for (const row of input.limits ?? []) {
+    const blocked = row.used >= row.limit;
+    const offer = row.remedy ? ` · offer ${row.remedy}` : "";
+    items.push({
+      kind: blocked ? "AT_LIMIT" : "NEAR_LIMIT",
+      id: row.tenantId,
+      title: row.tenantName,
+      detail: blocked
+        ? `Blocked: ${row.used} of ${row.limit} ${row.label}${offer}`
+        : `${row.percent}% of ${row.label} (${row.used} of ${row.limit})${offer}`,
+      // Fuller sorts first within each kind.
+      urgency: (blocked ? BASE_URGENCY.AT_LIMIT : BASE_URGENCY.NEAR_LIMIT) - row.percent,
+      days: null,
     });
   }
 

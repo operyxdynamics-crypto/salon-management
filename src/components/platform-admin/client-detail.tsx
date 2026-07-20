@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { inr } from "@/lib/format";
+import { useToast } from "./toast";
 
 type Health = { band: string; evidence: string[] };
 type Subscription = {
@@ -37,22 +39,31 @@ const STATUS_STYLE: Record<string, string> = {
 
 export function ClientDetail(props: Props) {
   const { tenant, health, subscription, plans, people, branches, documents, notes, events } = props;
+  const router = useRouter();
+  const toast = useToast();
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [planId, setPlanId] = useState(subscription?.planId ?? plans[0]?.id ?? "");
   const [period, setPeriod] = useState(subscription?.billingPeriod ?? "MONTHLY");
   const [agreed, setAgreed] = useState(subscription?.agreedPrice ? String(subscription.agreedPrice) : "");
   const [note, setNote] = useState("");
 
+  /**
+   * Every action on this page is a quick judgement call - approve a document, extend a trial, mark
+   * paid - often several in a row. The old reload after each one threw the admin back to the top
+   * of the page between every action. Refreshing in place keeps them exactly where they were.
+   */
   async function call(path: string, body: unknown, success: string, method = "PATCH") {
-    setBusy(true); setError(""); setMessage("");
+    setBusy(true); setError("");
     const response = await fetch(path, { method, headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
     const result = await response.json();
     setBusy(false);
     if (!response.ok) return setError(result.error?.message ?? "Unable to update");
-    setMessage(success);
-    window.setTimeout(() => window.location.reload(), 600);
+    // Clear the note box only when the note was the thing saved. Approving a document mid-thought
+    // must not wipe a half-typed note - drafts survive everything except being submitted.
+    if (path.endsWith("/notes")) setNote("");
+    toast(success);
+    router.refresh();
   }
 
   const subscriptionEndpoint = `/api/v1/admin/tenants/${tenant.id}/subscription`;
@@ -85,7 +96,7 @@ export function ClientDetail(props: Props) {
       </div>
     </header>
 
-    {(message || error) && <div className={`rounded-2xl p-4 text-sm font-bold ${error ? "bg-[#FDECEC] text-[#94302E]" : "bg-[#E9F7F1] text-[#0B6B4F]"}`}>{error || message}</div>}
+    {error && <div className="rounded-2xl bg-[#FDECEC] p-4 text-sm font-bold text-[#94302E]">{error}</div>}
 
     <section className="rounded-2xl border border-[#EFEAF3] bg-white p-6">
       <h2 className="font-serif text-2xl">Subscription</h2>

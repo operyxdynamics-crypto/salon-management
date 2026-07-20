@@ -2,6 +2,18 @@
 
 Written after reading Zylu and Salonify's public pricing, and auditing what Operyx already has.
 
+> **Update, 20 July 2026.** Salonist and ReSpark have since been researched in full — see
+> [COMPETITORS.md](./COMPETITORS.md). Two things there change this document:
+>
+> 1. **The GST wedge is confirmed across all four competitors and none of them mention it.** That is
+>    either the opportunity this plan assumes or evidence that salons don't ask. COMPETITORS.md §6
+>    has a twenty-call test to find out before more is built on the assumption.
+> 2. **§4's rule "never limit usage of the core loop" is now contradicted by the code.** Salon and
+>    Group carry booking ceilings of 1,000 and 5,000/month so the appointment add-on has something
+>    to lift. **Resolved:** ceilings raised to 3,000 and 15,000 — high enough that no real
+>    salon hits one, low enough that the add-on exists. The rule is now: never limit the core
+>    loop at a level a real customer can reach.
+
 ---
 
 ## 1. Where you actually stand

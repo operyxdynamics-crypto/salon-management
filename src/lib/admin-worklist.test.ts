@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildWorklist, revenueAtRisk, type SubscriptionRow } from "./admin-worklist";
+import { buildWorklist, revenueAtRisk, type LimitRow, type SubscriptionRow } from "./admin-worklist";
 
 const now = new Date("2026-07-20T10:00:00Z");
 const inDays = (days: number) => new Date(now.getTime() + days * 86_400_000);
@@ -10,7 +10,12 @@ const salon = (over: Partial<SubscriptionRow> & { tenantId: string; tenantName: 
   pastDueSince: null, hasActivity: true, createdAt: daysAgo(60), ...over,
 });
 
-const empty = { subscriptions: [], pendingBranches: [], leads: [], now };
+const empty = { subscriptions: [], pendingBranches: [], leads: [], limits: [], now };
+
+const limit = (over: Partial<LimitRow> = {}): LimitRow => ({
+  tenantId: "t1", tenantName: "Velvet Glow", label: "bookings used",
+  used: 4_200, limit: 5_000, percent: 84, remedy: "Extra appointments (+500, ₹500/mo)", ...over,
+});
 
 describe("buildWorklist", () => {
   it("is empty when nothing needs doing", () => {
@@ -89,6 +94,41 @@ describe("buildWorklist", () => {
   it("marks an overdue follow-up as overdue", () => {
     const [item] = buildWorklist({ ...empty, leads: [{ id: "l1", salonName: "X", contactName: "Asha", followUpAt: daysAgo(4), status: "NEW" }] });
     expect(item.detail).toContain("4 days overdue");
+  });
+});
+
+describe("limits", () => {
+  it("reads as an offer, with the price of the fix", () => {
+    const [item] = buildWorklist({ ...empty, limits: [limit()] });
+    expect(item.kind).toBe("NEAR_LIMIT");
+    expect(item.detail).toBe("84% of bookings used (4200 of 5000) · offer Extra appointments (+500, ₹500/mo)");
+  });
+
+  /** Not a warning any more - they cannot take a booking, and that is our doing. */
+  it("separates a salon that is blocked from one that is close", () => {
+    const [item] = buildWorklist({ ...empty, limits: [limit({ used: 5_000, percent: 100 })] });
+    expect(item.kind).toBe("AT_LIMIT");
+    expect(item.detail).toContain("Blocked: 5000 of 5000");
+  });
+
+  /** A paying customer who cannot work outranks a trial that expires today. */
+  it("puts a blocked customer above an expiring trial, and an upsell below it", () => {
+    const items = buildWorklist({
+      ...empty,
+      subscriptions: [salon({ tenantId: "t9", tenantName: "Trial", status: "TRIALING", trialEndsAt: now })],
+      limits: [limit({ tenantId: "t1", used: 5_000, percent: 100 }), limit({ tenantId: "t2", tenantName: "Close" })],
+    });
+    expect(items.map((item) => item.kind)).toEqual(["AT_LIMIT", "TRIAL_ENDING", "NEAR_LIMIT"]);
+  });
+
+  it("puts the fullest first", () => {
+    const items = buildWorklist({ ...empty, limits: [limit({ tenantId: "a", percent: 82 }), limit({ tenantId: "b", percent: 96 })] });
+    expect(items.map((item) => item.id)).toEqual(["b", "a"]);
+  });
+
+  it("copes with no add-on to offer", () => {
+    const [item] = buildWorklist({ ...empty, limits: [limit({ remedy: null })] });
+    expect(item.detail).toBe("84% of bookings used (4200 of 5000)");
   });
 });
 

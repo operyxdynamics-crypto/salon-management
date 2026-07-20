@@ -20,6 +20,22 @@ This is **our** control room, not a salon's. Two different products, easy to con
 A salon owner can never see the admin panel. You can never see a salon's customer data from here —
 only whether they're paying, how much they use it, and whether they need help.
 
+### The seven screens
+
+| Screen | Who is on it | The question it answers |
+|---|---|---|
+| **Today** | anything needing action | What will hurt if I ignore it? |
+| **Pipeline** | leads, demos, quotes | Who am I about to win? |
+| **Trials** | salons trialling now | Who is about to convert or slip away? |
+| **Customers** | paying salons only | Which of my customers is in trouble? |
+| **Money** | — | Am I growing or shrinking? |
+| **Packages** | plans + add-ons | What do we sell? |
+| **Activity** | — | Who did what? |
+
+**A salon appears on exactly one of Pipeline, Trials and Customers at a time.** A trialling salon is
+never listed as a customer — it is not paying us anything, and counting it as one would mean two
+screens giving different answers to "how many customers do we have?"
+
 ---
 
 ## 2. The day starts on Today
@@ -31,10 +47,12 @@ a customer to neglect. The order is deliberate:
 |---|---|---|
 | 1 | **Payment failed** | Money is leaking now. Longest-failing first. |
 | 2 | **Branch waiting for approval** | The salon is **blocked** and can't use what they bought. Our fault, not theirs — this churns customers faster than any pricing mistake. |
-| 3 | **Trial ending** | Money about to be lost. Call before it ends, not after. |
-| 4 | **Renewal due** | Money to confirm. |
-| 5 | **Never activated** | Signed up, never took a booking. Caught early it's a phone call; caught late it's a refund. |
-| 6 | **Follow up a lead** | Money not yet won. |
+| 3 | **At limit** | A paying salon has hit a ceiling and **cannot take a booking right now**. Sell them the add-on today; the alert tells you which one and what it costs. |
+| 4 | **Trial ending** | Money about to be lost. Call before it ends, not after. |
+| 5 | **Renewal due** | Money to confirm. |
+| 6 | **Never activated** | Signed up, never took a booking. Caught early it's a phone call; caught late it's a refund. |
+| 7 | **Near limit** | Nothing is wrong yet — they're at 80%+ of something. The easiest sale you will make all week. |
+| 8 | **Follow up a lead** | Money not yet won. |
 
 An empty Today screen means everything is handled. That is the goal, not a bug.
 
@@ -45,32 +63,62 @@ An empty Today screen means everything is handled. That is the goal, not a bug.
 **Do not create a salon for someone who is only asking about price.** A half-real salon skews every
 number we report — active salons, revenue, conversion rate.
 
-**Clients → Enquiries → Add enquiry.** Capture salon name, contact, phone, and how many branches
-and staff they have (that decides which plan you quote).
+**Pipeline → Add lead.** Capture salon name, contact, phone, where they came from, and how many
+branches and staff they have. **Ask for the size on the first call** — it is what decides the quote,
+and ringing back to ask is a wasted call.
 
 **Always set a follow-up date.** A lead with no next step is a lead being lost, and it will not
-appear on Today without one.
+appear on Today without one. The Pipeline header counts these for you.
 
-Statuses move in one direction: **New → Contacted → Demo booked → Quoted → Won / Lost.**
-Mark **Lost** honestly — a clean pipeline is more useful than a flattering one.
+The columns are the conversation: **New lead → Contacted → Demo → Quoted → Won**, with **Lost**
+tucked away behind a toggle. Click any card to open it: phone number at the top to call them, stage
+and notes on the left tab, the quote builder on the right.
+
+Mark **Lost** honestly, and write the reason in the notes. Whether we lose on price, on features or
+on slow follow-up are three different problems with three different fixes, and we can only tell them
+apart if the reasons are written down.
+
+### Quoting
+
+Open the lead → **Quote** tab. Pick the base plan, click the packs up and down, and the total
+recalculates with GST as you go. Every line shows its own arithmetic — "2 × 500" — so you can read
+it down the phone and the owner can check it.
+
+If the plan you have picked is too small for the size on record, the builder says so before you
+quote it. Selling a salon a plan that cannot hold their branches is the fastest way to a refund
+request.
+
+**Save quote** records it against the lead with today's prices and moves them to Quoted. When they
+ring three weeks later asking what you said it was, the answer is on the record rather than in
+someone's memory.
 
 ---
 
-## 4. Onboarding a salon that says yes
+## 4. They say yes — start the trial
 
-**Create salon**, then:
+**Do not use Create Salon for a lead you have been working.** Open the lead in Pipeline and use the
+**Start trial** tab. Everything is already there: salon name, city, phone, the plan you quoted and
+the add-ons you quoted with it. Retyping it into a separate form is where the quote and the
+subscription drift apart, and nobody notices until the first invoice is wrong.
 
-1. **Salon name and legal name.** Legal name and GSTIN appear on *their* invoices — worth getting
-   right at the start.
-2. **Choose the plan** (see §5).
-3. **Monthly or annual.** Annual is 20% cheaper for them, cash up front for us, and far less churn.
-   Push it.
-4. **Start the 14-day trial.**
-5. **Invite the owner** — generates a link. Send it to them; they set their own password. We never
-   know or set a salon's password.
+It asks for two things, because they are the only two you do not already have written down:
+
+1. **Owner's name.**
+2. **Owner's email.** Check this one twice — it decides who gets the keys to the account.
+
+Trial length defaults to the plan's own. Override it only if you actually negotiated something.
+
+**Copy the invitation link before you close the panel.** It is shown once and cannot be retrieved,
+only reissued. Send it to the owner; they set their own password on it. We never know or set a
+salon's password.
+
+### This creates a trial, not a customer
+
+The salon moves from Pipeline to **Trials**. It adds nothing to MRR until you mark it paid. Selling
+and getting paid are two different events, and every number we report depends on not confusing them.
 
 Then tell them the first three things to do: add services, add staff, take a test bill. A salon
-that bills on day one almost never churns.
+that bills on day one almost never churns — and Trials shows you at a glance which ones haven't.
 
 ### Their branch needs approving
 
@@ -149,7 +197,7 @@ over. Ask them to reduce first, or keep them where they are.
 
 ## 8. Changing prices
 
-**Plans → edit.** Prices are entered in rupees; the system stores them precisely.
+**Packages → Base plans → Edit.** Prices are entered in rupees; the system stores them precisely.
 
 **Changing a list price never re-prices existing customers.** A salon that agreed ₹1,999 keeps
 paying ₹1,999 until someone changes *their* subscription. Silently repricing live customers because

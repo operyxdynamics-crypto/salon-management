@@ -22,6 +22,12 @@ const db = new PrismaClient({
  * you offer is worth more than a low price you advertise.
  *
  * A limit of 0 means unlimited.
+ *
+ * Salon and Group carry a real appointment ceiling, set deliberately high: 3,000/month is about
+ * 100 bookings a day, which no single-branch salon reaches. The ceiling exists so growth can turn
+ * into add-on revenue, not so anyone hits it mid-shift - a salon blocked at the counter is a
+ * complaint, and the design only works if Operyx sells past the ceiling two weeks early.
+ * Franchise stays unlimited: at that size the conversation is about branches, not bookings.
  */
 const plans = [
   {
@@ -32,7 +38,7 @@ const plans = [
     annualPricePaise: 1_918_800,  // ₹19,188 = ₹1,599/mo
     setupFeePaise: 199_900,       // ₹1,999, waived on annual
     trialDays: 14,
-    maxBranches: 1, maxStaff: 15, maxServices: 0, maxMonthlyAppointments: 0, maxStorageMb: 2048,
+    maxBranches: 1, maxStaff: 15, maxServices: 0, maxMonthlyAppointments: 3_000, maxStorageMb: 2048,
     features: ["operations", "marketplace", "inventory", "attendance", "payroll"],
     isPublic: true, sortOrder: 1,
   },
@@ -44,7 +50,7 @@ const plans = [
     annualPricePaise: 4_798_800,  // ₹47,988 = ₹3,999/mo
     setupFeePaise: 199_900,
     trialDays: 14,
-    maxBranches: 5, maxStaff: 50, maxServices: 0, maxMonthlyAppointments: 0, maxStorageMb: 10_240,
+    maxBranches: 5, maxStaff: 50, maxServices: 0, maxMonthlyAppointments: 15_000, maxStorageMb: 10_240,
     features: ["operations", "marketplace", "inventory", "attendance", "payroll", "advanced_reports", "multi_branch", "priority_support"],
     isPublic: true, sortOrder: 2,
   },
@@ -60,6 +66,22 @@ const plans = [
     features: ["operations", "marketplace", "inventory", "attendance", "payroll", "advanced_reports", "multi_branch", "franchise", "multi_entity", "account_manager"],
     isPublic: true, sortOrder: 3,
   },
+  {
+    code: "enterprise",
+    name: "Enterprise",
+    description: "Their own database, their own deployment. Sold per deal - always set an agreed price on the subscription.",
+    // Deliberately zero: this plan is never sold at list. The agreed price on each subscription is
+    // the real number, and MRR already prefers agreed over list, so ₹0 here can never flatter it.
+    monthlyPricePaise: 0,
+    annualPricePaise: 0,
+    setupFeePaise: 0,
+    trialDays: 0,
+    maxBranches: 0, maxStaff: 0, maxServices: 0, maxMonthlyAppointments: 0, maxStorageMb: 0,
+    features: ["operations", "marketplace", "inventory", "attendance", "payroll", "advanced_reports", "multi_branch", "franchise", "multi_entity", "account_manager", "dedicated_database"],
+    requiresDedicatedDb: true,
+    isPublic: false, // a conversation, not a pricing-page tier
+    sortOrder: 4,
+  },
 ];
 const seededPlans = {};
 for (const plan of plans) {
@@ -68,6 +90,22 @@ for (const plan of plans) {
     update: plan,
     create: plan,
   });
+}
+
+/**
+ * Add-on packs. A plan sets the base; these extend it without a tier change.
+ *
+ * `limitField` names the plan limit each one raises. WhatsApp credits have none - they are metered,
+ * because every message costs Operyx real money to send.
+ */
+const addOns = [
+  { code: "extra_appointments", name: "Extra appointments", description: "500 more bookings a month.", limitField: "maxMonthlyAppointments", unitAmount: 500, unitPricePaise: 50_000, isMetered: false, sortOrder: 1 },
+  { code: "extra_branch", name: "Extra branch", description: "One more location on the same plan.", limitField: "maxBranches", unitAmount: 1, unitPricePaise: 80_000, isMetered: false, sortOrder: 2 },
+  { code: "extra_staff", name: "Extra staff seats", description: "Five more team members.", limitField: "maxStaff", unitAmount: 5, unitPricePaise: 40_000, isMetered: false, sortOrder: 3 },
+  { code: "whatsapp_credits", name: "WhatsApp credits", description: "1,000 messages. Metered - unused credits do not roll over.", limitField: null, unitAmount: 1000, unitPricePaise: 60_000, isMetered: true, sortOrder: 4 },
+];
+for (const addOn of addOns) {
+  await db.addOn.upsert({ where: { code: addOn.code }, update: addOn, create: addOn });
 }
 
 const tenant = await db.tenant.upsert({

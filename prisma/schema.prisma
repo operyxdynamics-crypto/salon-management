@@ -172,6 +172,7 @@ model Tenant {
   website                   SalonWebsite?
   createdAt                 DateTime                   @default(now())
   updatedAt                 DateTime                   @updatedAt
+  environment               TenantEnvironment?
 }
 
 model Branch {
@@ -1536,6 +1537,9 @@ model SubscriptionPlan {
 
   /// Whether this plan appears on the public pricing page. A grandfathered or custom plan stays
   /// sellable to its existing tenants without being advertised.
+  /// True for plans sold with the customer's own database (their server, their data). Assigning
+  /// one prompts the admin to record the environment, and the salon runs as its own deployment.
+  requiresDedicatedDb Boolean @default(false)
   isPublic               Boolean              @default(false)
   sortOrder              Int                  @default(0)
   isActive               Boolean              @default(true)
@@ -1573,6 +1577,7 @@ model TenantSubscription {
   /// What was actually agreed, which may not be the plan's list price - a discount, a legacy rate,
   /// or a negotiated franchise deal. Null means charge list price.
   agreedPricePaise Int?
+  addOns           SubscriptionAddOn[]
 
   /// Why they left, and when.
   ///
@@ -1811,6 +1816,14 @@ model Lead {
   /// The plan being discussed, so a quote can be reproduced later.
   interestedPlanId String?
   interestedPlan   SubscriptionPlan? @relation(fields: [interestedPlanId], references: [id], onDelete: SetNull)
+  /// The quote that was actually given: which packs, on top of interestedPlan, and the monthly
+  /// total before GST.
+  ///
+  /// Saved rather than recomputed, because a quote is a promise made on a particular day. If a pack
+  /// price changes next month, the number this salon was told must not change with it.
+  quotedAddOns       Json?
+  quotedMonthlyPaise Int?
+  quotedAt           DateTime?
   notes        String?
   /// When to chase. The work queue reads this - a lead with no next step is a lead being lost.
   followUpAt   DateTime?
@@ -1832,4 +1845,87 @@ enum LeadStatus {
   QUOTED
   WON
   LOST
+}
+
+/**
+ * Something sold on top of a plan.
+ *
+ * A salon on Group with 5 branches and 6,000 appointments does not need Franchise - they need more
+ * bookings. Forcing a tier change for one exhausted limit is how a limit becomes a reason to leave
+ * rather than a reason to spend.
+ *
+ * Sold in packs: one unit of `extra_appointments` is 500 bookings, so quantity 2 means +1,000.
+ */
+model AddOn {
+  id            String   @id @default(cuid())
+  code          String   @unique
+  name          String
+  description   String?
+  /// Which plan limit this extends. Null for add-ons that are not a limit at all, like message
+  /// credits, which are metered instead.
+  limitField    String?
+  /// How much one unit adds - 500 appointments, 1 branch, 5 staff seats.
+  unitAmount    Int
+  /// Price of one unit per month, in paise.
+  unitPricePaise Int
+  /// Metered add-ons are consumed rather than capped: every WhatsApp message costs Operyx real
+  /// money, so the balance depletes and has to be visible before a salon is surprised by it.
+  isMetered     Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  sortOrder     Int      @default(0)
+
+  subscriptions SubscriptionAddOn[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+/**
+ * An add-on attached to a salon's subscription.
+ *
+ * Stores the **quantity**, never the price. The price comes from the AddOn record, so the same rule
+ * that protects base plans protects these: changing a pack price later never silently re-prices an
+ * existing customer.
+ */
+model SubscriptionAddOn {
+  id             String             @id @default(cuid())
+  subscriptionId String
+  subscription   TenantSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  addOnId        String
+  addOn          AddOn              @relation(fields: [addOnId], references: [id], onDelete: Restrict)
+  quantity       Int                @default(1)
+  /// What has been used, for metered add-ons only. Reset when the billing period rolls over.
+  consumed       Int                @default(0)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@unique([subscriptionId, addOnId])
+}
+
+/// A customer's own database - the "on their server" deal.
+///
+/// This is a registry, not a router: the salon's instance is a separate deployment pointed at this
+/// database, and Operyx's shared app never reads or writes it in normal operation. What lives here
+/// is what support and migrations need - where it is, how to reach it, and how far behind it is.
+///
+/// `databaseUrlEncrypted` is AES-256-GCM under ENVIRONMENT_SECRET_KEY, never stored in plain text
+/// and never sent back to the browser once saved. A database credential is the most dangerous
+/// string in this schema; it is treated accordingly.
+model TenantEnvironment {
+  id                   String   @id @default(cuid())
+  tenantId             String   @unique
+  tenant               Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  /// Where their instance runs, e.g. https://salon.example.com - for support to find it.
+  appUrl               String?
+  /// Who hosts the database, free text: "Supabase, their account", "VPS at Hetzner", etc.
+  hostedBy             String?
+  databaseUrlEncrypted String
+  /// Result of the last connection test, so the page can show state without connecting.
+  lastCheckedAt        DateTime?
+  lastCheckOk          Boolean?
+  /// Latest migration found in their _prisma_migrations at last check - the drift indicator.
+  lastMigration        String?
+  notes                String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 }

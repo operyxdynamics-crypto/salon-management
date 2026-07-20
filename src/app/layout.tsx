@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Comfortaa, Inter } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { PwaRegister } from "@/components/pwa-register";
 // Tokens first: globals.css still carries the legacy literal-hex styles, and must be able to
 // override during the migration.
@@ -34,7 +35,12 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${brand.variable} ${ui.variable}`} suppressHydrationWarning>
-      <body suppressHydrationWarning>{children}<PwaRegister /></body>
+      {/*
+        Speed Insights measures real page loads from real devices. It matters more than usual here:
+        the counter machine in a salon is often a cheap tablet on patchy wifi, not the laptop this
+        was built on. A page that feels instant in development can be unusable at the till.
+      */}
+      <body suppressHydrationWarning>{children}<PwaRegister /><SpeedInsights /></body>
     </html>
   );
 }

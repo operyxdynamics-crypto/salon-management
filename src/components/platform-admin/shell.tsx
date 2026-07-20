@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, CircleDollarSign, FileCheck2, FileText, LogOut, Search, ShieldCheck, Store } from "lucide-react";
+import { Activity, CircleDollarSign, FileCheck2, LogOut, Package, ShieldCheck, Store, Target, Timer } from "lucide-react";
+import { ToastProvider } from "./toast";
 
 /**
  * The control room shell.
@@ -16,12 +17,20 @@ import { Activity, CircleDollarSign, FileCheck2, FileText, LogOut, Search, Shiel
  * salon's workspace. Acting on the wrong one is the expensive mistake here.
  */
 
+/**
+ * Pipeline, Trials and Customers are three screens because they are three different jobs, possibly
+ * done by three different people on different days.
+ *
+ * A salon is in exactly one of them at a time. That is the whole point: a trialling salon is not a
+ * customer, and listing it as one made a free salon look like revenue.
+ */
 export const PLATFORM_ADMIN_SECTIONS = [
   { href: "/platformadmin/dashboard", label: "Today", icon: Activity },
-  { href: "/platformadmin/clients", label: "Clients", icon: Store },
-  { href: "/platformadmin/enquiries", label: "Enquiries", icon: Search },
+  { href: "/platformadmin/pipeline", label: "Pipeline", icon: Target },
+  { href: "/platformadmin/trials", label: "Trials", icon: Timer },
+  { href: "/platformadmin/customers", label: "Customers", icon: Store },
   { href: "/platformadmin/money", label: "Money", icon: CircleDollarSign },
-  { href: "/platformadmin/plans", label: "Plans", icon: FileText },
+  { href: "/platformadmin/packages", label: "Packages", icon: Package },
   { href: "/platformadmin/activity", label: "Activity", icon: FileCheck2 },
 ] as const;
 
@@ -75,7 +84,9 @@ export function PlatformAdminShell({ adminName, counts, children }: {
         </div>
       </aside>
 
-      <div className="min-w-0 p-5 lg:p-8">{children}</div>
+      <div className="min-w-0 p-5 lg:p-8">
+        <ToastProvider>{children}</ToastProvider>
+      </div>
     </main>
   );
 }

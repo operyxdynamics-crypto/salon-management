@@ -1,0 +1,68 @@
+# Postgres for one dedicated Operyx customer, on their VPS.
+#
+# Two containers: the database, and a small sidecar that takes a nightly dump and prunes old ones.
+# The dump is a plain `pg_dump -Fc` file on the host disk under ./backups - simple enough that a
+# restore at 9pm needs no documentation beyond restore.sh next to this file.
+#
+# Copy .env.example to .env, set the password, `docker compose up -d`. That is the whole install.
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: operyx-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: operyx
+      POSTGRES_USER: operyx
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      # Checksums catch silent disk corruption early - on a ₹500 VPS disk, worth every cycle.
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    command:
+      # A salon is ~20 connections at peak; Vercel functions come and go, so keep headroom.
+      - postgres
+      - -c
+      - max_connections=60
+      - -c
+      - shared_buffers=256MB
+      # Log slow queries: when the salon says "billing is slow", the answer is already on disk.
+      - -c
+      - log_min_duration_statement=2000
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U operyx -d operyx"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backup:
+    image: postgres:16-alpine
+    container_name: operyx-backup
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      # How many nightly dumps to keep. 14 nights ≈ two weeks of "undo".
+      KEEP: ${BACKUP_KEEP:-14}
+    volumes:
+      - ./backups:/backups
+    # Poor man's cron: check the clock every minute; at 21:00 UTC (02:30 IST, salon fast asleep)
+    # dump and prune. A once-a-minute loop survives container restarts with no state to corrupt,
+    # and works in busybox - which the fancier "sleep until" date arithmetic does not.
+    entrypoint: >
+      /bin/sh -c 'while true; do
+        if [ "$$(date -u +%H%M)" = "2100" ]; then
+          FILE=/backups/operyx-$$(date -u +%Y%m%d-%H%M).dump;
+          pg_dump -h db -U operyx -d operyx -Fc -f $$FILE && echo "backup ok: $$FILE" || echo "BACKUP FAILED";
+          ls -1t /backups/operyx-*.dump 2>/dev/null | tail -n +$$(( KEEP + 1 )) | xargs -r rm;
+          sleep 61;
+        fi;
+        sleep 30;
+      done'
+
+volumes:
+  pgdata:

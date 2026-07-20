@@ -40,3 +40,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Templates are safe to track - they contain no real values, and the dedicated-db runbook
+# tells people to copy this file. Real .env files stay ignored by the rule above.
+!*.env.example
+!.env.example

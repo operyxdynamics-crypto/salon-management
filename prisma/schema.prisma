@@ -165,6 +165,7 @@ model Tenant {
   rewardRules               RewardRule[]
   benefitTransactions       BenefitTransaction[]
   subscriptionRecord        TenantSubscription?
+  subscriptionEvents        SubscriptionEvent[]
   verificationDocuments     VerificationDocument[]
   adminNotes                AdminNote[]
   ownerInvitations          OwnerInvitation[]
@@ -283,6 +284,8 @@ model User {
   uploadedDocuments   VerificationDocument[] @relation("DocumentUploader")
   reviewedDocuments   VerificationDocument[] @relation("DocumentReviewer")
   reviewedAttendance  Attendance[]           @relation("AttendanceReviewer")
+  ownedLeads          Lead[]                 @relation("LeadOwner")
+  subscriptionEvents  SubscriptionEvent[]    @relation("SubscriptionEventActor")
   branchReviews       BranchReview[]
   adminNotes          AdminNote[]
   sentInvitations     OwnerInvitation[]      @relation("InvitationSender")
@@ -1508,30 +1511,147 @@ model SubscriptionPlan {
   code                   String               @unique
   name                   String
   description            String?
+
+  /// What the plan costs, in paise. Money is stored as an integer of the smallest unit so it can
+  /// never pick up a floating-point remainder - the same reason invoices use Decimal.
+  ///
+  /// Prices exclude GST. An Indian SaaS charges 18% on top, and quoting inclusive would make the
+  /// plan look more expensive than every competitor's advertised price.
+  monthlyPricePaise      Int                  @default(0)
+  /// The full year's price, not the monthly equivalent - so a discount is a decision, not a sum.
+  annualPricePaise       Int                  @default(0)
+  currency               String               @default("INR")
+  /// One-time onboarding fee, waived on annual billing.
+  setupFeePaise          Int                  @default(0)
+  /// Days of free trial. Zero means the plan cannot be trialled - which is right for Franchise,
+  /// where onboarding is a conversation rather than a signup.
+  trialDays              Int                  @default(0)
+
   maxBranches            Int
   maxStaff               Int
   maxServices            Int
   maxMonthlyAppointments Int
   maxStorageMb           Int
   features               Json
+
+  /// Whether this plan appears on the public pricing page. A grandfathered or custom plan stays
+  /// sellable to its existing tenants without being advertised.
+  isPublic               Boolean              @default(false)
+  sortOrder              Int                  @default(0)
   isActive               Boolean              @default(true)
+
   tenantSubscriptions    TenantSubscription[]
+  leads                  Lead[]
   createdAt              DateTime             @default(now())
   updatedAt              DateTime             @updatedAt
 }
 
 model TenantSubscription {
-  id         String           @id @default(cuid())
-  tenantId   String           @unique
-  tenant     Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  planId     String
-  plan       SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Restrict)
-  startsAt   DateTime         @default(now())
-  endsAt     DateTime?
-  assignedBy String?
-  notes      String?
-  createdAt  DateTime         @default(now())
-  updatedAt  DateTime         @updatedAt
+  id             String             @id @default(cuid())
+  tenantId       String             @unique
+  tenant         Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  planId         String
+  plan           SubscriptionPlan   @relation(fields: [planId], references: [id], onDelete: Restrict)
+
+  /// TRIALING → ACTIVE → PAST_DUE → SUSPENDED, or CANCELLED at any point.
+  ///
+  /// Separate from Tenant.status on purpose: a salon can be a perfectly good tenant whose card
+  /// bounced this morning. Conflating "who you are" with "whether you have paid" is how software
+  /// ends up locking a paying customer out over a bank glitch.
+  status         SubscriptionStatus @default(TRIALING)
+  billingPeriod  BillingPeriod      @default(MONTHLY)
+
+  /// When the free trial runs out. Null once they have converted.
+  trialEndsAt    DateTime?
+  /// End of the period already paid for. Access continues until this date even after cancelling -
+  /// they bought the month.
+  currentPeriodEnd DateTime?
+  /// When a payment first failed. Drives the grace period: full access, then read-only, then
+  /// suspended - never an immediate cut-off, because it will always happen on a Saturday.
+  pastDueSince   DateTime?
+
+  /// What was actually agreed, which may not be the plan's list price - a discount, a legacy rate,
+  /// or a negotiated franchise deal. Null means charge list price.
+  agreedPricePaise Int?
+
+  /// Why they left, and when.
+  ///
+  /// One dropdown, and the most valuable data this company will ever collect. Churn without a
+  /// reason is a number that tells you the patient died; churn with a reason tells you what of.
+  cancelledAt      DateTime?
+  cancelReason     String?
+
+  startsAt       DateTime           @default(now())
+  endsAt         DateTime?
+  assignedBy     String?
+  notes          String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@index([status])
+}
+
+/**
+ * Every change to a subscription, kept forever.
+ *
+ * TenantSubscription holds only the *current* state, so a plan change overwrites what came before.
+ * That makes net revenue retention, cohort analysis and any honest churn breakdown permanently
+ * impossible - not "not built yet", but unrecoverable, because the history was never written down.
+ *
+ * The value fields are the point. Knowing a salon moved from Salon to Group is mildly interesting;
+ * knowing their monthly value went from ₹1,999 to ₹4,999 on a given date is what lets you compute
+ * expansion, contraction and NRR later. Values are snapshotted rather than looked up, because list
+ * prices change and last year's upgrade must keep reporting last year's numbers.
+ */
+model SubscriptionEvent {
+  id            String                @id @default(cuid())
+  tenantId      String
+  tenant        Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  kind          SubscriptionEventKind
+  /// Monthly value before and after, in paise. Both null for events that do not move money.
+  fromValuePaise Int?
+  toValuePaise   Int?
+  fromPlanCode  String?
+  toPlanCode    String?
+  billingPeriod String?
+  /// Why - a cancellation reason, a discount justification, a note from the call.
+  reason        String?
+  /// Who made the change. Null when the system did it, e.g. a trial expiring on its own.
+  actorUserId   String?
+  actor         User?                 @relation("SubscriptionEventActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+  createdAt     DateTime              @default(now())
+
+  @@index([tenantId, createdAt])
+  @@index([kind, createdAt])
+}
+
+enum SubscriptionEventKind {
+  CREATED
+  TRIAL_STARTED
+  TRIAL_EXTENDED
+  CONVERTED
+  UPGRADED
+  DOWNGRADED
+  RENEWED
+  PAYMENT_FAILED
+  RECOVERED
+  CANCELLED
+  REACTIVATED
+  PRICE_CHANGED
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  SUSPENDED
+  CANCELLED
+}
+
+enum BillingPeriod {
+  MONTHLY
+  ANNUAL
 }
 
 model VerificationDocument {
@@ -1659,4 +1779,57 @@ model WebsiteRevision {
   createdAt DateTime     @default(now())
 
   @@index([websiteId, createdAt])
+}
+
+/// ---------------------------------------------------------------------------------------------
+/// Operyx's own business: the salons we are selling to, before and after they become tenants.
+/// ---------------------------------------------------------------------------------------------
+
+/**
+ * A sales enquiry.
+ *
+ * Exists because a prospect is not a tenant. Someone who calls about pricing has no salon in the
+ * system, no owner login and no subscription - and if the only way to record them is to create a
+ * tenant, the database fills with half-real salons that skew every count. A lead converts into a
+ * tenant exactly once, at which point `convertedTenantId` links the two and the pipeline number
+ * stops counting them.
+ */
+model Lead {
+  id           String     @id @default(cuid())
+  salonName    String
+  contactName  String
+  phone        String
+  email        String?
+  city         String?
+  /// Roughly how big they are, so a salesperson can tell a chair-rental from a chain at a glance.
+  branchCount  Int        @default(1)
+  staffCount   Int        @default(0)
+  /// Where they came from: referral, Instagram, walk-in, cold call. Free text on purpose - the
+  /// list of channels changes faster than a schema should.
+  source       String?
+  status       LeadStatus @default(NEW)
+  /// The plan being discussed, so a quote can be reproduced later.
+  interestedPlanId String?
+  interestedPlan   SubscriptionPlan? @relation(fields: [interestedPlanId], references: [id], onDelete: SetNull)
+  notes        String?
+  /// When to chase. The work queue reads this - a lead with no next step is a lead being lost.
+  followUpAt   DateTime?
+  ownerUserId  String?
+  owner        User?      @relation("LeadOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  /// Set once the lead becomes a real salon. Also what stops it being counted as open pipeline.
+  convertedTenantId String? @unique
+  convertedAt  DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([status, followUpAt])
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  DEMO_BOOKED
+  QUOTED
+  WON
+  LOST
 }

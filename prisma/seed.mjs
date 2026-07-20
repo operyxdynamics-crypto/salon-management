@@ -11,10 +11,55 @@ const db = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
 });
 
+/**
+ * The plans Operyx sells. See docs/SAAS-PLAN.md for the reasoning.
+ *
+ * Prices are in paise and exclude 18% GST, which is how every competitor quotes. Annual is a flat
+ * 20% off and waives the setup fee.
+ *
+ * Deliberately no cheap tier: Operyx is priced on GST compliance and franchise support, which are
+ * worth nothing to a single-chair salon and a great deal to a group with an accountant. A discount
+ * you offer is worth more than a low price you advertise.
+ *
+ * A limit of 0 means unlimited.
+ */
 const plans = [
-  { code: "starter", name: "Starter", description: "For a single-location salon beginning on Operyx.", maxBranches: 1, maxStaff: 8, maxServices: 30, maxMonthlyAppointments: 500, maxStorageMb: 250, features: ["operations", "marketplace"] },
-  { code: "growth", name: "Growth", description: "For established salons with larger teams and reporting.", maxBranches: 3, maxStaff: 30, maxServices: 100, maxMonthlyAppointments: 3000, maxStorageMb: 2048, features: ["operations", "marketplace", "advanced_reports", "inventory"] },
-  { code: "scale", name: "Scale", description: "For multi-branch salon groups.", maxBranches: 15, maxStaff: 200, maxServices: 500, maxMonthlyAppointments: 20000, maxStorageMb: 10240, features: ["operations", "marketplace", "advanced_reports", "inventory", "priority_support"] },
+  {
+    code: "salon",
+    name: "Salon",
+    description: "One salon, billed properly. GST invoices, attendance and payroll included.",
+    monthlyPricePaise: 199_900,   // ₹1,999
+    annualPricePaise: 1_918_800,  // ₹19,188 = ₹1,599/mo
+    setupFeePaise: 199_900,       // ₹1,999, waived on annual
+    trialDays: 14,
+    maxBranches: 1, maxStaff: 15, maxServices: 0, maxMonthlyAppointments: 0, maxStorageMb: 2048,
+    features: ["operations", "marketplace", "inventory", "attendance", "payroll"],
+    isPublic: true, sortOrder: 1,
+  },
+  {
+    code: "group",
+    name: "Group",
+    description: "Several branches under one business, with reporting across all of them.",
+    monthlyPricePaise: 499_900,   // ₹4,999
+    annualPricePaise: 4_798_800,  // ₹47,988 = ₹3,999/mo
+    setupFeePaise: 199_900,
+    trialDays: 14,
+    maxBranches: 5, maxStaff: 50, maxServices: 0, maxMonthlyAppointments: 0, maxStorageMb: 10_240,
+    features: ["operations", "marketplace", "inventory", "attendance", "payroll", "advanced_reports", "multi_branch", "priority_support"],
+    isPublic: true, sortOrder: 2,
+  },
+  {
+    code: "franchise",
+    name: "Franchise",
+    description: "Franchise networks: COCO, FOCO and FOFO branches billing under their own GSTINs.",
+    monthlyPricePaise: 1_199_900,  // ₹11,999
+    annualPricePaise: 11_518_800,  // ₹1,15,188 = ₹9,599/mo
+    setupFeePaise: 0,              // onboarding is a conversation at this size
+    trialDays: 0,                  // sold, not self-served
+    maxBranches: 0, maxStaff: 0, maxServices: 0, maxMonthlyAppointments: 0, maxStorageMb: 51_200,
+    features: ["operations", "marketplace", "inventory", "attendance", "payroll", "advanced_reports", "multi_branch", "franchise", "multi_entity", "account_manager"],
+    isPublic: true, sortOrder: 3,
+  },
 ];
 const seededPlans = {};
 for (const plan of plans) {
@@ -43,7 +88,7 @@ const tenant = await db.tenant.upsert({
     gstin: "29AABCV1234F1Z5",
     panNumber: "AABCV1234F",
     status: "ACTIVE",
-    subscription: "growth",
+    subscription: "group",
     onboardingStep: 4,
     policies: { cancellationHours: 4 },
   },
@@ -266,8 +311,8 @@ const owner = existingOwner ? await db.user.update({
 
 await db.tenantSubscription.upsert({
   where: { tenantId: tenant.id },
-  update: { planId: seededPlans.growth.id, assignedBy: admin?.id },
-  create: { tenantId: tenant.id, planId: seededPlans.growth.id, assignedBy: admin?.id },
+  update: { planId: seededPlans.group.id, assignedBy: admin?.id },
+  create: { tenantId: tenant.id, planId: seededPlans.group.id, assignedBy: admin?.id },
 });
 
 const pendingTenant = await db.tenant.upsert({
@@ -279,7 +324,7 @@ const pendingTenant = await db.tenant.upsert({
     legalName: "Blush and Bloom Salon LLP",
     gstin: "29AAGFB2244P1Z8",
     status: "PENDING_REVIEW",
-    subscription: "starter",
+    subscription: "salon",
   },
 });
 
@@ -305,8 +350,8 @@ await db.branch.upsert({
 
 await db.tenantSubscription.upsert({
   where: { tenantId: pendingTenant.id },
-  update: { planId: seededPlans.starter.id, assignedBy: admin?.id },
-  create: { tenantId: pendingTenant.id, planId: seededPlans.starter.id, assignedBy: admin?.id },
+  update: { planId: seededPlans.salon.id, assignedBy: admin?.id },
+  create: { tenantId: pendingTenant.id, planId: seededPlans.salon.id, assignedBy: admin?.id },
 });
 
 if (admin) {

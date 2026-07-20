@@ -850,7 +850,7 @@ export function SalonWorkspace({ initialData, initialDetail, initialModule }: { 
           {detail.customerId ? <CustomerProfileView customerId={detail.customerId} data={data} submit={submit} close={closeDetail} openAppointment={(id) => openDetail("appointmentId", id)} bookAppointment={(customerId) => openAppointment({ customerId, branchId: selectedBranchId === "all" ? undefined : selectedBranchId })} openSale={(customerId, branchId) => void openCustomerSale(customerId, branchId)} openInvoice={openInvoiceCenter} />
             : detail.serviceId ? <ServiceProfileView serviceId={detail.serviceId} data={data} close={closeDetail} openAppointment={(id) => openDetail("appointmentId", id)} />
             : <>
-          {active === "Overview" && <Overview data={data} navigate={navigate} openInvoice={openInvoiceCenter} />}
+          {active === "Overview" && <Overview data={data} navigate={navigate} openInvoice={openInvoiceCenter} submit={submit} />}
           {active === "Appointments" && <AppointmentsView data={data} open={openAppointment} submit={submit} openDetail={(id) => openDetail("appointmentId", id)} openSale={(item) => void openAppointmentSale(item)} openInvoice={openInvoiceCenter} />}
           {active === "Customers" && <CustomersView data={data} open={() => setModal("customer")} submit={submit} openProfile={(id) => openDetail("customerId", id)} />}
           {active === "Point of sale" && <BillingWorkspace
